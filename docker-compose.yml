@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  microservice:
+    image: sumelms/microservice-catalog
+    ports:
+      - "8080:8080"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - ./config/config.yml:/config.yml
+    depends_on:
+      - postgres
+    environment:
+      - SUMELMS_CONFIG_PATH=/config.yml
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - microservice_catalog_postgres:/var/lib/postgresql/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  microservice_catalog_postgres:
