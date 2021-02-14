@@ -23,7 +23,7 @@ all: test build
 
 # Runner
 
-run: build-proto
+run:
 	export SUMELMS_CONFIG_PATH="./config/config.yml" && \
 	${GORUN} cmd/server/main.go
 .PHONY: run

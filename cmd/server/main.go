@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/sumelms/microservice-catalog/pkg/config"
 
-	database "github.com/sumelms/microservice-catalog/pkg/database/gorm"
+	httptransport "github.com/sumelms/microservice-catalog/pkg/transport/http"
+
 	"github.com/sumelms/microservice-catalog/pkg/logger"
 
 	"github.com/go-kit/kit/log/level"
@@ -31,13 +34,13 @@ func main() {
 	}()
 
 	// Database
-	db, err := database.Connect(cfg.Database)
-	if err != nil {
-		_ = level.Error(logger).Log("exit", err)
-		os.Exit(-1)
-	}
+	// db, err := database.Connect(cfg.Database)
+	// if err != nil {
+	// 	_ = level.Error(logger).Log("exit", err)
+	// 	os.Exit(-1)
+	// }
 
-	// ctx := context.Background()
+	ctx := context.Background()
 	// repository := user.NewRepository(db, logger)
 	// srv := userdomain.NewService(repository, logger)
 	// endpoints := userendpoint.MakeEndpoints(srv)
@@ -53,8 +56,8 @@ func main() {
 	// HTTP Server
 	go func() {
 		fmt.Println("HTTP Server Listening on", cfg.Server.HTTP.Host)
-		// httpServer := httptransport.NewHTTPServer(ctx, endpoints)
-		// errs <- http.ListenAndServe(cfg.Server.HTTP.Host, httpServer)
+		httpServer := httptransport.NewHTTPServer(ctx)
+		errs <- http.ListenAndServe(cfg.Server.HTTP.Host, httpServer)
 	}()
 
 	// gRPC Server

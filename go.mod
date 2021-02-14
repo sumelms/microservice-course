@@ -12,6 +12,7 @@ require (
 	github.com/lib/pq v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/sherifabdlnaby/configuro v0.0.2
+	github.com/sumelms/microkit v0.0.0-20210214205330-e8e716d00dc3
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.25.0
 )
