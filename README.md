@@ -3,13 +3,13 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.com/sumelms/microservice-catalog">
-    <img alt="Travis" src="https://travis-ci.com/sumelms/microservice-catalog.svg?branch=main">
+  <a href="https://travis-ci.com/sumelms/microservice-course">
+    <img alt="Travis" src="https://travis-ci.com/sumelms/microservice-course.svg?branch=main">
   </a>  
-  <a href="https://codecov.io/gh/sumelms/microservice-catalog">
-    <img src="https://codecov.io/gh/sumelms/backend/microservice-catalog/main/graph/badge.svg?token=8E92BS3SR9" />
+  <a href="https://codecov.io/gh/sumelms/microservice-course">
+    <img src="https://codecov.io/gh/sumelms/backend/microservice-course/main/graph/badge.svg?token=8E92BS3SR9" />
   </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/sumelms/microservice-catalog">
+  <img alt="GitHub" src="https://img.shields.io/github/license/sumelms/microservice-course">
   <a href="https://discord.gg/Yh9q9cd">
     <img alt="Discord" src="https://img.shields.io/discord/726500188021063682">
   </a>
@@ -17,7 +17,7 @@
 
 ## About Sumé LMS
 
-> Note: This repository contains the **catalog microservice** of the Sumé LMS. If you are looking for more information
+> Note: This repository contains the **course microservice** of the Sumé LMS. If you are looking for more information
 > about the application, we strongly recommend you to [check the documentation](https://www.sumelms.com/docs).
 
 Sumé LMS is a modern and open-source learning management system that uses modern technologies to deliver performance
@@ -56,7 +56,7 @@ and scalability to your learning environment.
 Clone the repository
 
 ```bash
-$ git clone [git@github.com](mailto:git@github.com):sumelms/microservice-catalog.git
+$ git clone [git@github.com](mailto:git@github.com):sumelms/microservice-course.git
 ```
 
 Access the project folder, and download the Go dependencies
@@ -164,7 +164,7 @@ SUMELMS_DATABASE_HOST = "localhost"
 SUMELMS_DATABASE_PORT = 5432
 SUMELMS_DATABASE_USER = nil
 SUMELMS_DATABASE_PASSWORD = nil
-SUMELMS_DATABASE_DATABASE = "sumelms_catalog"
+SUMELMS_DATABASE_DATABASE = "sumelms_course"
 ```
 
 > We are using [configuro](https://github.com/sherifabdlnaby/configuro) to manage the configuration, so the precedence
@@ -208,7 +208,7 @@ find help and get in touch with the community.
 ### Bugs or feature requests
 
 If you found a bug or have a feature request, the best way to do
-it is [opening an issue](https://github.com/sumelms/microservice-catalog/issues).
+it is [opening an issue](https://github.com/sumelms/microservice-course/issues).
 
 
 ## License

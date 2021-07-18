@@ -8,11 +8,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/sumelms/microservice-catalog/pkg/config"
+	"github.com/sumelms/microservice-course/pkg/config"
 
-	httptransport "github.com/sumelms/microservice-catalog/pkg/transport/http"
+	httptransport "github.com/sumelms/microservice-course/pkg/transport/http"
 
-	"github.com/sumelms/microservice-catalog/pkg/logger"
+	"github.com/sumelms/microservice-course/pkg/logger"
 
 	"github.com/go-kit/kit/log/level"
 	_ "github.com/lib/pq"

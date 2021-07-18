@@ -7,7 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // database driver
-	"github.com/sumelms/microservice-catalog/pkg/config"
+	"github.com/sumelms/microservice-course/pkg/config"
 )
 
 func Connect(cfg *config.Database) (*gorm.DB, error) {

@@ -13,7 +13,7 @@ LINTER := golangci-lint
 
 VERSION := $(shell git describe --tags --exact-match 2>/dev/null || echo latest)
 DOCKERHUB_NAMESPACE ?= sumelms
-MICROSERVICE_NAME := catalog
+MICROSERVICE_NAME := course
 BINARY_NAME := sumelms-${MICROSERVICE_NAME}
 IMAGE := ${DOCKERHUB_NAMESPACE}/microservice-${MICROSERVICE_NAME}:${VERSION}
 

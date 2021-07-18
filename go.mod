@@ -1,4 +1,4 @@
-module github.com/sumelms/microservice-catalog
+module github.com/sumelms/microservice-course
 
 go 1.14
 

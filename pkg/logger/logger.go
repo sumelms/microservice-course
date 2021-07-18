@@ -12,7 +12,7 @@ func NewLogger() log.Logger {
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = log.NewSyncLogger(logger)
 		logger = log.With(logger,
-			"service", "sumelms-catalog",
+			"service", "sumelms-course",
 			"time:", log.DefaultTimestampUTC,
 			"caller", log.DefaultCaller,
 		)
