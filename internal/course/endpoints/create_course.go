@@ -13,14 +13,14 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type createProfileRequest struct {
-	Title       string `json:"title" validate:"required,alphanum,max=100"`
-	Subtitle    string `json:"subtitle" validade:"required,alphanum,max=100"`
-	Excerpt     string `json:"excerpt" validate:"required,alphanum,max=100"`
-	Description string `json:"description" validate:"required,alphanum,max=255"`
+type createCourseRequest struct {
+	Title       string `json:"title" validate:"required,max=100"`
+	Subtitle    string `json:"subtitle" validade:"required,max=100"`
+	Excerpt     string `json:"excerpt" validate:"required,max=140"`
+	Description string `json:"description" validate:"required,max=255"`
 }
 
-type createProfileResponse struct {
+type createCourseResponse struct {
 	UUID        string    `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
@@ -41,7 +41,7 @@ func NewCreateCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 
 func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(createProfileRequest)
+		req, ok := request.(createCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -51,19 +51,19 @@ func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		p := domain.Course{}
+		c := domain.Course{}
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &p)
+		err := json.Unmarshal(data, &c)
 		if err != nil {
 			return nil, err
 		}
 
-		created, err := s.CreateCourse(ctx, &p)
+		created, err := s.CreateCourse(ctx, &c)
 		if err != nil {
 			return nil, err
 		}
 
-		return createProfileResponse{
+		return createCourseResponse{
 			UUID:        created.UUID,
 			Title:       created.Title,
 			Subtitle:    created.Subtitle,
@@ -76,7 +76,7 @@ func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 }
 
 func decodeCreateCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req createProfileRequest
+	var req createCourseRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
