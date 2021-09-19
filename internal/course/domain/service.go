@@ -10,6 +10,7 @@ type Service interface {
 	CreateCourse(context.Context, *Course) (Course, error)
 	FindCourse(context.Context, string) (Course, error)
 	UpdateCourse(context.Context, *Course) (Course, error)
+	DeleteCourse(context.Context, string) error
 }
 
 type service struct {
@@ -46,4 +47,12 @@ func (s *service) UpdateCourse(_ context.Context, course *Course) (Course, error
 		return Course{}, fmt.Errorf("service can't find course: %w", err)
 	}
 	return c, nil
+}
+
+func (s *service) DeleteCourse(_ context.Context, id string) error {
+	err := s.repo.Delete(id)
+	if err != nil {
+		return fmt.Errorf("delete profile: %w", err)
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"github.com/go-kit/kit/log"
 	"github.com/jinzhu/gorm"
 	"github.com/sumelms/microservice-course/internal/course/domain"
@@ -72,16 +73,16 @@ func (r *Repository) Update(c *domain.Course) (domain.Course, error) {
 	return *c, nil
 }
 
-//// Delete a profile by CourseID
-//func (r *Repository) Delete(id domain.UserID) error {
-//	query := r.db.Where(whereCourseUUID, id).Delete(&Course{})
-//
-//	if err := query.Error; err != nil {
-//		if errors.Is(err, gorm.ErrRecordNotFound) {
-//			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "course not found")
-//		}
-//		return merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "delete course")
-//	}
-//
-//	return nil
-//}
+// Delete a course by its ID
+func (r *Repository) Delete(id string) error {
+	query := r.db.Where(whereCourseUUID, id).Delete(&Course{})
+
+	if err := query.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "course not found")
+		}
+		return merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "delete course")
+	}
+
+	return nil
+}

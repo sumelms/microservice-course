@@ -46,8 +46,6 @@ func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		fmt.Printf("CONTEXT IS: %s", ctx.Value("bus"))
-
 		v := validator.NewValidator()
 		if err := v.Validate(req); err != nil {
 			return nil, err

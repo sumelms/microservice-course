@@ -7,7 +7,7 @@ import (
 type UserID string
 
 type Course struct {
-	gorm.Model
+	gorm.Model // @TODO Remove it from here
 	UUID        string
 	Title       string
 	Subtitle    string
