@@ -10,7 +10,7 @@ import (
 // Course struct
 type Course struct {
 	gorm.Model
-	UUID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	UUID        uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Title       string    `gorm:"size:100"`
 	Subtitle    string    `gorm:"size:100"`
 	Excerpt     string    `gorm:"size:144"`

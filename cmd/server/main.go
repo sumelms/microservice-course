@@ -57,7 +57,7 @@ func main() {
 		httpLogger := log.With(logger, "component", "http")
 
 		mux := http.NewServeMux()
-		// Access Control and CORS
+		// Middlewares
 		http.Handle("/", accessControl(mux))
 
 		// Initializing the services

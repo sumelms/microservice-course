@@ -20,14 +20,14 @@ func NewHTTPHandler(s domain.Service, logger log.Logger) http.Handler {
 
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
 	getCourseHandler := endpoints.NewGetCourseHandler(s, opts...)
-	//updateProfileHandler := endpoints.NewUpdateProfileHandler(s, opts...)
+	updateCourseHandler := endpoints.NewUpdateCourseHandler(s, opts...)
 	//deleteProfileHandler := endpoints.NewDeleteProfileHandler(s, opts...)
 
 	r := mux.NewRouter()
 
 	r.Handle("/course", createCourseHandler).Methods(http.MethodPost)
 	r.Handle("/course/{uuid}", getCourseHandler).Methods(http.MethodGet)
-	//r.Handle("/profile/{id}", updateProfileHandler).Methods(http.MethodPut)
+	r.Handle("/course/{uuid}", updateCourseHandler).Methods(http.MethodPut)
 	//r.Handle("/profile/{id}", deleteProfileHandler).Methods(http.MethodDelete)
 
 	return r

@@ -42,17 +42,17 @@ func makeGetCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		course, err := s.GetCourse(ctx, req.UUID)
+		c, err := s.FindCourse(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
 		return &getCourseResponse{
-			UUID:        course.UUID,
-			Title:       course.Title,
-			Subtitle:    course.Subtitle,
-			Excerpt:     course.Excerpt,
-			Description: course.Description,
+			UUID:        c.UUID,
+			Title:       c.Title,
+			Subtitle:    c.Subtitle,
+			Excerpt:     c.Excerpt,
+			Description: c.Description,
 		}, nil
 	}
 }

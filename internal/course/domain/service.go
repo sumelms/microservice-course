@@ -8,7 +8,8 @@ import (
 
 type Service interface {
 	CreateCourse(context.Context, *Course) (Course, error)
-	GetCourse(context.Context, string) (Course, error)
+	FindCourse(context.Context, string) (Course, error)
+	UpdateCourse(context.Context, *Course) (Course, error)
 }
 
 type service struct {
@@ -31,10 +32,18 @@ func (s *service) CreateCourse(_ context.Context, course *Course) (Course, error
 	return c, nil
 }
 
-func (s *service) GetCourse(_ context.Context, id string) (Course, error) {
+func (s *service) FindCourse(_ context.Context, id string) (Course, error) {
 	c, err := s.repo.Find(id)
 	if err != nil {
 		return Course{}, fmt.Errorf("service can't found course: %w", err)
+	}
+	return c, nil
+}
+
+func (s *service) UpdateCourse(_ context.Context, course *Course) (Course, error) {
+	c, err := s.repo.Update(course)
+	if err != nil {
+		return Course{}, fmt.Errorf("service can't find course: %w", err)
 	}
 	return c, nil
 }

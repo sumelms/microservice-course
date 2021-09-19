@@ -9,18 +9,20 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type createCourseRequest struct {
+type updateCourseRequest struct {
+	UUID        string `json:"uuid" validate:"required"`
 	Title       string `json:"title" validate:"required,max=100"`
 	Subtitle    string `json:"subtitle" validade:"required,max=100"`
 	Excerpt     string `json:"excerpt" validate:"required,max=140"`
 	Description string `json:"description" validate:"required,max=255"`
 }
 
-type createCourseResponse struct {
+type updateCourseResponse struct {
 	UUID        string    `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
@@ -30,23 +32,21 @@ type createCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func NewCreateCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateCourseHandler(svc domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeCreateCourseEndpoint(s),
-		decodeCreateCourseRequest,
-		encodeCreateCourseResponse,
+		makeUpdateCourseEndpoint(svc),
+		decodeUpdateCourseRequest,
+		encodeUpdateCourseResponse,
 		opts...,
 	)
 }
 
-func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(createCourseRequest)
+		req, ok := request.(updateCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
-
-		fmt.Printf("CONTEXT IS: %s", ctx.Value("bus"))
 
 		v := validator.NewValidator()
 		if err := v.Validate(req); err != nil {
@@ -60,32 +60,39 @@ func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		created, err := s.CreateCourse(ctx, &c)
+		updated, err := s.UpdateCourse(ctx, &c)
 		if err != nil {
 			return nil, err
 		}
 
-		return createCourseResponse{
-			UUID:        created.UUID,
-			Title:       created.Title,
-			Subtitle:    created.Subtitle,
-			Excerpt:     created.Excerpt,
-			Description: created.Description,
-			CreatedAt:   created.CreatedAt,
-			UpdatedAt:   created.UpdatedAt,
-		}, err
+		return updateCourseResponse{
+			UUID:        updated.UUID,
+			Title:       updated.Title,
+			Subtitle:    updated.Subtitle,
+			Excerpt:     updated.Excerpt,
+			Description: updated.Description,
+		}, nil
 	}
 }
 
-func decodeCreateCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req createCourseRequest
+func decodeUpdateCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["uuid"]
+	if !ok {
+		return nil, fmt.Errorf("invalid argument")
+	}
+
+	var req updateCourseRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
 	}
+
+	req.UUID = id
+
 	return req, nil
 }
 
-func encodeCreateCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func encodeUpdateCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return kithttp.EncodeJSONResponse(ctx, w, response)
 }

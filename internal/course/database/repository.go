@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	whereCourseID = "uuid = ?"
+	whereCourseUUID = "uuid = ?"
 )
 
 // Repository struct
@@ -32,7 +32,7 @@ func (r *Repository) Create(course *domain.Course) (domain.Course, error) {
 	entity := toDBModel(course)
 
 	if err := r.db.Create(&entity).Error; err != nil {
-		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "repository create course")
+		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't create course")
 	}
 	return toDomainModel(&entity), nil
 }
@@ -41,7 +41,7 @@ func (r *Repository) Create(course *domain.Course) (domain.Course, error) {
 func (r *Repository) Find(id string) (domain.Course, error) {
 	var course Course
 
-	query := r.db.Where(whereCourseID, id).First(&course)
+	query := r.db.Where(whereCourseUUID, id).First(&course)
 	if query.RecordNotFound() {
 		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
 	}
@@ -52,28 +52,29 @@ func (r *Repository) Find(id string) (domain.Course, error) {
 	return toDomainModel(&course), nil
 }
 
-//// Update the given course
-//func (r *Repository) Update(p *domain.Course) (domain.Course, error) {
-//	var course Course
-//
-//	query := r.db.Where(whereCourseID, p.ID).First(&course)
-//
-//	if query.RecordNotFound() {
-//		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
-//	}
-//
-//	query = r.db.Save(&course)
-//
-//	if err := query.Error; err != nil {
-//		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "update course")
-//	}
-//
-//	return toDomainModel(&course), nil
-//}
-//
+// Update the given course
+func (r *Repository) Update(c *domain.Course) (domain.Course, error) {
+	var course Course
+
+	query := r.db.Where(whereCourseUUID, c.UUID).First(&course)
+
+	if query.RecordNotFound() {
+		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
+	}
+
+	c.ID = course.ID
+	query = r.db.Save(&c)
+
+	if err := query.Error; err != nil {
+		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update course")
+	}
+
+	return *c, nil
+}
+
 //// Delete a profile by CourseID
 //func (r *Repository) Delete(id domain.UserID) error {
-//	query := r.db.Where(whereCourseID, id).Delete(&Course{})
+//	query := r.db.Where(whereCourseUUID, id).Delete(&Course{})
 //
 //	if err := query.Error; err != nil {
 //		if errors.Is(err, gorm.ErrRecordNotFound) {
