@@ -1,12 +1,10 @@
 server:
   http:
     host: ":8080"
-  grpc:
-    host: ":8081"
 database:
   driver: postgres
-  host: localhost
+  host: postgres
   port: 5432
   username: postgres
-  password: password
+  password: secret@123
   database: postgres

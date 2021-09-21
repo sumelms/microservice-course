@@ -11,7 +11,6 @@ import (
 type Config struct {
 	Server struct {
 		HTTP *Server `validate:"required"`
-		GRPC *Server `validate:"required"`
 	} `validate:"required"`
 	Database *Database `validate:"required"`
 }

@@ -1,5 +1,7 @@
 package tests
 
+// nolint: gochecknoinits, dogsled
+
 import (
 	"os"
 	"path"

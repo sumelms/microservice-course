@@ -14,6 +14,6 @@ What do you think that it should be? Just a few words to help us to quickly proc
 
 A clear and concise description of what do you need
 
-### Aditional information
+### Additional information
 
 Any other additional information.
