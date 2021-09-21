@@ -28,6 +28,26 @@ func NewRepository(db *gorm.DB, logger log.Logger) *Repository {
 	}
 }
 
+// List courses
+func (r *Repository) List() ([]domain.Course, error) {
+	var courses []Course
+
+	query := r.db.Find(&courses)
+	if query.RecordNotFound() {
+		return []domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
+	}
+	if err := query.Error; err != nil {
+		return []domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find course")
+	}
+
+	dc := make([]domain.Course, len(courses))
+	for i := range courses {
+		course := courses[i]
+		dc[i] = toDomainModel(&course)
+	}
+	return dc, nil
+}
+
 // Create creates a course
 func (r *Repository) Create(course *domain.Course) (domain.Course, error) {
 	entity := toDBModel(course)

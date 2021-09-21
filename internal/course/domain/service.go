@@ -7,6 +7,7 @@ import (
 )
 
 type Service interface {
+	ListCourse(ctx context.Context) ([]Course, error)
 	CreateCourse(context.Context, *Course) (Course, error)
 	FindCourse(context.Context, string) (Course, error)
 	UpdateCourse(context.Context, *Course) (Course, error)
@@ -23,6 +24,14 @@ func NewService(repo Repository, logger log.Logger) *service { // nolint: revive
 		repo:   repo,
 		logger: logger,
 	}
+}
+
+func (s *service) ListCourse(_ context.Context) ([]Course, error) {
+	cs, err := s.repo.List()
+	if err != nil {
+		return []Course{}, fmt.Errorf("service didn't found any course: %w", err)
+	}
+	return cs, nil
 }
 
 func (s *service) CreateCourse(_ context.Context, course *Course) (Course, error) {

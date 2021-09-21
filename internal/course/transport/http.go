@@ -18,6 +18,7 @@ func NewHTTPHandler(s domain.Service, logger log.Logger) http.Handler {
 		kithttp.ServerErrorEncoder(errors.EncodeError),
 	}
 
+	listCourseHandler := endpoints.NewListCourseHandler(s, opts...)
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
 	getCourseHandler := endpoints.NewGetCourseHandler(s, opts...)
 	updateCourseHandler := endpoints.NewUpdateCourseHandler(s, opts...)
@@ -25,10 +26,11 @@ func NewHTTPHandler(s domain.Service, logger log.Logger) http.Handler {
 
 	r := mux.NewRouter()
 
-	r.Handle("/course", createCourseHandler).Methods(http.MethodPost)
-	r.Handle("/course/{uuid}", getCourseHandler).Methods(http.MethodGet)
-	r.Handle("/course/{uuid}", updateCourseHandler).Methods(http.MethodPut)
-	r.Handle("/course/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
+	r.Handle("/courses", listCourseHandler).Methods(http.MethodGet)
+	r.Handle("/courses", createCourseHandler).Methods(http.MethodPost)
+	r.Handle("/courses/{uuid}", getCourseHandler).Methods(http.MethodGet)
+	r.Handle("/courses/{uuid}", updateCourseHandler).Methods(http.MethodPut)
+	r.Handle("/courses/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
 
 	return r
 }

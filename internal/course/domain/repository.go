@@ -5,5 +5,5 @@ type Repository interface {
 	Find(course string) (Course, error)
 	Update(course *Course) (Course, error)
 	Delete(course string) error
-	//List()
+	List() ([]Course, error)
 }
