@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-kit/kit/log"
 )
 
@@ -45,7 +46,7 @@ func (s *service) CreateCourse(_ context.Context, course *Course) (Course, error
 func (s *service) FindCourse(_ context.Context, id string) (Course, error) {
 	c, err := s.repo.Find(id)
 	if err != nil {
-		return Course{}, fmt.Errorf("service can't found course: %w", err)
+		return Course{}, fmt.Errorf("service can't find course: %w", err)
 	}
 	return c, nil
 }
@@ -53,7 +54,7 @@ func (s *service) FindCourse(_ context.Context, id string) (Course, error) {
 func (s *service) UpdateCourse(_ context.Context, course *Course) (Course, error) {
 	c, err := s.repo.Update(course)
 	if err != nil {
-		return Course{}, fmt.Errorf("service can't find course: %w", err)
+		return Course{}, fmt.Errorf("service can't update course: %w", err)
 	}
 	return c, nil
 }
@@ -61,7 +62,7 @@ func (s *service) UpdateCourse(_ context.Context, course *Course) (Course, error
 func (s *service) DeleteCourse(_ context.Context, id string) error {
 	err := s.repo.Delete(id)
 	if err != nil {
-		return fmt.Errorf("delete profile: %w", err)
+		return fmt.Errorf("service can't delete course: %w", err)
 	}
 	return nil
 }

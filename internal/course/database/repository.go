@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+
 	"github.com/go-kit/kit/log"
 	"github.com/jinzhu/gorm"
 	"github.com/sumelms/microservice-course/internal/course/domain"
@@ -34,18 +35,18 @@ func (r *Repository) List() ([]domain.Course, error) {
 
 	query := r.db.Find(&courses)
 	if query.RecordNotFound() {
-		return []domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
+		return []domain.Course{}, nil
 	}
 	if err := query.Error; err != nil {
-		return []domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find course")
+		return []domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list courses")
 	}
 
-	dc := make([]domain.Course, len(courses))
+	list := make([]domain.Course, len(courses))
 	for i := range courses {
 		course := courses[i]
-		dc[i] = toDomainModel(&course)
+		list = append(list, toDomainModel(&course))
 	}
-	return dc, nil
+	return list, nil
 }
 
 // Create creates a course

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-kit/kit/log"
 )
@@ -26,22 +27,42 @@ func NewService(repo Repository, logger log.Logger) *service { // nolint: revive
 	}
 }
 
-func (s service) ListMatrix(ctx context.Context) ([]Matrix, error) {
-	panic("implement me")
+func (s *service) ListMatrix(_ context.Context) ([]Matrix, error) {
+	ms, err := s.repo.List()
+	if err != nil {
+		return []Matrix{}, fmt.Errorf("service didn't found any matrix: %w", err)
+	}
+	return ms, nil
 }
 
-func (s service) CreateMatrix(ctx context.Context, matrix *Matrix) (Matrix, error) {
-	panic("implement me")
+func (s *service) CreateMatrix(_ context.Context, matrix *Matrix) (Matrix, error) {
+	m, err := s.repo.Create(matrix)
+	if err != nil {
+		return Matrix{}, fmt.Errorf("service can't create matrix: %w", err)
+	}
+	return m, nil
 }
 
-func (s service) FindMatrix(ctx context.Context, id string) (Matrix, error) {
-	panic("implement me")
+func (s *service) FindMatrix(_ context.Context, id string) (Matrix, error) {
+	m, err := s.repo.Find(id)
+	if err != nil {
+		return Matrix{}, fmt.Errorf("service can't find matrix: %w", err)
+	}
+	return m, nil
 }
 
-func (s service) UpdateMatrix(ctx context.Context, matrix *Matrix) (Matrix, error) {
-	panic("implement me")
+func (s *service) UpdateMatrix(_ context.Context, matrix *Matrix) (Matrix, error) {
+	m, err := s.repo.Update(matrix)
+	if err != nil {
+		return Matrix{}, fmt.Errorf("service can't update matrix: %w", err)
+	}
+	return m, nil
 }
 
-func (s service) DeleteMatrix(ctx context.Context, id string) error {
-	panic("implement me")
+func (s *service) DeleteMatrix(_ context.Context, id string) error {
+	err := s.repo.Delete(id)
+	if err != nil {
+		return fmt.Errorf("service can't delete matrix: %w", err)
+	}
+	return nil
 }
