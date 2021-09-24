@@ -59,8 +59,7 @@ func (r *Repository) Update(m *domain.Matrix) (domain.Matrix, error) {
 		return domain.Matrix{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "matrix not found")
 	}
 
-	m.ID = matrix.ID
-	query = r.db.Save(&m)
+	query = r.db.Model(&matrix).Updates(&m)
 
 	if err := query.Error; err != nil {
 		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update matrix")
@@ -92,10 +91,9 @@ func (r *Repository) List() ([]domain.Matrix, error) {
 		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list matrices")
 	}
 
-	list := make([]domain.Matrix, len(matrices))
-	for i := range matrices {
-		matrix := matrices[i]
-		list = append(list, toDomainModel(&matrix))
+	var list []domain.Matrix
+	for _, m := range matrices {
+		list = append(list, toDomainModel(&m))
 	}
 
 	return list, nil

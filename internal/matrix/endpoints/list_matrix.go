@@ -29,19 +29,18 @@ func makeListMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		mr := make([]findMatrixResponse, len(matrices))
-		for i := range matrices {
-			m := matrices[i]
-			mr[i] = findMatrixResponse{
+		var list []findMatrixResponse
+		for _, m := range matrices {
+			list = append(list, findMatrixResponse{
 				UUID:        m.UUID,
 				Title:       m.Title,
 				Description: m.Description,
 				CreatedAt:   m.CreatedAt,
 				UpdatedAt:   m.UpdatedAt,
-			}
+			})
 		}
 
-		return &listMatrixResponse{Matrices: mr}, nil
+		return &listMatrixResponse{Matrices: list}, nil
 	}
 }
 

@@ -1,10 +1,11 @@
 package database
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	"time"
 )
 
 type Matrix struct {
@@ -16,6 +17,12 @@ type Matrix struct {
 }
 
 func (m *Matrix) BeforeCreate(scope *gorm.Scope) error {
+	id, err := uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+	scope.SetColumn("UUID", id.String())
+
 	if m.UpdatedAt.IsZero() {
 		err := scope.SetColumn("UpdatedAt", time.Now())
 		if err != nil {
@@ -23,7 +30,7 @@ func (m *Matrix) BeforeCreate(scope *gorm.Scope) error {
 		}
 	}
 
-	err := scope.SetColumn("CreatedAt", time.Now())
+	err = scope.SetColumn("CreatedAt", time.Now())
 	if err != nil {
 		scope.Log("BeforeCreate error: %v", err)
 	}

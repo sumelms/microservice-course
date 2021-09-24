@@ -29,10 +29,9 @@ func makeListCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		cr := make([]findCourseResponse, len(courses))
-		for i := range courses {
-			c := courses[i]
-			cr[i] = findCourseResponse{
+		var list []findCourseResponse
+		for _, c := range courses {
+			list = append(list, findCourseResponse{
 				UUID:        c.UUID,
 				Title:       c.Title,
 				Subtitle:    c.Subtitle,
@@ -40,12 +39,10 @@ func makeListCourseEndpoint(s domain.Service) endpoint.Endpoint {
 				Description: c.Description,
 				CreatedAt:   c.CreatedAt,
 				UpdatedAt:   c.UpdatedAt,
-			}
+			})
 		}
 
-		return &listCourseResponse{
-			Courses: cr,
-		}, nil
+		return &listCourseResponse{Courses: list}, nil
 	}
 }
 

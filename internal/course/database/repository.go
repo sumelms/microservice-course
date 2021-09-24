@@ -41,10 +41,9 @@ func (r *Repository) List() ([]domain.Course, error) {
 		return []domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list courses")
 	}
 
-	list := make([]domain.Course, len(courses))
-	for i := range courses {
-		course := courses[i]
-		list = append(list, toDomainModel(&course))
+	var list []domain.Course
+	for _, c := range courses {
+		list = append(list, toDomainModel(&c))
 	}
 	return list, nil
 }
@@ -84,8 +83,7 @@ func (r *Repository) Update(c *domain.Course) (domain.Course, error) {
 		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
 	}
 
-	c.ID = course.ID
-	query = r.db.Save(&c)
+	query = r.db.Model(&course).Update(&c)
 
 	if err := query.Error; err != nil {
 		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update course")

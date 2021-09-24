@@ -18,6 +18,12 @@ type Course struct {
 }
 
 func (c *Course) BeforeCreate(scope *gorm.Scope) error {
+	id, err := uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+	scope.SetColumn("UUID", id.String())
+
 	if c.UpdatedAt.IsZero() {
 		err := scope.SetColumn("UpdatedAt", time.Now())
 		if err != nil {
@@ -25,7 +31,7 @@ func (c *Course) BeforeCreate(scope *gorm.Scope) error {
 		}
 	}
 
-	err := scope.SetColumn("CreatedAt", time.Now())
+	err = scope.SetColumn("CreatedAt", time.Now())
 	if err != nil {
 		scope.Log("BeforeCreate error: %v", err)
 	}
