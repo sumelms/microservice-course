@@ -2,84 +2,115 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/sumelms/microservice-course/internal/matrix"
+
+	"github.com/gorilla/mux"
+	"github.com/sumelms/microservice-course/internal/course"
+
+	"github.com/go-kit/kit/log"
 	"github.com/sumelms/microservice-course/pkg/config"
+	database "github.com/sumelms/microservice-course/pkg/database/gorm"
+	"golang.org/x/sync/errgroup"
 
-	httptransport "github.com/sumelms/microservice-course/pkg/transport/http"
+	applogger "github.com/sumelms/microservice-course/pkg/logger"
 
-	"github.com/sumelms/microservice-course/pkg/logger"
-
-	"github.com/go-kit/kit/log/level"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	// Logger
-	logger := logger.NewLogger()
+	var (
+		logger     log.Logger
+		httpServer *http.Server
+	)
 
+	// Logger
+	logger = applogger.NewLogger()
+	logger.Log("msg", "service started") // nolint: errcheck
+
+	// Configuration
 	cfg, err := loadConfig()
 	if err != nil {
-		_ = level.Error(logger).Log("exit", err)
+		logger.Log("exit", err) // nolint: errcheck
 		os.Exit(-1)
 	}
 
-	_ = level.Info(logger).Log("msg", "service started")
-	defer func() {
-		_ = level.Info(logger).Log("msg", "service ended")
-	}()
-
 	// Database
-	// db, err := database.Connect(cfg.Database)
-	// if err != nil {
-	// 	_ = level.Error(logger).Log("exit", err)
-	// 	os.Exit(-1)
-	// }
+	db, err := database.Connect(cfg.Database)
+	if err != nil {
+		logger.Log("msg", "database error", err) // nolint: errcheck
+		os.Exit(1)
+	}
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(interrupt)
 
 	ctx := context.Background()
-	// repository := user.NewRepository(db, logger)
-	// srv := userdomain.NewService(repository, logger)
-	// endpoints := userendpoint.MakeEndpoints(srv)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-	errs := make(chan error)
+	g, ctx := errgroup.WithContext(ctx)
 
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errs <- fmt.Errorf("%s", <-c)
-	}()
+	g.Go(func() error {
+		httpLogger := log.With(logger, "component", "http")
 
-	// HTTP Server
-	go func() {
-		fmt.Println("HTTP Server Listening on", cfg.Server.HTTP.Host)
-		httpServer := httptransport.NewHTTPServer(ctx)
-		errs <- http.ListenAndServe(cfg.Server.HTTP.Host, httpServer)
-	}()
+		srv := http.NewServeMux()
+		router := mux.NewRouter()
 
-	// gRPC Server
-	go func() {
-		// listener, err := net.Listen("tcp", cfg.Server.GRPC.Host)
-		// if err != nil {
-		// 	errs <- err
-		// 	return
-		// }
+		// Initializing the services
+		course.NewHTTPService(router, db, httpLogger)
+		matrix.NewHTTPService(router, db, httpLogger)
 
-		fmt.Println("gRPC Server Listening on", cfg.Server.GRPC.Host)
+		// Handle the router
+		srv.Handle("/", router)
 
-		// handler := grpctransport.NewGRPCServer(ctx, endpoints)
-		// grpcServer := grpc.NewServer()
+		// Middlewares
+		http.Handle("/", accessControl(srv))
 
-		// protouser.RegisterUserServer(grpcServer, handler)
-		// reflection.Register(grpcServer)
+		logger.Log("transport", "http", "address", cfg.Server.HTTP.Host, "msg", "listening") // nolint: errcheck
 
-		// errs <- grpcServer.Serve(listener)
-	}()
+		httpServer = &http.Server{
+			Addr:         cfg.Server.HTTP.Host,
+			ReadTimeout:  10 * time.Second,
+			WriteTimeout: 10 * time.Second,
+		}
 
-	_ = level.Error(logger).Log("exit", <-errs)
+		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+			return err
+		}
+		return nil
+	})
+
+	select {
+	case <-interrupt:
+		break
+	case <-ctx.Done():
+		break
+	}
+
+	logger.Log("msg", "received shutdown signal") // nolint: errcheck
+
+	cancel()
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+
+	if httpServer != nil {
+		httpServer.Shutdown(shutdownCtx) // nolint: errcheck
+	}
+
+	if err := g.Wait(); err != nil {
+		logger.Log("msg", "server returning an error", "error", err) // nolint: errcheck
+		defer os.Exit(2)
+	}
+
+	logger.Log("msg", "service ended") // nolint: errcheck
 }
 
 func loadConfig() (*config.Config, error) {
@@ -95,4 +126,18 @@ func loadConfig() (*config.Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func accessControl(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+
+		if r.Method == "OPTIONS" {
+			return
+		}
+
+		h.ServeHTTP(w, r)
+	})
 }

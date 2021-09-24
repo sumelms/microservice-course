@@ -1,19 +1,25 @@
 language: go
-
 sudo: false
-
 go:
   - '1.14'
   - '1.15'
   - tip
-
 before_install:
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.34.1
-
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.39.0
+  - curl -L https://github.com/google/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip -o /tmp/protoc.zip
+  - unzip /tmp/protoc.zip -d "$HOME"/protoc
+  - rm /tmp/protoc.zip
+  - go get google.golang.org/protobuf/cmd/protoc-gen-go
+  - go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+env:
+  - PATH=$HOME/protoc/bin:$PATH GO111MODULE=on
+install:  
+  - make build-proto
+  - go get ./...
+  - make vendor
+  - make lint
+  - make test
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-
-script:
-  - make lint
-  - ./.travis.gofmt.sh
-  - ./.travis.test.sh
+script:  
+  - make build

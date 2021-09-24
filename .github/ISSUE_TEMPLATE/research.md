@@ -16,7 +16,7 @@ Describe the research goals.
 
 ### Desired artfacts
 
-List the artifacts that the research should generate (report, demo, etc).
+List the artifacts that the research should generate (report, demo, etc.).
 
 ### Possible next steps
 
