@@ -12,11 +12,11 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type getCourseRequest struct {
+type findCourseRequest struct {
 	UUID string `json:"uuid"`
 }
 
-type getCourseResponse struct {
+type findCourseResponse struct {
 	UUID        string    `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
@@ -26,18 +26,18 @@ type getCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func NewGetCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeGetCourseEndpoint(s),
-		decodeGetCourseRequest,
-		encodeGetCourseResponse,
+		makeFindCourseEndpoint(s),
+		decodeFindCourseRequest,
+		encodeFindCourseResponse,
 		opts...,
 	)
 }
 
-func makeGetCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(getCourseRequest)
+		req, ok := request.(findCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -47,7 +47,7 @@ func makeGetCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &getCourseResponse{
+		return &findCourseResponse{
 			UUID:        c.UUID,
 			Title:       c.Title,
 			Subtitle:    c.Subtitle,
@@ -57,16 +57,16 @@ func makeGetCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	}
 }
 
-func decodeGetCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeFindCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["uuid"]
 	if !ok {
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return getCourseRequest{UUID: id}, nil
+	return findCourseRequest{UUID: id}, nil
 }
 
-func encodeGetCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func encodeFindCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return kithttp.EncodeJSONResponse(ctx, w, response)
 }

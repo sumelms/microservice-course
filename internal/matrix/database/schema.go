@@ -1,24 +1,22 @@
 package database
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	"github.com/sumelms/microservice-course/internal/matrix/domain"
+	"time"
 )
 
-// Course struct
-type Course struct {
+type Matrix struct {
 	gorm.Model
-	UUID        uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Title       string    `gorm:"size:100"`
-	Subtitle    string    `gorm:"size:100"`
-	Excerpt     string    `gorm:"size:144"`
-	Description string    `gorm:"size:255"`
+	UUID        uuid.UUID       `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Title       string          `gorm:"size:100"`
+	Description string          `gorm:"size:255"`
+	CourseID    domain.CourseID `gorm:"index;"`
 }
 
-func (c *Course) BeforeCreate(scope *gorm.Scope) error {
-	if c.UpdatedAt.IsZero() {
+func (m *Matrix) BeforeCreate(scope *gorm.Scope) error {
+	if m.UpdatedAt.IsZero() {
 		err := scope.SetColumn("UpdatedAt", time.Now())
 		if err != nil {
 			scope.Log("BeforeCreate error: %v", err)
@@ -32,7 +30,7 @@ func (c *Course) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-func (c *Course) BeforeUpdate(scope *gorm.Scope) error {
+func (m *Matrix) BeforeUpdate(scope *gorm.Scope) error {
 	err := scope.SetColumn("UpdatedAt", time.Now())
 	if err != nil {
 		scope.Log("BeforeUpdate error: %v", err)

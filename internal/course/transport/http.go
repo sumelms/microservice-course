@@ -1,9 +1,10 @@
 package transport
 
 import (
+	"net/http"
+
 	"github.com/sumelms/microservice-course/internal/course/endpoints"
 	"github.com/sumelms/microservice-course/pkg/errors"
-	"net/http"
 
 	"github.com/go-kit/kit/log"
 	kittransport "github.com/go-kit/kit/transport"
@@ -12,7 +13,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-func NewHTTPHandler(s domain.Service, logger log.Logger) http.Handler {
+func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(kittransport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(errors.EncodeError),
@@ -20,17 +21,13 @@ func NewHTTPHandler(s domain.Service, logger log.Logger) http.Handler {
 
 	listCourseHandler := endpoints.NewListCourseHandler(s, opts...)
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
-	getCourseHandler := endpoints.NewGetCourseHandler(s, opts...)
+	findCourseHandler := endpoints.NewFindCourseHandler(s, opts...)
 	updateCourseHandler := endpoints.NewUpdateCourseHandler(s, opts...)
 	deleteCourseHandler := endpoints.NewDeleteCourseHandler(s, opts...)
 
-	r := mux.NewRouter()
-
-	r.Handle("/courses", listCourseHandler).Methods(http.MethodGet)
 	r.Handle("/courses", createCourseHandler).Methods(http.MethodPost)
-	r.Handle("/courses/{uuid}", getCourseHandler).Methods(http.MethodGet)
+	r.Handle("/courses", listCourseHandler).Methods(http.MethodGet)
+	r.Handle("/courses/{uuid}", findCourseHandler).Methods(http.MethodGet)
 	r.Handle("/courses/{uuid}", updateCourseHandler).Methods(http.MethodPut)
 	r.Handle("/courses/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
-
-	return r
 }

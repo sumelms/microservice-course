@@ -17,21 +17,29 @@ func toDBModel(entity *domain.Course) Course {
 		course.UUID = uuid.MustParse(entity.UUID)
 	}
 
-	if entity.DeletedAt != nil {
-		course.DeletedAt = entity.DeletedAt
-	}
+	if entity.ID > 0 {
+		// gorm.Model fields
+		course.ID = entity.ID
+		course.CreatedAt = entity.CreatedAt
+		course.UpdatedAt = entity.UpdatedAt
 
+		if !entity.DeletedAt.IsZero() {
+			course.DeletedAt = entity.DeletedAt
+		}
+	}
 	return course
 }
 
 func toDomainModel(entity *Course) domain.Course {
-	course := domain.Course{
+	return domain.Course{
+		ID:          entity.ID,
 		UUID:        entity.UUID.String(),
 		Title:       entity.Title,
 		Subtitle:    entity.Subtitle,
 		Excerpt:     entity.Excerpt,
 		Description: entity.Description,
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
+		DeletedAt:   entity.DeletedAt,
 	}
-
-	return course
 }

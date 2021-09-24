@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	ListCourse(ctx context.Context) ([]Course, error)
+	ListCourse(context.Context) ([]Course, error)
 	CreateCourse(context.Context, *Course) (Course, error)
 	FindCourse(context.Context, string) (Course, error)
 	UpdateCourse(context.Context, *Course) (Course, error)

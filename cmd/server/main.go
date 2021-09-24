@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
-	"github.com/sumelms/microservice-course/internal/course"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/sumelms/microservice-course/internal/matrix"
+
+	"github.com/gorilla/mux"
+	"github.com/sumelms/microservice-course/internal/course"
 
 	"github.com/go-kit/kit/log"
 	"github.com/sumelms/microservice-course/pkg/config"
@@ -56,12 +60,18 @@ func main() {
 	g.Go(func() error {
 		httpLogger := log.With(logger, "component", "http")
 
-		mux := http.NewServeMux()
-		// Middlewares
-		http.Handle("/", accessControl(mux))
+		srv := http.NewServeMux()
+		router := mux.NewRouter()
 
 		// Initializing the services
-		course.NewHTTPService(mux, db, httpLogger)
+		course.NewHTTPService(router, db, httpLogger)
+		matrix.NewHTTPService(router, db, httpLogger)
+
+		// Handle the router
+		srv.Handle("/", router)
+
+		// Middlewares
+		http.Handle("/", accessControl(srv))
 
 		logger.Log("transport", "http", "address", cfg.Server.HTTP.Host, "msg", "listening") // nolint: errcheck
 

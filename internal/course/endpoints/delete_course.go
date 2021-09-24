@@ -26,7 +26,10 @@ func NewDeleteCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 
 func makeDeleteCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(deleteCourseRequest)
+		req, ok := request.(deleteCourseRequest)
+		if !ok {
+			return nil, fmt.Errorf("invalid argument")
+		}
 
 		err := s.DeleteCourse(ctx, req.UUID)
 		if err != nil {

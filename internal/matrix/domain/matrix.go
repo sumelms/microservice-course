@@ -2,14 +2,15 @@ package domain
 
 import "time"
 
-type Course struct {
+type CourseID uint
+
+type Matrix struct {
 	ID          uint
 	UUID        string
 	Title       string
-	Subtitle    string
-	Excerpt     string
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   *time.Time
+	CourseID    CourseID
 }

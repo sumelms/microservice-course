@@ -2,14 +2,15 @@ package endpoints
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	"net/http"
 )
 
 type listCourseResponse struct {
-	Courses []getCourseResponse `json:"courses"`
+	Courses []findCourseResponse `json:"courses"`
 }
 
 func NewListCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -28,10 +29,10 @@ func makeListCourseEndpoint(s domain.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		cr := make([]getCourseResponse, len(courses))
+		cr := make([]findCourseResponse, len(courses))
 		for i := range courses {
 			c := courses[i]
-			cr[i] = getCourseResponse{
+			cr[i] = findCourseResponse{
 				UUID:        c.UUID,
 				Title:       c.Title,
 				Subtitle:    c.Subtitle,
