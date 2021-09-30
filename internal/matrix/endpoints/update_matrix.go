@@ -20,6 +20,7 @@ type updateMatrixRequest struct {
 	UUID        string `json:"uuid" validate:"required"`
 	Title       string `json:"title" validate:"required,max=100"`
 	Description string `json:"description" validate:"required,max=255"`
+	CourseID    string `json:"course_id" validate:"required"`
 }
 
 type updateMatrixResponse struct {
@@ -28,6 +29,7 @@ type updateMatrixResponse struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	CourseID    string    `json:"course_id"`
 }
 
 func NewUpdateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -69,6 +71,7 @@ func makeUpdateMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 			Description: updated.Description,
 			CreatedAt:   updated.CreatedAt,
 			UpdatedAt:   updated.UpdatedAt,
+			CourseID:    updated.CourseID,
 		}, nil
 	}
 }

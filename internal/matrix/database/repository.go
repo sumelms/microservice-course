@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/go-kit/kit/log"
 	"github.com/jinzhu/gorm"
@@ -89,6 +90,26 @@ func (r *Repository) List() ([]domain.Matrix, error) {
 	}
 	if err := query.Error; err != nil {
 		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list matrices")
+	}
+
+	var list []domain.Matrix
+	for _, m := range matrices {
+		list = append(list, toDomainModel(&m))
+	}
+
+	return list, nil
+}
+
+func (r *Repository) FindBy(field string, value interface{}) ([]domain.Matrix, error) {
+	var matrices []Matrix
+
+	where := fmt.Sprintf("%s = ?", field)
+	query := r.db.Where(where, value).Find(&matrices)
+	if query.RecordNotFound() {
+		return []domain.Matrix{}, nil
+	}
+	if err := query.Error; err != nil {
+		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, fmt.Sprintf("find matrices by %s", field))
 	}
 
 	var list []domain.Matrix

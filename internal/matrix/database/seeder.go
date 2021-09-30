@@ -9,8 +9,8 @@ func Matrices() seed.Seed {
 	return seed.Seed{
 		Name: "CreateMatrices",
 		Run: func(db *gorm.DB) error {
-			u := &Matrix{}
-			return db.Create(u).Error
+			m := &Matrix{}
+			return db.Create(m).Error
 		},
 	}
 }

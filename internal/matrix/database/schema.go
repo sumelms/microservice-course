@@ -5,15 +5,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type Matrix struct {
 	gorm.Model
-	UUID        uuid.UUID       `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Title       string          `gorm:"size:100"`
-	Description string          `gorm:"size:255"`
-	CourseID    domain.CourseID `gorm:"index;"`
+	UUID        uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Title       string    `gorm:"size:100"`
+	Description string    `gorm:"size:255"`
+	CourseID    uuid.UUID `gorm:"type:uuid" sql:"index"`
 }
 
 func (m *Matrix) BeforeCreate(scope *gorm.Scope) error {
