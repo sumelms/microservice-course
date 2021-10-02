@@ -30,14 +30,14 @@ type createSubscriptionResponse struct {
 
 func NewCreateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeCreateSubscriptionHandler(s),
+		makeCreateSubscriptionEndpoint(s),
 		decodeCreateSubscriptionRequest,
 		encodeCreateSubscriptionResponse,
 		opts...,
 	)
 }
 
-func makeCreateSubscriptionHandler(s domain.Service) endpoint.Endpoint {
+func makeCreateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createSubscriptionRequest)
 		if !ok {

@@ -6,4 +6,5 @@ type Repository interface {
 	Update(*Subscription) (Subscription, error)
 	Delete(string) error
 	List() ([]Subscription, error)
+	FindBy(string, interface{}) ([]Subscription, error)
 }

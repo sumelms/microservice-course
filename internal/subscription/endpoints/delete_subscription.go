@@ -18,14 +18,14 @@ type deleteSubscriptionRequest struct {
 
 func NewDeleteSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeDeleteSubscriptionEdnpoint(s),
+		makeDeleteSubscriptionEndpoint(s),
 		decodeDeleteSubscriptionRequest,
 		encodeDeleteSubscriptionResponse,
 		opts...,
 	)
 }
 
-func makeDeleteSubscriptionEdnpoint(s domain.Service) endpoint.Endpoint {
+func makeDeleteSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(deleteSubscriptionRequest)
 		if !ok {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/go-kit/kit/log"
 	"github.com/jinzhu/gorm"
@@ -83,6 +84,26 @@ func (r *Repository) List() ([]domain.Subscription, error) {
 	query := r.db.Find(&subscriptions)
 	if query.RecordNotFound() {
 		return []domain.Subscription{}, nil
+	}
+
+	var list []domain.Subscription
+	for _, s := range subscriptions {
+		list = append(list, toDomainModel(&s))
+	}
+
+	return list, nil
+}
+
+func (r *Repository) FindBy(field string, value interface{}) ([]domain.Subscription, error) {
+	var subscriptions []Subscription
+
+	where := fmt.Sprintf("%s = ?", field)
+	query := r.db.Where(where, value).Find(&subscriptions)
+	if query.RecordNotFound() {
+		return []domain.Subscription{}, nil
+	}
+	if err := query.Error; err != nil {
+		return []domain.Subscription{}, merrors.WrapErrorf(err, merrors.ErrCodeNotFound, fmt.Sprintf("find subscriptions by %s", field))
 	}
 
 	var list []domain.Subscription

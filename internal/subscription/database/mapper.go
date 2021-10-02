@@ -7,9 +7,9 @@ import (
 
 func toDBModel(entity *domain.Subscription) Subscription {
 	s := Subscription{
-		UserID:   uuid.MustParse(string(entity.UserID)),
-		CourseID: uuid.MustParse(string(entity.CourseID)),
-		MatrixID: uuid.MustParse(string(entity.MatrixID)),
+		UserID:   uuid.MustParse(entity.UserID),
+		CourseID: uuid.MustParse(entity.CourseID),
+		MatrixID: uuid.MustParse(entity.MatrixID),
 	}
 
 	if !entity.ValidUntil.IsZero() {
@@ -33,9 +33,9 @@ func toDBModel(entity *domain.Subscription) Subscription {
 func toDomainModel(entity *Subscription) domain.Subscription {
 	return domain.Subscription{
 		ID:         entity.ID,
-		UserID:     domain.UserID(entity.UserID.String()),
-		CourseID:   domain.CourseID(entity.CourseID.String()),
-		MatrixID:   domain.MatrixID(entity.MatrixID.String()),
+		UserID:     entity.UserID.String(),
+		CourseID:   entity.CourseID.String(),
+		MatrixID:   entity.MatrixID.String(),
 		ValidUntil: entity.ValidUntil,
 		CreatedAt:  entity.CreatedAt,
 		UpdatedAt:  entity.UpdatedAt,
