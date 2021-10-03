@@ -34,13 +34,12 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		var matrices []domain.Matrix
-		var err error
+		filters := make(map[string]interface{})
 		if len(req.CourseID) > 0 {
-			matrices, err = s.FindMatrixByCourse(ctx, req.CourseID)
-		} else {
-			matrices, err = s.ListMatrix(ctx)
+			filters["course_id"] = req.CourseID
 		}
+
+		matrices, err := s.ListMatrix(ctx, filters)
 		if err != nil {
 			return nil, err
 		}

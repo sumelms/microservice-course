@@ -81,10 +81,10 @@ func (r *Repository) Delete(id string) error {
 	return nil
 }
 
-func (r *Repository) List() ([]domain.Matrix, error) {
+func (r *Repository) List(filters map[string]interface{}) ([]domain.Matrix, error) {
 	var matrices []Matrix
 
-	query := r.db.Find(&matrices)
+	query := r.db.Find(&matrices, filters)
 	if query.RecordNotFound() {
 		return []domain.Matrix{}, nil
 	}

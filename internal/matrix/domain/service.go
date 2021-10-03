@@ -8,12 +8,11 @@ import (
 )
 
 type ServiceInterface interface {
-	ListMatrix(context.Context) ([]Matrix, error)
+	ListMatrix(context.Context, map[string]interface{}) ([]Matrix, error)
 	CreateMatrix(context.Context, *Matrix) (Matrix, error)
 	FindMatrix(context.Context, string) (Matrix, error)
 	UpdateMatrix(context.Context, *Matrix) (Matrix, error)
 	DeleteMatrix(context.Context, string) error
-	FindMatrixByCourse(context.Context, string) ([]Matrix, error)
 }
 
 type Service struct {
@@ -28,8 +27,8 @@ func NewService(repo Repository, logger log.Logger) *Service {
 	}
 }
 
-func (s *Service) ListMatrix(_ context.Context) ([]Matrix, error) {
-	ms, err := s.repo.List()
+func (s *Service) ListMatrix(_ context.Context, filters map[string]interface{}) ([]Matrix, error) {
+	ms, err := s.repo.List(filters)
 	if err != nil {
 		return []Matrix{}, fmt.Errorf("Service didn't found any matrix: %w", err)
 	}
@@ -66,12 +65,4 @@ func (s *Service) DeleteMatrix(_ context.Context, id string) error {
 		return fmt.Errorf("Service can't delete matrix: %w", err)
 	}
 	return nil
-}
-
-func (s *Service) FindMatrixByCourse(_ context.Context, courseID string) ([]Matrix, error) {
-	ms, err := s.repo.FindBy("course_id", courseID)
-	if err != nil {
-		return []Matrix{}, fmt.Errorf("Service didn't found any matrix to course %s: %v", courseID, err)
-	}
-	return ms, nil
 }

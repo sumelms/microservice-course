@@ -5,6 +5,6 @@ type Repository interface {
 	Find(string) (Matrix, error)
 	Update(*Matrix) (Matrix, error)
 	Delete(string) error
-	List() ([]Matrix, error)
+	List(map[string]interface{}) ([]Matrix, error)
 	FindBy(string, interface{}) ([]Matrix, error)
 }
