@@ -78,10 +78,10 @@ func (r *Repository) Delete(id string) error {
 	return nil
 }
 
-func (r *Repository) List() ([]domain.Subscription, error) {
+func (r *Repository) List(filters map[string]interface{}) ([]domain.Subscription, error) {
 	var subscriptions []Subscription
 
-	query := r.db.Find(&subscriptions)
+	query := r.db.Find(&subscriptions, filters)
 	if query.RecordNotFound() {
 		return []domain.Subscription{}, nil
 	}

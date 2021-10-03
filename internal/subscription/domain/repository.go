@@ -5,6 +5,6 @@ type Repository interface {
 	Find(string) (Subscription, error)
 	Update(*Subscription) (Subscription, error)
 	Delete(string) error
-	List() ([]Subscription, error)
+	List(map[string]interface{}) ([]Subscription, error)
 	FindBy(string, interface{}) ([]Subscription, error)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type ServiceInterface interface {
-	ListSubscription(context.Context) ([]Subscription, error)
+	ListSubscription(context.Context, map[string]interface{}) ([]Subscription, error)
 	CreateSubscription(context.Context, *Subscription) (Subscription, error)
 	FindSubscription(context.Context, string) (Subscription, error)
 	UpdateSubscription(context.Context, *Subscription) (Subscription, error)
@@ -29,8 +29,8 @@ func NewService(repo Repository, logger log.Logger) *Service {
 	}
 }
 
-func (s *Service) ListSubscription(ctx context.Context) ([]Subscription, error) {
-	list, err := s.repo.List()
+func (s *Service) ListSubscription(ctx context.Context, filters map[string]interface{}) ([]Subscription, error) {
+	list, err := s.repo.List(filters)
 	if err != nil {
 		return []Subscription{}, fmt.Errorf("Service didn't found any subscription: %w", err)
 	}
