@@ -16,6 +16,7 @@ import (
 type createMatrixRequest struct {
 	Title       string `json:"title" validate:"required,max=100"`
 	Description string `json:"description" validate:"required,max=255"`
+	CourseID    string `json:"course_id" validate:"required"`
 }
 
 type createMatrixResponse struct {
@@ -24,6 +25,7 @@ type createMatrixResponse struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	CourseID    string    `json:"course_id"`
 }
 
 func NewCreateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -65,6 +67,7 @@ func makeCreateMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 			Description: created.Description,
 			CreatedAt:   created.CreatedAt,
 			UpdatedAt:   created.UpdatedAt,
+			CourseID:    created.CourseID,
 		}, err
 	}
 }

@@ -24,6 +24,7 @@ type findMatrixResponse struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	CourseID    string    `json:"course_id"`
 }
 
 func NewFindMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -53,6 +54,7 @@ func makeFindMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 			Description: m.Description,
 			CreatedAt:   m.CreatedAt,
 			UpdatedAt:   m.UpdatedAt,
+			CourseID:    m.CourseID,
 		}, nil
 	}
 }

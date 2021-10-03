@@ -13,6 +13,7 @@ type Service interface {
 	FindMatrix(context.Context, string) (Matrix, error)
 	UpdateMatrix(context.Context, *Matrix) (Matrix, error)
 	DeleteMatrix(context.Context, string) error
+	FindMatrixByCourse(context.Context, string) ([]Matrix, error)
 }
 
 type service struct {
@@ -65,4 +66,12 @@ func (s *service) DeleteMatrix(_ context.Context, id string) error {
 		return fmt.Errorf("service can't delete matrix: %w", err)
 	}
 	return nil
+}
+
+func (s *service) FindMatrixByCourse(_ context.Context, courseID string) ([]Matrix, error) {
+	ms, err := s.repo.FindBy("course_id", courseID)
+	if err != nil {
+		return []Matrix{}, fmt.Errorf("service didn't found any matrix to course %s: %v", courseID, err)
+	}
+	return ms, nil
 }

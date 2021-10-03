@@ -6,28 +6,28 @@ import (
 )
 
 func toDBModel(entity *domain.Matrix) Matrix {
-	matrix := Matrix{
+	m := Matrix{
 		Title:       entity.Title,
 		Description: entity.Description,
-		CourseID:    entity.CourseID,
+		CourseID:    uuid.MustParse(entity.CourseID),
 	}
 
 	if len(entity.UUID) > 0 {
-		matrix.UUID = uuid.MustParse(entity.UUID)
+		m.UUID = uuid.MustParse(entity.UUID)
 	}
 
 	if entity.ID > 0 {
 		// gorm.Model fields
-		matrix.ID = entity.ID
-		matrix.CreatedAt = entity.CreatedAt
-		matrix.UpdatedAt = entity.UpdatedAt
+		m.ID = entity.ID
+		m.CreatedAt = entity.CreatedAt
+		m.UpdatedAt = entity.UpdatedAt
 
 		if !entity.DeletedAt.IsZero() {
-			matrix.DeletedAt = entity.DeletedAt
+			m.DeletedAt = entity.DeletedAt
 		}
 	}
 
-	return matrix
+	return m
 }
 
 func toDomainModel(entity *Matrix) domain.Matrix {
@@ -39,6 +39,6 @@ func toDomainModel(entity *Matrix) domain.Matrix {
 		CreatedAt:   entity.CreatedAt,
 		UpdatedAt:   entity.UpdatedAt,
 		DeletedAt:   entity.DeletedAt,
-		CourseID:    entity.CourseID,
+		CourseID:    entity.CourseID.String(),
 	}
 }

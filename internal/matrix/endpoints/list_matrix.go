@@ -37,6 +37,7 @@ func makeListMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 				Description: m.Description,
 				CreatedAt:   m.CreatedAt,
 				UpdatedAt:   m.UpdatedAt,
+				CourseID:    m.CourseID,
 			})
 		}
 

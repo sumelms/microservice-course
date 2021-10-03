@@ -24,10 +24,12 @@ func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
 	findMatrixHandler := endpoints.NewFindMatrixHandler(s, opts...)
 	updateMatrixHandler := endpoints.NewUpdateMatrixHandler(s, opts...)
 	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
+	findMatrixByCourseHandler := endpoints.NewFindMatrixByCourse(s, opts...)
 
 	r.Handle("/matrices", listMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices", createMatrixHandler).Methods(http.MethodPost)
 	r.Handle("/matrices/{uuid}", findMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices/{uuid}", updateMatrixHandler).Methods(http.MethodPut)
 	r.Handle("/matrices/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
+	r.Handle("/matrices/find-by-course-id/{uuid}", findMatrixByCourseHandler).Methods(http.MethodGet)
 }
