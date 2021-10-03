@@ -46,7 +46,7 @@ func makeListSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	}
 }
 
-func decodeListSubscriptionRequest(ctx context.Context, request2 *http.Request) (interface{}, error) {
+func decodeListSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return nil, nil
 }
 

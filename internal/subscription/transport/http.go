@@ -28,10 +28,10 @@ func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
 	findSubscriptionByUserHandler := endpoints.NewFindSubscriptionByUserHandler(s, opts...)
 
 	r.Handle("/subscriptions", listSubscriptionHandler).Methods(http.MethodGet)
-	r.Handle("/subscriptions/{uuid}", findSubscriptionHandler).Methods(http.MethodGet)
+	r.Handle("/subscriptions/{id}", findSubscriptionHandler).Methods(http.MethodGet)
 	r.Handle("/subscriptions", createSubscriptionHandler).Methods(http.MethodPost)
-	r.Handle("/subscriptions/{uuid}", deleteSubscriptionHandler).Methods(http.MethodDelete)
-	r.Handle("/subscriptions/{uuid}", updateSubscriptionHandler).Methods(http.MethodPut)
-	r.Handle("/subscriptions/find-by-course-id/{uuid}", findSubscriptionByCourseHandler).Methods(http.MethodGet)
-	r.Handle("/subscriptions/find-by-user-id/{uuid}", findSubscriptionByUserHandler).Methods(http.MethodGet)
+	r.Handle("/subscriptions/{id}", deleteSubscriptionHandler).Methods(http.MethodDelete)
+	r.Handle("/subscriptions/{id}", updateSubscriptionHandler).Methods(http.MethodPut)
+	r.Handle("/subscriptions/find-by-course-id/{id}", findSubscriptionByCourseHandler).Methods(http.MethodGet)
+	r.Handle("/subscriptions/find-by-user-id/{id}", findSubscriptionByUserHandler).Methods(http.MethodGet)
 }
