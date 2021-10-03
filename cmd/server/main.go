@@ -8,6 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sumelms/microservice-course/internal/subscription"
+
 	"github.com/sumelms/microservice-course/internal/matrix"
 
 	"github.com/gorilla/mux"
@@ -66,6 +68,7 @@ func main() {
 		// Initializing the services
 		course.NewHTTPService(router, db, httpLogger)
 		matrix.NewHTTPService(router, db, httpLogger)
+		subscription.NewHTTPService(router, db, httpLogger)
 
 		// Handle the router
 		srv.Handle("/", router)
