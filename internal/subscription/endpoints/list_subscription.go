@@ -13,7 +13,7 @@ type listSubscriptionResponse struct {
 	Subscriptions []findSubscriptionResponse `json:"subscriptions"`
 }
 
-func NewListSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListSubscriptionEndpoint(s),
 		decodeListSubscriptionRequest,
@@ -22,7 +22,7 @@ func NewListSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) 
 	)
 }
 
-func makeListSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		subscriptions, err := s.ListSubscription(ctx)
 		if err != nil {

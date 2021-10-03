@@ -22,10 +22,10 @@ func (c *Course) BeforeCreate(scope *gorm.Scope) error {
 	if err != nil {
 		return err
 	}
-	scope.SetColumn("UUID", id.String())
+	scope.SetColumn("UUID", id.String()) // nolint: errcheck
 
 	if c.UpdatedAt.IsZero() {
-		err := scope.SetColumn("UpdatedAt", time.Now())
+		err = scope.SetColumn("UpdatedAt", time.Now())
 		if err != nil {
 			scope.Log("BeforeCreate error: %v", err)
 		}

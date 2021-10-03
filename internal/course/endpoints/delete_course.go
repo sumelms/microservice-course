@@ -15,7 +15,7 @@ type deleteCourseRequest struct {
 	UUID string `json:"uuid" validate:"required"`
 }
 
-func NewDeleteCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteCourseEndpoint(s),
 		decodeDeleteCourseRequest,
@@ -24,7 +24,7 @@ func NewDeleteCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 	)
 }
 
-func makeDeleteCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeDeleteCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(deleteCourseRequest)
 		if !ok {

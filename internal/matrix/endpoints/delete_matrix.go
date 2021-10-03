@@ -16,7 +16,7 @@ type deleteMatrixRequest struct {
 	UUID string `json:"uuid" validate:"required"`
 }
 
-func NewDeleteMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteMatrixEndpoint(s),
 		decodeDeleteMatrixRequest,
@@ -25,7 +25,7 @@ func NewDeleteMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 	)
 }
 
-func makeDeleteMatrixEndpoint(s domain.Service) endpoint.Endpoint {
+func makeDeleteMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(deleteMatrixRequest)
 		if !ok {

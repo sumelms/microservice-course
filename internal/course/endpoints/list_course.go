@@ -13,7 +13,7 @@ type listCourseResponse struct {
 	Courses []findCourseResponse `json:"courses"`
 }
 
-func NewListCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListCourseEndpoint(s),
 		decodeListCourseRequest,
@@ -22,7 +22,7 @@ func NewListCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kitht
 	)
 }
 
-func makeListCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		courses, err := s.ListCourse(ctx)
 		if err != nil {
@@ -30,7 +30,8 @@ func makeListCourseEndpoint(s domain.Service) endpoint.Endpoint {
 		}
 
 		var list []findCourseResponse
-		for _, c := range courses {
+		for i := range courses {
+			c := courses[i]
 			list = append(list, findCourseResponse{
 				UUID:        c.UUID,
 				Title:       c.Title,

@@ -20,7 +20,7 @@ type findSubscriptionByCourseResponse struct {
 	Subscriptions []findSubscriptionResponse `json:"subscriptions"`
 }
 
-func NewFindSubscriptionByCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindSubscriptionByCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubscriptionByCourseEndpoint(s),
 		decodeFindSubscriptionByCourseRequest,
@@ -29,7 +29,7 @@ func NewFindSubscriptionByCourseHandler(s domain.Service, opts ...kithttp.Server
 	)
 }
 
-func makeFindSubscriptionByCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindSubscriptionByCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findSubscriptionByCourseRequest)
 		if !ok {

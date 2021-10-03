@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	gorm2 "github.com/jinzhu/gorm"
 	"log"
 	"os"
 
+	"github.com/jinzhu/gorm"
+
 	course "github.com/sumelms/microservice-course/internal/course/database"
 	"github.com/sumelms/microservice-course/pkg/config"
-	"github.com/sumelms/microservice-course/pkg/database/gorm"
+	database "github.com/sumelms/microservice-course/pkg/database/gorm"
 	"github.com/sumelms/microservice-course/pkg/seed"
 )
 
@@ -19,11 +20,11 @@ func main() {
 	}
 
 	// Database
-	db, err := gorm.Connect(cfg.Database)
+	db, err := database.Connect(cfg.Database)
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %s", err)
 	}
-	defer func(db *gorm2.DB) {
+	defer func(db *gorm.DB) {
 		_ = db.Close()
 	}(db)
 

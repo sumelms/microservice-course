@@ -28,7 +28,7 @@ type createMatrixResponse struct {
 	CourseID    string    `json:"course_id"`
 }
 
-func NewCreateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateMatrixEndpoint(s),
 		decodeCreateMatrixRequest,
@@ -37,7 +37,7 @@ func NewCreateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 	)
 }
 
-func makeCreateMatrixEndpoint(s domain.Service) endpoint.Endpoint {
+func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createMatrixRequest)
 		if !ok {

@@ -34,7 +34,7 @@ type updateSubscriptionResponse struct {
 	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
-func NewUpdateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubscriptionEndpoint(s),
 		decodeUpdateSubscriptionRequest,
@@ -43,7 +43,7 @@ func NewUpdateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption
 	)
 }
 
-func makeUpdateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateSubscriptionRequest)
 		if !ok {

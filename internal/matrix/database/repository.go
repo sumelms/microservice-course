@@ -93,7 +93,8 @@ func (r *Repository) List() ([]domain.Matrix, error) {
 	}
 
 	var list []domain.Matrix
-	for _, m := range matrices {
+	for i := range matrices {
+		m := matrices[i]
 		list = append(list, toDomainModel(&m))
 	}
 
@@ -113,7 +114,8 @@ func (r *Repository) FindBy(field string, value interface{}) ([]domain.Matrix, e
 	}
 
 	var list []domain.Matrix
-	for _, m := range matrices {
+	for i := range matrices {
+		m := matrices[i]
 		list = append(list, toDomainModel(&m))
 	}
 

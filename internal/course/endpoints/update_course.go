@@ -17,7 +17,7 @@ import (
 type updateCourseRequest struct {
 	UUID        string `json:"uuid" validate:"required"`
 	Title       string `json:"title" validate:"required,max=100"`
-	Subtitle    string `json:"subtitle" validade:"required,max=100"`
+	Subtitle    string `json:"subtitle" validate:"required,max=100"`
 	Excerpt     string `json:"excerpt" validate:"required,max=140"`
 	Description string `json:"description" validate:"required,max=255"`
 }
@@ -32,16 +32,16 @@ type updateCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func NewUpdateCourseHandler(svc domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeUpdateCourseEndpoint(svc),
+		makeUpdateCourseEndpoint(s),
 		decodeUpdateCourseRequest,
 		encodeUpdateCourseResponse,
 		opts...,
 	)
 }
 
-func makeUpdateCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateCourseRequest)
 		if !ok {

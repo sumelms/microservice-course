@@ -28,7 +28,7 @@ type createSubscriptionResponse struct {
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
-func NewCreateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateSubscriptionEndpoint(s),
 		decodeCreateSubscriptionRequest,
@@ -37,7 +37,7 @@ func NewCreateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption
 	)
 }
 
-func makeCreateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createSubscriptionRequest)
 		if !ok {

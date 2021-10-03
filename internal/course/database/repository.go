@@ -42,7 +42,8 @@ func (r *Repository) List() ([]domain.Course, error) {
 	}
 
 	var list []domain.Course
-	for _, c := range courses {
+	for i := range courses {
+		c := courses[i]
 		list = append(list, toDomainModel(&c))
 	}
 	return list, nil

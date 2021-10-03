@@ -27,7 +27,7 @@ type findMatrixResponse struct {
 	CourseID    string    `json:"course_id"`
 }
 
-func NewFindMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindMatrixEndpoint(s),
 		decodeFindMatrixRequest,
@@ -36,7 +36,7 @@ func NewFindMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kitht
 	)
 }
 
-func makeFindMatrixEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findMatrixRequest)
 		if !ok {

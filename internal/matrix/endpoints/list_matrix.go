@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/go-kit/kit/endpoint"
@@ -9,11 +10,15 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
+type listMatrixRequest struct {
+	CourseID string `json:"course_id,omitempty"`
+}
+
 type listMatrixResponse struct {
 	Matrices []findMatrixResponse `json:"matrices"`
 }
 
-func NewListMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListMatrixEndpoint(s),
 		decodeListMatrixRequest,
@@ -22,15 +27,27 @@ func NewListMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kitht
 	)
 }
 
-func makeListMatrixEndpoint(s domain.Service) endpoint.Endpoint {
+func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		matrices, err := s.ListMatrix(ctx)
+		req, ok := request.(listMatrixRequest)
+		if !ok {
+			return nil, fmt.Errorf("invalid argument")
+		}
+
+		var matrices []domain.Matrix
+		var err error
+		if len(req.CourseID) > 0 {
+			matrices, err = s.FindMatrixByCourse(ctx, req.CourseID)
+		} else {
+			matrices, err = s.ListMatrix(ctx)
+		}
 		if err != nil {
 			return nil, err
 		}
 
 		var list []findMatrixResponse
-		for _, m := range matrices {
+		for i := range matrices {
+			m := matrices[i]
 			list = append(list, findMatrixResponse{
 				UUID:        m.UUID,
 				Title:       m.Title,
@@ -45,8 +62,9 @@ func makeListMatrixEndpoint(s domain.Service) endpoint.Endpoint {
 	}
 }
 
-func decodeListMatrixRequest(_ context.Context, _ *http.Request) (interface{}, error) {
-	return nil, nil
+func decodeListMatrixRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	courseID := r.FormValue("course_id")
+	return listMatrixRequest{CourseID: courseID}, nil
 }
 
 func encodeListMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

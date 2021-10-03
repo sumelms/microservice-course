@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 
@@ -18,16 +17,10 @@ type findSubscriptionByUserRequest struct {
 }
 
 type findSubscriptionByUserResponse struct {
-	ID         uint       `json:"id"`
-	UserID     string     `json:"user_id"`
-	CourseID   string     `json:"course_id"`
-	MatrixID   string     `json:"matrix_id"`
-	ValidUntil *time.Time `json:"valid_until;omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	Subscriptions []findSubscriptionResponse `json:"subscriptions"`
 }
 
-func NewFindSubscriptionByUserHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindSubscriptionByUserHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubscriptionByUserEndpoint(s),
 		decodeFindSubscriptionByUserRequest,
@@ -36,7 +29,7 @@ func NewFindSubscriptionByUserHandler(s domain.Service, opts ...kithttp.ServerOp
 	)
 }
 
-func makeFindSubscriptionByUserEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindSubscriptionByUserEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findSubscriptionByUserRequest)
 		if !ok {
@@ -60,7 +53,7 @@ func makeFindSubscriptionByUserEndpoint(s domain.Service) endpoint.Endpoint {
 				UpdatedAt:  sub.UpdatedAt,
 			})
 		}
-		return &findSubscriptionByCourseResponse{Subscriptions: list}, nil
+		return &findSubscriptionByUserResponse{Subscriptions: list}, nil
 	}
 }
 

@@ -13,7 +13,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
+func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger) {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(kittransport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(errors.EncodeError),
@@ -24,12 +24,11 @@ func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
 	findMatrixHandler := endpoints.NewFindMatrixHandler(s, opts...)
 	updateMatrixHandler := endpoints.NewUpdateMatrixHandler(s, opts...)
 	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
-	findMatrixByCourseHandler := endpoints.NewFindMatrixByCourse(s, opts...)
 
+	r.Handle("/matrices", listMatrixHandler).Queries("course_id", "{course_id}").Methods(http.MethodGet)
 	r.Handle("/matrices", listMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices", createMatrixHandler).Methods(http.MethodPost)
 	r.Handle("/matrices/{uuid}", findMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices/{uuid}", updateMatrixHandler).Methods(http.MethodPut)
 	r.Handle("/matrices/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
-	r.Handle("/matrices/find-by-course-id/{uuid}", findMatrixByCourseHandler).Methods(http.MethodGet)
 }

@@ -87,7 +87,8 @@ func (r *Repository) List() ([]domain.Subscription, error) {
 	}
 
 	var list []domain.Subscription
-	for _, s := range subscriptions {
+	for i := range subscriptions {
+		s := subscriptions[i]
 		list = append(list, toDomainModel(&s))
 	}
 
@@ -107,7 +108,8 @@ func (r *Repository) FindBy(field string, value interface{}) ([]domain.Subscript
 	}
 
 	var list []domain.Subscription
-	for _, s := range subscriptions {
+	for i := range subscriptions {
+		s := subscriptions[i]
 		list = append(list, toDomainModel(&s))
 	}
 

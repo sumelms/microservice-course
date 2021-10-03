@@ -32,7 +32,7 @@ type updateMatrixResponse struct {
 	CourseID    string    `json:"course_id"`
 }
 
-func NewUpdateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateMatrixEndpoint(s),
 		decodeUpdateMatrixRequest,
@@ -41,7 +41,7 @@ func NewUpdateMatrixHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 	)
 }
 
-func makeUpdateMatrixEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateMatrixRequest)
 		if !ok {
