@@ -7,4 +7,4 @@ database:
   port: 5432
   username: postgres
   password: secret@123
-  database: postgres
+  database: sumelms_course
