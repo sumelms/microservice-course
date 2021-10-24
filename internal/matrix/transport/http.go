@@ -25,7 +25,6 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	updateMatrixHandler := endpoints.NewUpdateMatrixHandler(s, opts...)
 	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
 
-	r.Handle("/matrices", listMatrixHandler).Queries("course_id", "{course_id}").Methods(http.MethodGet)
 	r.Handle("/matrices", listMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices", createMatrixHandler).Methods(http.MethodPost)
 	r.Handle("/matrices/{uuid}", findMatrixHandler).Methods(http.MethodGet)
