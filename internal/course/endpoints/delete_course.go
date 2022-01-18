@@ -7,7 +7,9 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
@@ -31,8 +33,8 @@ func makeDeleteCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		err := s.DeleteCourse(ctx, req.UUID)
-		if err != nil {
+		id := uuid.MustParse(req.UUID)
+		if err := s.DeleteCourse(ctx, id); err != nil {
 			return nil, err
 		}
 

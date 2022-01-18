@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
@@ -58,19 +59,18 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		created, err := s.CreateCourse(ctx, &c)
-		if err != nil {
+		if err := s.CreateCourse(ctx, &c); err != nil {
 			return nil, err
 		}
 
 		return createCourseResponse{
-			UUID:        created.UUID,
-			Title:       created.Title,
-			Subtitle:    created.Subtitle,
-			Excerpt:     created.Excerpt,
-			Description: created.Description,
-			CreatedAt:   created.CreatedAt,
-			UpdatedAt:   created.UpdatedAt,
+			UUID:        c.UUID,
+			Title:       c.Title,
+			Subtitle:    c.Subtitle,
+			Excerpt:     c.Excerpt,
+			Description: c.Description,
+			CreatedAt:   c.CreatedAt,
+			UpdatedAt:   c.UpdatedAt,
 		}, err
 	}
 }

@@ -8,7 +8,9 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
@@ -42,7 +44,8 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		c, err := s.FindCourse(ctx, req.UUID)
+		id := uuid.MustParse(req.UUID)
+		c, err := s.FindCourse(ctx, id)
 		if err != nil {
 			return nil, err
 		}

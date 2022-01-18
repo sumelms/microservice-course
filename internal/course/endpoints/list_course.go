@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
@@ -24,14 +25,14 @@ func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		courses, err := s.ListCourse(ctx)
+		cc, err := s.ListCourse(ctx)
 		if err != nil {
 			return nil, err
 		}
 
 		var list []findCourseResponse
-		for i := range courses {
-			c := courses[i]
+		for i := range cc {
+			c := cc[i]
 			list = append(list, findCourseResponse{
 				UUID:        c.UUID,
 				Title:       c.Title,

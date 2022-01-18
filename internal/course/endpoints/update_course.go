@@ -10,6 +10,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
@@ -60,17 +61,16 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		updated, err := s.UpdateCourse(ctx, &c)
-		if err != nil {
+		if err := s.UpdateCourse(ctx, &c); err != nil {
 			return nil, err
 		}
 
 		return updateCourseResponse{
-			UUID:        updated.UUID,
-			Title:       updated.Title,
-			Subtitle:    updated.Subtitle,
-			Excerpt:     updated.Excerpt,
-			Description: updated.Description,
+			UUID:        c.UUID,
+			Title:       c.Title,
+			Subtitle:    c.Subtitle,
+			Excerpt:     c.Excerpt,
+			Description: c.Description,
 		}, nil
 	}
 }
