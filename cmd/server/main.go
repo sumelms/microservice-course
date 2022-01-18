@@ -13,12 +13,14 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix"
 
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course"
 
 	"github.com/go-kit/kit/log"
-	"github.com/sumelms/microservice-course/pkg/config"
-	database "github.com/sumelms/microservice-course/pkg/database/gorm"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/sumelms/microservice-course/pkg/config"
+	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 
 	applogger "github.com/sumelms/microservice-course/pkg/logger"
 

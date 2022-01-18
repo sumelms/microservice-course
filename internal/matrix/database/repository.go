@@ -1,123 +1,47 @@
 package database
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/go-kit/kit/log"
-	"github.com/jinzhu/gorm"
-	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	merrors "github.com/sumelms/microservice-course/pkg/errors"
-)
+	"github.com/jmoiron/sqlx"
 
-const (
-	whereMatrixUUID = "UUID = ?"
+	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type Repository struct {
-	db     *gorm.DB
+	db     *sqlx.DB
 	logger log.Logger
 }
 
-func NewRepository(db *gorm.DB, logger log.Logger) *Repository {
-	db.AutoMigrate(&Matrix{})
-
-	return &Repository{
-		db:     db,
-		logger: logger,
-	}
+func NewRepository(db *sqlx.DB, l log.Logger) *Repository {
+	return &Repository{db: db, logger: l}
 }
 
-func (r *Repository) Create(matrix *domain.Matrix) (domain.Matrix, error) {
-	entity := toDBModel(matrix)
-
-	if err := r.db.Create(&entity).Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't create matrix")
-	}
-	return toDomainModel(&entity), nil
+func (r Repository) Create(matrix *domain.Matrix) (domain.Matrix, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (r *Repository) Find(id string) (domain.Matrix, error) {
-	var matrix Matrix
-
-	query := r.db.Where(whereMatrixUUID, id).First(&matrix)
-	if query.RecordNotFound() {
-		return domain.Matrix{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "matrix not found")
-	}
-	if err := query.Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find matrix")
-	}
-
-	return toDomainModel(&matrix), nil
+func (r Repository) Find(s string) (domain.Matrix, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (r *Repository) Update(m *domain.Matrix) (domain.Matrix, error) {
-	var matrix Matrix
-
-	query := r.db.Where(whereMatrixUUID, m.UUID).First(&matrix)
-
-	if query.RecordNotFound() {
-		return domain.Matrix{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "matrix not found")
-	}
-
-	query = r.db.Model(&matrix).Updates(&m)
-
-	if err := query.Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update matrix")
-	}
-
-	return *m, nil
+func (r Repository) Update(matrix *domain.Matrix) (domain.Matrix, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (r *Repository) Delete(id string) error {
-	query := r.db.Where(whereMatrixUUID, id).Delete(&Matrix{})
-
-	if err := query.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "matrix not found")
-		}
-	}
-
-	return nil
+func (r Repository) Delete(s string) error {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (r *Repository) List(filters map[string]interface{}) ([]domain.Matrix, error) {
-	var matrices []Matrix
-
-	query := r.db.Find(&matrices, filters)
-	if query.RecordNotFound() {
-		return []domain.Matrix{}, nil
-	}
-	if err := query.Error; err != nil {
-		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list matrices")
-	}
-
-	var list []domain.Matrix
-	for i := range matrices {
-		m := matrices[i]
-		list = append(list, toDomainModel(&m))
-	}
-
-	return list, nil
+func (r Repository) List(m map[string]interface{}) ([]domain.Matrix, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (r *Repository) FindBy(field string, value interface{}) ([]domain.Matrix, error) {
-	var matrices []Matrix
-
-	where := fmt.Sprintf("%s = ?", field)
-	query := r.db.Where(where, value).Find(&matrices)
-	if query.RecordNotFound() {
-		return []domain.Matrix{}, nil
-	}
-	if err := query.Error; err != nil {
-		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, fmt.Sprintf("find matrices by %s", field))
-	}
-
-	var list []domain.Matrix
-	for i := range matrices {
-		m := matrices[i]
-		list = append(list, toDomainModel(&m))
-	}
-
-	return list, nil
+func (r Repository) FindBy(s string, i interface{}) ([]domain.Matrix, error) {
+	//TODO implement me
+	panic("implement me")
 }

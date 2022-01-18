@@ -5,11 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/jinzhu/gorm"
+	"github.com/jmoiron/sqlx"
 
-	course "github.com/sumelms/microservice-course/internal/course/database"
 	"github.com/sumelms/microservice-course/pkg/config"
-	database "github.com/sumelms/microservice-course/pkg/database/gorm"
+	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	"github.com/sumelms/microservice-course/pkg/seed"
 )
 
@@ -24,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %s", err)
 	}
-	defer func(db *gorm.DB) {
+	defer func(db *sqlx.DB) {
 		_ = db.Close()
 	}(db)
 
@@ -52,7 +51,5 @@ func loadConfig() (*config.Config, error) {
 }
 
 func allSeeds() []seed.Seed {
-	return []seed.Seed{
-		course.Courses(),
-	}
+	return []seed.Seed{}
 }
