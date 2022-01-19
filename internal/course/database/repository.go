@@ -14,10 +14,6 @@ type Repository struct {
 	*sqlx.DB
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{DB: db}
-}
-
 func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
 	var c domain.Course
 	if err := r.Get(&c, `SELECT * FROM courses WHERE uuid = $1`, id); err != nil {
