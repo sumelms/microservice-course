@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
@@ -39,7 +40,8 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			filters["course_id"] = req.CourseID
 		}
 
-		matrices, err := s.ListMatrix(ctx, filters)
+		// @TODO Implement filters to service
+		matrices, err := s.Matrices(ctx)
 		if err != nil {
 			return nil, err
 		}

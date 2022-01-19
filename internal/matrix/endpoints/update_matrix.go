@@ -10,9 +10,11 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
+
 	"github.com/sumelms/microservice-course/pkg/validator"
 
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
@@ -55,23 +57,21 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		var m domain.Matrix
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &m)
-		if err != nil {
+		if err := json.Unmarshal(data, &m); err != nil {
 			return nil, err
 		}
 
-		updated, err := s.UpdateMatrix(ctx, &m)
-		if err != nil {
+		if err := s.UpdateMatrix(ctx, &m); err != nil {
 			return nil, err
 		}
 
 		return updateMatrixResponse{
-			UUID:        updated.UUID,
-			Title:       updated.Title,
-			Description: updated.Description,
-			CreatedAt:   updated.CreatedAt,
-			UpdatedAt:   updated.UpdatedAt,
-			CourseID:    updated.CourseID,
+			UUID:        m.UUID,
+			Title:       m.Title,
+			Description: m.Description,
+			CreatedAt:   m.CreatedAt,
+			UpdatedAt:   m.UpdatedAt,
+			CourseID:    m.CourseID,
 		}, nil
 	}
 }

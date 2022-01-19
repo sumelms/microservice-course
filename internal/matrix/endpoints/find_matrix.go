@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
 
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
@@ -43,7 +45,7 @@ func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		m, err := s.FindMatrix(ctx, req.UUID)
+		m, err := s.Matrix(ctx, uuid.MustParse(req.UUID))
 		if err != nil {
 			return nil, err
 		}

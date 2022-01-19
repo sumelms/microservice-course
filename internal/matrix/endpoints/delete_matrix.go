@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
@@ -32,8 +34,7 @@ func makeDeleteMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		err := s.DeleteMatrix(ctx, req.UUID)
-		if err != nil {
+		if err := s.DeleteMatrix(ctx, uuid.MustParse(req.UUID)); err != nil {
 			return nil, err
 		}
 
