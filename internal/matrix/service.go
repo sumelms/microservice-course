@@ -11,7 +11,7 @@ import (
 )
 
 func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) {
-	repository := database.NewRepository(db)
+	repository := &database.Repository{DB: db}
 	service := domain.NewService(repository, logger)
 
 	transport.NewHTTPHandler(router, service, logger)

@@ -8,5 +8,4 @@ type Repository interface {
 	CreateMatrix(*Matrix) error
 	UpdateMatrix(*Matrix) error
 	DeleteMatrix(uuid.UUID) error
-	FindMatricesBy(string, interface{}) ([]Matrix, error)
 }
