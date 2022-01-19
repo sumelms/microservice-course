@@ -54,8 +54,7 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		c := domain.Course{}
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &c)
-		if err != nil {
+		if err := json.Unmarshal(data, &c); err != nil {
 			return nil, err
 		}
 
@@ -71,7 +70,7 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			Description: c.Description,
 			CreatedAt:   c.CreatedAt,
 			UpdatedAt:   c.UpdatedAt,
-		}, err
+		}, nil
 	}
 }
 

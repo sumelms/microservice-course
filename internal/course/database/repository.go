@@ -18,8 +18,24 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{DB: db}
 }
 
+func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
+	var c domain.Course
+	if err := r.Get(&c, `SELECT * FROM courses WHERE uuid = $1`, id); err != nil {
+		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
+	}
+	return c, nil
+}
+
+func (r *Repository) Courses() ([]domain.Course, error) {
+	var cc []domain.Course
+	if err := r.Select(&cc, `SELECT * FROM courses`); err != nil {
+		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting courses")
+	}
+	return cc, nil
+}
+
 func (r *Repository) CreateCourse(c *domain.Course) error {
-	if err := r.Get(&c, `INSERT INTO courses VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+	if err := r.Get(&c, `INSERT INTO courses VALUES ($1, $2, $3, $4) RETURNING *`,
 		c.Title,
 		c.Subtitle,
 		c.Excerpt,
@@ -45,24 +61,8 @@ func (r *Repository) UpdateCourse(c *domain.Course) error {
 }
 
 func (r *Repository) DeleteCourse(id uuid.UUID) error {
-	if _, err := r.Query(`UPDATE courses SET deleted_at = $1 WHERE id = $2`, time.Now(), id); err != nil {
+	if _, err := r.Exec(`UPDATE courses SET deleted_at = $1 WHERE id = $2`, time.Now(), id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil
-}
-
-func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
-	var c domain.Course
-	if err := r.Get(&c, `SELECT * FROM courses WHERE uuid = $1`, id); err != nil {
-		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
-	}
-	return c, nil
-}
-
-func (r *Repository) Courses() ([]domain.Course, error) {
-	var cc []domain.Course
-	if err := r.Select(&cc, `SELECT * FROM courses`); err != nil {
-		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting courses")
-	}
-	return cc, nil
 }

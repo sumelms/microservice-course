@@ -45,7 +45,7 @@ func TestRepository_Course(t *testing.T) {
 		repo.Close()
 	}()
 
-	query := "^SELECT \\* FROM courses WHERE uuid = \\$1"
+	query := "SELECT \\* FROM courses WHERE uuid = \\$1"
 	rows := sqlmock.
 		NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
 			"created_at", "updated_at", "deleted_at"}).
@@ -67,7 +67,7 @@ func TestRepository_Courses(t *testing.T) {
 		repo.Close()
 	}()
 
-	query := "^SELECT \\* FROM courses"
+	query := "SELECT \\* FROM courses"
 	rows := sqlmock.
 		NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
 			"created_at", "updated_at", "deleted_at"}).

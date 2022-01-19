@@ -56,8 +56,7 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		c := domain.Course{}
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &c)
-		if err != nil {
+		if err := json.Unmarshal(data, &c); err != nil {
 			return nil, err
 		}
 
