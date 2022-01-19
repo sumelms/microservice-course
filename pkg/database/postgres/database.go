@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	// Adding the postgres driver
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 
