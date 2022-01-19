@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
@@ -43,7 +44,8 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			filters["user_id"] = req.UserID
 		}
 
-		subscriptions, err := s.ListSubscription(ctx, filters)
+		// @TODO Implement filters to service
+		subscriptions, err := s.Subscriptions(ctx)
 		if err != nil {
 			return nil, err
 		}

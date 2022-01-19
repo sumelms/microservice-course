@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -11,11 +12,12 @@ import (
 	"github.com/go-kit/kit/endpoint"
 
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type findSubscriptionRequest struct {
-	ID string `json:"id"`
+	ID int `json:"id"`
 }
 
 type findSubscriptionResponse struct {
@@ -44,7 +46,7 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		sub, err := s.FindSubscription(ctx, req.ID)
+		sub, err := s.Subscription(ctx, req.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +70,12 @@ func decodeFindSubscriptionRequest(ctx context.Context, r *http.Request) (interf
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return findSubscriptionRequest{ID: id}, nil
+	sid, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid argument conversion")
+	}
+
+	return findSubscriptionRequest{ID: sid}, nil
 }
 
 func encodeFindSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -13,11 +14,12 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type updateSubscriptionRequest struct {
-	ID         string     `json:"id" validate:"required"`
+	ID         int        `json:"id" validate:"required"`
 	UserID     string     `json:"user_id" validate:"required"`
 	CourseID   string     `json:"course_id" validate:"required"`
 	MatrixID   string     `json:"matrix_id" validate:"required"`
@@ -57,8 +59,7 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 
 		var sub domain.Subscription
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &sub)
-		if err != nil {
+		if err := json.Unmarshal(data, &sub); err != nil {
 			return nil, err
 		}
 
@@ -82,12 +83,16 @@ func decodeUpdateSubscriptionRequest(ctx context.Context, r *http.Request) (inte
 	}
 
 	var req updateSubscriptionRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
 	}
 
-	req.ID = id
+	sid, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid argument conversion")
+	}
+
+	req.ID = sid
 
 	return req, nil
 }
