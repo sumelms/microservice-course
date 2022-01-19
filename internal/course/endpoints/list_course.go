@@ -25,7 +25,7 @@ func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		cc, err := s.ListCourse(ctx)
+		cc, err := s.Courses(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -34,7 +34,7 @@ func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		for i := range cc {
 			c := cc[i]
 			list = append(list, findCourseResponse{
-				UUID:        c.UUID,
+				UUID:        c.UUID.String(),
 				Title:       c.Title,
 				Subtitle:    c.Subtitle,
 				Excerpt:     c.Excerpt,

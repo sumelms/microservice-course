@@ -45,13 +45,13 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		id := uuid.MustParse(req.UUID)
-		c, err := s.FindCourse(ctx, id)
+		c, err := s.Course(ctx, id)
 		if err != nil {
 			return nil, err
 		}
 
 		return &findCourseResponse{
-			UUID:        c.UUID,
+			UUID:        c.UUID.String(),
 			Title:       c.Title,
 			Subtitle:    c.Subtitle,
 			Excerpt:     c.Excerpt,

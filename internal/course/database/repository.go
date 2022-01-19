@@ -18,7 +18,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{DB: db}
 }
 
-func (r *Repository) Create(c *domain.Course) error {
+func (r *Repository) CreateCourse(c *domain.Course) error {
 	if err := r.Get(&c, `INSERT INTO courses VALUES ($1, $2, $3, $4, $5) RETURNING *`,
 		c.Title,
 		c.Subtitle,
@@ -29,7 +29,7 @@ func (r *Repository) Create(c *domain.Course) error {
 	return nil
 }
 
-func (r *Repository) Update(c *domain.Course) error {
+func (r *Repository) UpdateCourse(c *domain.Course) error {
 	if err := r.Get(&c, `UPDATE courses 
 		SET title = $1, subtitle = $2, excerpt = $3, description = $4 
 		WHERE uuid = $5 
@@ -44,14 +44,14 @@ func (r *Repository) Update(c *domain.Course) error {
 	return nil
 }
 
-func (r *Repository) Delete(id uuid.UUID) error {
+func (r *Repository) DeleteCourse(id uuid.UUID) error {
 	if _, err := r.Query(`UPDATE courses SET deleted_at = $1 WHERE id = $2`, time.Now(), id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil
 }
 
-func (r *Repository) Find(id uuid.UUID) (domain.Course, error) {
+func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
 	var c domain.Course
 	if err := r.Get(&c, `SELECT * FROM courses WHERE uuid = $1`, id); err != nil {
 		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
@@ -59,9 +59,9 @@ func (r *Repository) Find(id uuid.UUID) (domain.Course, error) {
 	return c, nil
 }
 
-func (r *Repository) List() ([]domain.Course, error) {
+func (r *Repository) Courses() ([]domain.Course, error) {
 	var cc []domain.Course
-	if err := r.Get(&cc, `SELECT * FROM courses`); err != nil {
+	if err := r.Select(&cc, `SELECT * FROM courses`); err != nil {
 		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting courses")
 	}
 	return cc, nil

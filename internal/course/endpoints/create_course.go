@@ -64,7 +64,7 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		return createCourseResponse{
-			UUID:        c.UUID,
+			UUID:        c.UUID.String(),
 			Title:       c.Title,
 			Subtitle:    c.Subtitle,
 			Excerpt:     c.Excerpt,
