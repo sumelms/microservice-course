@@ -8,9 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sumelms/microservice-course/internal/subscription"
-
 	"github.com/sumelms/microservice-course/internal/matrix"
+	"github.com/sumelms/microservice-course/internal/subscription"
 
 	"github.com/gorilla/mux"
 
