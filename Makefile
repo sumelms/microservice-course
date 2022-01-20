@@ -56,6 +56,14 @@ build: ## Generate the microservice binary
 build-proto: ## Compiles the protobuf
 	protoc --go-grpc_out=proto --go_out=proto proto/**/*.proto
 
+.PHONY: migrate
+migrate: ## Runs the migrations
+	migrate -database ${POSTGRESQL_URL} -path db/migrations up
+
+.PHONY: migrate-down
+migrate-down: ## Revert the migrations
+	migrate -database ${POSTGRESQL_URL} -path db/migrations down
+
 ## --------------------------------------
 ## Linting
 ## --------------------------------------

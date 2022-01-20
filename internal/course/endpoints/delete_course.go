@@ -14,7 +14,7 @@ import (
 )
 
 type deleteCourseRequest struct {
-	UUID string `json:"uuid" validate:"required"`
+	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
 func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -33,8 +33,7 @@ func makeDeleteCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		id := uuid.MustParse(req.UUID)
-		if err := s.DeleteCourse(ctx, id); err != nil {
+		if err := s.DeleteCourse(ctx, req.UUID); err != nil {
 			return nil, err
 		}
 
@@ -49,7 +48,9 @@ func decodeDeleteCourseRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return deleteCourseRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return deleteCourseRequest{UUID: uid}, nil
 }
 
 func encodeDeleteCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

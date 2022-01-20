@@ -42,7 +42,7 @@ func TestRepository_Course(t *testing.T) {
 
 	repo := &Repository{db}
 	defer func() {
-		repo.Close()
+		_ = repo.Close()
 	}()
 
 	query := "SELECT \\* FROM courses WHERE uuid = \\$1"
@@ -64,7 +64,7 @@ func TestRepository_Courses(t *testing.T) {
 
 	repo := &Repository{db}
 	defer func() {
-		repo.Close()
+		_ = repo.Close()
 	}()
 
 	query := "SELECT \\* FROM courses"

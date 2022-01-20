@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
@@ -19,19 +20,19 @@ import (
 )
 
 type updateMatrixRequest struct {
-	UUID        string `json:"uuid" validate:"required"`
-	Title       string `json:"title" validate:"required,max=100"`
-	Description string `json:"description" validate:"required,max=255"`
-	CourseID    string `json:"course_id" validate:"required"`
+	UUID        uuid.UUID `json:"uuid" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=100"`
+	Description string    `json:"description" validate:"required,max=255"`
+	CourseID    uuid.UUID `json:"course_id" validate:"required"`
 }
 
 type updateMatrixResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    string    `json:"course_id"`
+	CourseID    uuid.UUID `json:"course_id"`
 }
 
 func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -89,7 +90,7 @@ func decodeUpdateMatrixRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, err
 	}
 
-	req.UUID = id
+	req.UUID = uuid.MustParse(id)
 
 	return req, nil
 }

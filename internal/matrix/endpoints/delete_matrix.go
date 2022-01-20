@@ -15,7 +15,7 @@ import (
 )
 
 type deleteMatrixRequest struct {
-	UUID string `json:"uuid" validate:"required"`
+	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
 func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -34,7 +34,7 @@ func makeDeleteMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		if err := s.DeleteMatrix(ctx, uuid.MustParse(req.UUID)); err != nil {
+		if err := s.DeleteMatrix(ctx, req.UUID); err != nil {
 			return nil, err
 		}
 
@@ -49,7 +49,9 @@ func decodeDeleteMatrixRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return deleteMatrixRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return deleteMatrixRequest{UUID: uid}, nil
 }
 
 func encodeDeleteMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

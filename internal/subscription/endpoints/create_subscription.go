@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/sumelms/microservice-course/pkg/validator"
 
 	"github.com/go-kit/kit/endpoint"
@@ -16,16 +18,17 @@ import (
 )
 
 type createSubscriptionRequest struct {
-	UserID     string     `json:"user_id" validate:"required"`
-	CourseID   string     `json:"course_id" validate:"required"`
-	MatrixID   string     `json:"matrix_id" validate:"required"`
+	UserID     uuid.UUID  `json:"user_id" validate:"required"`
+	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
+	MatrixID   uuid.UUID  `json:"matrix_id" validate:"required"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
 type createSubscriptionResponse struct {
-	UserID     string     `json:"user_id"`
-	CourseID   string     `json:"course_id"`
-	MatrixID   string     `json:"matrix_id"`
+	UUID       uuid.UUID  `json:"uuid"`
+	UserID     uuid.UUID  `json:"user_id"`
+	CourseID   uuid.UUID  `json:"course_id"`
+	MatrixID   uuid.UUID  `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
@@ -61,6 +64,7 @@ func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return createSubscriptionResponse{
+			UUID:       sub.UUID,
 			UserID:     sub.UserID,
 			CourseID:   sub.CourseID,
 			MatrixID:   sub.MatrixID,
@@ -69,7 +73,7 @@ func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 	}
 }
 
-func decodeCreateSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+func decodeCreateSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req createSubscriptionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err

@@ -9,24 +9,25 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type createMatrixRequest struct {
-	Title       string `json:"title" validate:"required,max=100"`
-	Description string `json:"description" validate:"required,max=255"`
-	CourseID    string `json:"course_id" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=100"`
+	Description string    `json:"description" validate:"required,max=255"`
+	CourseID    uuid.UUID `json:"course_id" validate:"required"`
 }
 
 type createMatrixResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    string    `json:"course_id"`
+	CourseID    uuid.UUID `json:"course_id"`
 }
 
 func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {

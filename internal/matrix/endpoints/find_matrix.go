@@ -17,16 +17,16 @@ import (
 )
 
 type findMatrixRequest struct {
-	UUID string `json:"uuid" validate:"required"`
+	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
 type findMatrixResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    string    `json:"course_id"`
+	CourseID    uuid.UUID `json:"course_id"`
 }
 
 func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -45,7 +45,7 @@ func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		m, err := s.Matrix(ctx, uuid.MustParse(req.UUID))
+		m, err := s.Matrix(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,9 @@ func decodeFindMatrixRequest(_ context.Context, r *http.Request) (interface{}, e
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return findMatrixRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return findMatrixRequest{UUID: uid}, nil
 }
 
 func encodeFindMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

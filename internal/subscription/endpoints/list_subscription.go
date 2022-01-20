@@ -7,13 +7,14 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type listSubscriptionRequest struct {
-	CourseID string `json:"course_id"`
-	UserID   string `json:"user_id"`
+	CourseID uuid.UUID `json:"course_id"`
+	UserID   uuid.UUID `json:"user_id"`
 }
 
 type listSubscriptionResponse struct {
@@ -37,10 +38,10 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		filters := make(map[string]interface{})
-		if len(req.CourseID) > 0 {
+		if req.CourseID != uuid.Nil {
 			filters["course_id"] = req.CourseID
 		}
-		if len(req.UserID) > 0 {
+		if req.UserID != uuid.Nil {
 			filters["user_id"] = req.UserID
 		}
 
@@ -53,7 +54,7 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		var list []findSubscriptionResponse
 		for _, sub := range subscriptions {
 			list = append(list, findSubscriptionResponse{
-				ID:         sub.ID,
+				UUID:       sub.UUID,
 				UserID:     sub.UserID,
 				CourseID:   sub.CourseID,
 				MatrixID:   sub.MatrixID,
@@ -67,12 +68,12 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	}
 }
 
-func decodeListSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	courseID := r.FormValue("course_id")
 	userID := r.FormValue("user_id")
 	return listSubscriptionRequest{
-		CourseID: courseID,
-		UserID:   userID,
+		CourseID: uuid.MustParse(courseID),
+		UserID:   uuid.MustParse(userID),
 	}, nil
 }
 

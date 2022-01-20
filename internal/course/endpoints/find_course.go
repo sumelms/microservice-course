@@ -15,11 +15,11 @@ import (
 )
 
 type findCourseRequest struct {
-	UUID string `json:"uuid"`
+	UUID uuid.UUID `json:"uuid"`
 }
 
 type findCourseResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
 	Excerpt     string    `json:"excerpt"`
@@ -44,14 +44,13 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		id := uuid.MustParse(req.UUID)
-		c, err := s.Course(ctx, id)
+		c, err := s.Course(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
 		return &findCourseResponse{
-			UUID:        c.UUID.String(),
+			UUID:        c.UUID,
 			Title:       c.Title,
 			Subtitle:    c.Subtitle,
 			Excerpt:     c.Excerpt,
@@ -67,7 +66,9 @@ func decodeFindCourseRequest(_ context.Context, r *http.Request) (interface{}, e
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return findCourseRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return findCourseRequest{UUID: uid}, nil
 }
 
 func encodeFindCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
