@@ -37,11 +37,11 @@ func (s *Service) Matrix(_ context.Context, id uuid.UUID) (Matrix, error) {
 }
 
 func (s *Service) Matrices(_ context.Context) ([]Matrix, error) {
-	ms, err := s.repo.Matrices()
+	mm, err := s.repo.Matrices()
 	if err != nil {
 		return []Matrix{}, fmt.Errorf("service didn't found any matrix: %w", err)
 	}
-	return ms, nil
+	return mm, nil
 }
 
 func (s *Service) CreateMatrix(_ context.Context, m *Matrix) error {

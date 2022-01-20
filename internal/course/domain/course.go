@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Course struct
 type Course struct {
 	ID          uint       `json:"id"`
 	UUID        uuid.UUID  `json:"uuid"`

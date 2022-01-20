@@ -40,7 +40,7 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			filters["course_id"] = req.CourseID
 		}
 
-		// @TODO Implement filters to service
+		// @TODO Implement filters to service -- WIP
 		matrices, err := s.Matrices(ctx)
 		if err != nil {
 			return nil, err
