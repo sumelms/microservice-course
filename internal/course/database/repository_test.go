@@ -158,3 +158,62 @@ func TestRepository_Courses(t *testing.T) {
 		})
 	}
 }
+
+func TestRepository_CreateCourse(t *testing.T) {
+	db, mock := tests.NewDBMock()
+
+	c := newTestCourse()
+	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
+		"created_at", "updated_at", "deleted_at"}).
+		AddRow(c.ID, c.UUID, c.Title, c.Subtitle, c.Excerpt, c.Description,
+			c.CreatedAt, c.UpdatedAt, c.DeletedAt)
+
+	type fields struct {
+		DB *sqlx.DB
+	}
+	type args struct {
+		c *domain.Course
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		rows    *sqlmock.Rows
+		args    args
+		wantErr bool
+	}{
+		{
+			name:    "create course",
+			fields:  fields{DB: db},
+			rows:    rows,
+			args:    args{c: &c},
+			wantErr: false,
+		},
+		{
+			name:    "empty fields",
+			fields:  fields{DB: db},
+			rows:    nil,
+			args:    args{c: &c},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r := &Repository{DB: tt.fields.DB}
+			defer func() {
+				_ = r.Close()
+			}()
+
+			query := "INSERT INTO courses \\(title, subtitle, excerpt, description\\) VALUES \\(\\$1, \\$2, \\$3, \\$4\\) RETURNING \\*"
+			mock.ExpectQuery(query).WithArgs(c.Title, c.Subtitle, c.Excerpt, c.Description).WillReturnRows(rows)
+
+			if err := r.CreateCourse(tt.args.c); (err != nil) != tt.wantErr {
+				t.Errorf("CreateCourse() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
