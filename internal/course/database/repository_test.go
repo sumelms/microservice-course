@@ -217,3 +217,57 @@ func TestRepository_CreateCourse(t *testing.T) {
 		})
 	}
 }
+
+func TestRepository_UpdateCourse(t *testing.T) {
+	db, mock := tests.NewDBMock()
+
+	c := newTestCourse()
+	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
+		"created_at", "updated_at", "deleted_at"}).
+		AddRow(c.ID, c.UUID, c.Title, c.Subtitle, c.Excerpt, c.Description,
+			c.CreatedAt, c.UpdatedAt, c.DeletedAt)
+
+	type fields struct {
+		DB *sqlx.DB
+	}
+	type args struct {
+		c *domain.Course
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		rows    *sqlmock.Rows
+		wantErr bool
+	}{
+		{
+			name:    "update course",
+			fields:  fields{DB: db},
+			args:    args{c: &c},
+			rows:    rows,
+			wantErr: false,
+		},
+		{
+			name:    "empty course",
+			fields:  fields{DB: db},
+			args:    args{c: &domain.Course{}},
+			rows:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Repository{DB: tt.fields.DB}
+			defer func() {
+				_ = r.Close()
+			}()
+
+			query := "UPDATE courses SET title = \\$1, subtitle = \\$2, excerpt = \\$3, description = \\$4 WHERE uuid = \\$5 RETURNING \\*"
+			mock.ExpectQuery(query).WithArgs(c.Title, c.Subtitle, c.Excerpt, c.Description, c.UUID).WillReturnRows(rows)
+
+			if err := r.UpdateCourse(tt.args.c); (err != nil) != tt.wantErr {
+				t.Errorf("UpdateCourse() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

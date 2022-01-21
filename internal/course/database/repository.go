@@ -1,8 +1,6 @@
 package database
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
@@ -55,8 +53,8 @@ func (r *Repository) UpdateCourse(c *domain.Course) error {
 
 // DeleteCourse soft delete the course by given id
 func (r *Repository) DeleteCourse(id uuid.UUID) error {
-	query := `UPDATE courses SET deleted_at = $1 WHERE uuid = $2`
-	if _, err := r.Exec(query, time.Now(), id); err != nil {
+	query := `UPDATE courses SET deleted_at = NOW() WHERE uuid = $1`
+	if _, err := r.Exec(query, id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil
