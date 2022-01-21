@@ -9,20 +9,19 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/tests"
 )
 
 var now = time.Now()
 
-func newTestCourse() domain.Course {
-	return domain.Course{
+func newTestMatrix() domain.Matrix {
+	return domain.Matrix{
 		ID:          1,
 		UUID:        uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc"),
-		Title:       "Course Title",
-		Subtitle:    "Course Subtitle",
-		Excerpt:     "Course Excerpt",
-		Description: "Course Description",
+		Title:       "Matrix Title",
+		Description: "Matrix Description",
+		CourseID:    uuid.MustParse("79e1d30d-77f0-4d2f-995c-74aef97c76bf"),
 		CreatedAt:   now,
 		UpdatedAt:   now,
 		DeletedAt:   nil,
@@ -32,11 +31,11 @@ func newTestCourse() domain.Course {
 func TestRepository_Matrix(t *testing.T) {
 	db, mock := tests.NewDBMock()
 
-	c := newTestCourse()
-	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt",
-		"description", "created_at", "updated_at", "deleted_at"}).
-		AddRow(c.ID, c.UUID, c.Title, c.Subtitle, c.Excerpt,
-			c.Description, c.CreatedAt, c.UpdatedAt, c.DeletedAt)
+	m := newTestMatrix()
+	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
+		"course_id", "created_at", "updated_at", "deleted_at"}).
+		AddRow(m.ID, m.UUID, m.Title, m.Description,
+			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
 
 	type fields struct {
 		DB *sqlx.DB
@@ -50,23 +49,23 @@ func TestRepository_Matrix(t *testing.T) {
 		fields  fields
 		args    args
 		rows    *sqlmock.Rows
-		want    domain.Course
+		want    domain.Matrix
 		wantErr bool
 	}{
 		{
-			name:    "get course",
+			name:    "get matrix",
 			fields:  fields{DB: db},
-			args:    args{id: c.UUID},
+			args:    args{id: m.UUID},
 			rows:    rows,
-			want:    c,
+			want:    m,
 			wantErr: false,
 		},
 		{
-			name:    "course not found error",
+			name:    "matrix not found error",
 			fields:  fields{DB: db},
 			args:    args{id: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
 			rows:    rows,
-			want:    domain.Course{},
+			want:    domain.Matrix{},
 			wantErr: true,
 		},
 	}
@@ -81,31 +80,31 @@ func TestRepository_Matrix(t *testing.T) {
 				_ = r.Close()
 			}()
 
-			query := "SELECT \\* FROM courses WHERE deleted_at IS NULL AND uuid = \\$1"
+			query := "SELECT \\* FROM matrices WHERE deleted_at IS NULL AND uuid = \\$1"
 			mock.ExpectQuery(query).WithArgs(tt.args.id).WillReturnRows(tt.rows)
 
-			got, err := r.Course(tt.args.id)
+			got, err := r.Matrix(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Course() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Matrix() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Course() got = %v, want %v", got, tt.want)
+				t.Errorf("Matrix() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestRepository_Courses(t *testing.T) {
+func TestRepository_Matrices(t *testing.T) {
 	db, mock := tests.NewDBMock()
-	c := newTestCourse()
 
-	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
-		"created_at", "updated_at", "deleted_at"}).
-		AddRow(c.ID, c.UUID, c.Title, c.Subtitle, c.Excerpt, c.Description,
-			c.CreatedAt, c.UpdatedAt, c.DeletedAt).
-		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), c.Title, c.Subtitle, c.Excerpt, c.Description,
-			c.CreatedAt, c.UpdatedAt, c.DeletedAt)
+	m := newTestMatrix()
+	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
+		"course_id", "created_at", "updated_at", "deleted_at"}).
+		AddRow(m.ID, m.UUID, m.Title, m.Description,
+			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt).
+		AddRow(2, uuid.MustParse("e74868b2-72d4-4591-a90d-122a9ac2d945"), m.Title, m.Description,
+			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
 
 	type fields struct {
 		DB *sqlx.DB
@@ -119,14 +118,14 @@ func TestRepository_Courses(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "get all courses",
+			name:    "get all matrices",
 			fields:  fields{DB: db},
 			rows:    rows,
 			wantLen: 2,
 			wantErr: false,
 		},
 		{
-			name:    "get no courses",
+			name:    "get no matrices",
 			fields:  fields{DB: db},
 			rows:    nil,
 			wantLen: 0,
@@ -144,16 +143,16 @@ func TestRepository_Courses(t *testing.T) {
 				_ = r.Close()
 			}()
 
-			query := "SELECT \\* FROM courses WHERE deleted_at IS NULL"
+			query := "SELECT \\* FROM matrices WHERE deleted_at IS NULL"
 			mock.ExpectQuery(query).WillReturnRows(rows)
 
-			got, err := r.Courses()
+			got, err := r.Matrices()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Courses() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Matrices() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if len(got) != tt.wantLen {
-				t.Errorf("Courses() got = %v, want %v", got, tt.wantLen)
+				t.Errorf("Matrices() got = %v, want %v", got, tt.wantLen)
 			}
 		})
 	}
