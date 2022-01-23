@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	"github.com/sumelms/microservice-course/tests"
+	mtests "github.com/sumelms/microservice-course/tests"
 )
 
 var now = time.Now()
@@ -30,7 +30,7 @@ func newTestSubscription() domain.Subscription {
 }
 
 func TestRepository_Subscription(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	s := newTestSubscription()
 	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
@@ -97,7 +97,7 @@ func TestRepository_Subscription(t *testing.T) {
 }
 
 func TestRepository_Subscriptions(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 	s := newTestSubscription()
 
 	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id", "valid_until",
@@ -160,7 +160,7 @@ func TestRepository_Subscriptions(t *testing.T) {
 }
 
 func TestRepository_CreateSubscription(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	s := newTestSubscription()
 	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
@@ -219,7 +219,7 @@ func TestRepository_CreateSubscription(t *testing.T) {
 }
 
 func TestRepository_UpdateSubscription(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	s := newTestSubscription()
 	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",

@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	"github.com/sumelms/microservice-course/tests"
+	mtests "github.com/sumelms/microservice-course/tests"
 )
 
 var now = time.Now()
@@ -30,7 +30,7 @@ func newTestCourse() domain.Course {
 }
 
 func TestRepository_Course(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	c := newTestCourse()
 	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt",
@@ -97,7 +97,7 @@ func TestRepository_Course(t *testing.T) {
 }
 
 func TestRepository_Courses(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 	c := newTestCourse()
 
 	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
@@ -160,7 +160,7 @@ func TestRepository_Courses(t *testing.T) {
 }
 
 func TestRepository_CreateCourse(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	c := newTestCourse()
 	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",
@@ -219,7 +219,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 }
 
 func TestRepository_UpdateCourse(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	c := newTestCourse()
 	rows := mock.NewRows([]string{"id", "uuid", "title", "subtitle", "excerpt", "description",

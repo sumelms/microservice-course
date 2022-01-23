@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	"github.com/sumelms/microservice-course/tests"
+	mtests "github.com/sumelms/microservice-course/tests"
 )
 
 var now = time.Now()
@@ -29,7 +29,7 @@ func newTestMatrix() domain.Matrix {
 }
 
 func TestRepository_Matrix(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	m := newTestMatrix()
 	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
@@ -96,7 +96,7 @@ func TestRepository_Matrix(t *testing.T) {
 }
 
 func TestRepository_Matrices(t *testing.T) {
-	db, mock := tests.NewDBMock()
+	db, mock := mtests.NewDBMock()
 
 	m := newTestMatrix()
 	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
