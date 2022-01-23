@@ -34,7 +34,7 @@ func (r *Repository) Subscriptions() ([]domain.Subscription, error) {
 
 func (r *Repository) CreateSubscription(s *domain.Subscription) error {
 	query := `INSERT INTO subscriptions (course_id, matrix_id, user_id, valid_until) VALUES ($1, $2, $3, $4) RETURNING *`
-	if err := r.Get(&s, query, s.CourseID, s.MatrixID, s.UserID, s.ValidUntil); err != nil {
+	if err := r.Get(s, query, s.CourseID, s.MatrixID, s.UserID, s.ValidUntil); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subscription")
 	}
 	return nil
@@ -42,7 +42,7 @@ func (r *Repository) CreateSubscription(s *domain.Subscription) error {
 
 func (r *Repository) UpdateSubscription(s *domain.Subscription) error {
 	query := `UPDATE subscriptions SET user_id = $1, course_id = $2, matrix_id = $3, valid_until = $4 WHERE uuid = $5 RETURNING *`
-	if err := r.Get(&s, query, s.UserID, s.CourseID, s.MatrixID, s.ValidUntil, s.UUID); err != nil {
+	if err := r.Get(s, query, s.UserID, s.CourseID, s.MatrixID, s.ValidUntil, s.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
 	}
 	return nil

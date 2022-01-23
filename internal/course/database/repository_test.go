@@ -29,7 +29,7 @@ func newTestCourse() domain.Course {
 	}
 }
 
-func TestRepository_Matrix(t *testing.T) {
+func TestRepository_Course(t *testing.T) {
 	db, mock := tests.NewDBMock()
 
 	c := newTestCourse()
