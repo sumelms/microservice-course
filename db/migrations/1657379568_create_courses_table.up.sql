@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE courses
@@ -15,3 +17,5 @@ CREATE TABLE courses
 
 CREATE UNIQUE INDEX courses_uuid_uindex
     ON courses (uuid);
+
+COMMIT;

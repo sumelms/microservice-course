@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE matrices
@@ -14,3 +16,5 @@ CREATE TABLE matrices
 
 CREATE UNIQUE INDEX matrices_uuid_uindex
     ON matrices (uuid);
+
+COMMIT;

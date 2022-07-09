@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE subscriptions
@@ -15,3 +17,5 @@ CREATE TABLE subscriptions
 
 CREATE UNIQUE INDEX subscriptions_uuid_uindex
     ON subscriptions (uuid);
+
+COMMIT;
