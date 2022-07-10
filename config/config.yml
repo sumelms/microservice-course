@@ -3,7 +3,7 @@ server:
     host: ":8080"
 database:
   driver: postgres
-  host: postgres
+  host: localhost
   port: 5432
   username: postgres
   password: secret@123

@@ -97,6 +97,20 @@ $ make container-build
 
 If everything works, you can now [run the microservice using the container image](#running).
 
+### Local database
+
+You can have your local database running the following command:
+
+```
+docker-compose up -d postgres
+```
+
+And then you could run the migrations using 
+
+```
+make migrations-up
+```
+
 ## Running
 
 OK! Now you build it you need to run the microservice. That should also be pretty easy.
