@@ -7,12 +7,17 @@ import (
 
 	"github.com/sumelms/microservice-course/internal/subscription/database"
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/subscription/service"
 	"github.com/sumelms/microservice-course/internal/subscription/transport"
 )
 
 func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) {
-	repository := &database.Repository{DB: db}
-	service := domain.NewService(repository, logger)
-
+	service := NewService(db, logger)
 	transport.NewHTTPHandler(router, service, logger)
+}
+
+func NewService(db *sqlx.DB, logger log.Logger) *domain.Service {
+	repository := &database.Repository{DB: db}
+	courseSvc := service.NewCourseSvc(db, logger)
+	return domain.NewService(repository, courseSvc, logger)
 }

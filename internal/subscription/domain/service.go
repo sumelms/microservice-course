@@ -16,15 +16,21 @@ type ServiceInterface interface {
 	DeleteSubscription(context.Context, uuid.UUID) error
 }
 
-type Service struct {
-	repo   Repository
-	logger log.Logger
+type CourseService interface {
+	ExistCourse(context.Context, uuid.UUID) error
 }
 
-func NewService(repo Repository, logger log.Logger) *Service {
+type Service struct {
+	repo       Repository
+	coursesSvc CourseService
+	logger     log.Logger
+}
+
+func NewService(repo Repository, courseSvc CourseService, logger log.Logger) *Service {
 	return &Service{
-		repo:   repo,
-		logger: logger,
+		repo:       repo,
+		logger:     logger,
+		coursesSvc: courseSvc,
 	}
 }
 
@@ -36,7 +42,10 @@ func (s *Service) Subscriptions(_ context.Context) ([]Subscription, error) {
 	return list, nil
 }
 
-func (s *Service) CreateSubscription(_ context.Context, sub *Subscription) error {
+func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) error {
+	if err := s.coursesSvc.ExistCourse(ctx, sub.CourseID); err != nil {
+		return fmt.Errorf("error checking if course %s exists: %w", sub.CourseID, err)
+	}
 	if err := s.repo.CreateSubscription(sub); err != nil {
 		return fmt.Errorf("service can't create subscription: %w", err)
 	}
