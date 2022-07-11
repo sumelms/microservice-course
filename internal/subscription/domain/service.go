@@ -5,82 +5,71 @@ import (
 	"fmt"
 
 	"github.com/go-kit/kit/log"
+	"github.com/google/uuid"
 )
 
 type ServiceInterface interface {
-	ListSubscription(context.Context, map[string]interface{}) ([]Subscription, error)
-	CreateSubscription(context.Context, *Subscription) (Subscription, error)
-	FindSubscription(context.Context, string) (Subscription, error)
-	UpdateSubscription(context.Context, *Subscription) (Subscription, error)
-	DeleteSubscription(context.Context, string) error
-	FindSubscriptionByCourse(context.Context, string) ([]Subscription, error)
-	FindSubscriptionByUser(context.Context, string) ([]Subscription, error)
+	Subscription(context.Context, uuid.UUID) (Subscription, error)
+	Subscriptions(context.Context) ([]Subscription, error)
+	CreateSubscription(context.Context, *Subscription) error
+	UpdateSubscription(context.Context, *Subscription) error
+	DeleteSubscription(context.Context, uuid.UUID) error
+}
+
+type CourseService interface {
+	ExistCourse(context.Context, uuid.UUID) error
 }
 
 type Service struct {
-	repo   Repository
-	logger log.Logger
+	repo       Repository
+	coursesSvc CourseService
+	logger     log.Logger
 }
 
-func NewService(repo Repository, logger log.Logger) *Service {
+func NewService(repo Repository, courseSvc CourseService, logger log.Logger) *Service {
 	return &Service{
-		repo:   repo,
-		logger: logger,
+		repo:       repo,
+		logger:     logger,
+		coursesSvc: courseSvc,
 	}
 }
 
-func (s *Service) ListSubscription(ctx context.Context, filters map[string]interface{}) ([]Subscription, error) {
-	list, err := s.repo.List(filters)
+func (s *Service) Subscriptions(_ context.Context) ([]Subscription, error) {
+	list, err := s.repo.Subscriptions()
 	if err != nil {
-		return []Subscription{}, fmt.Errorf("Service didn't found any subscription: %w", err)
+		return []Subscription{}, fmt.Errorf("service didn't found any subscription: %w", err)
 	}
 	return list, nil
 }
 
-func (s *Service) CreateSubscription(ctx context.Context, subscription *Subscription) (Subscription, error) {
-	sub, err := s.repo.Create(subscription)
-	if err != nil {
-		return Subscription{}, fmt.Errorf("Service can't create subscription: %w", err)
+func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) error {
+	if err := s.coursesSvc.ExistCourse(ctx, sub.CourseID); err != nil {
+		return fmt.Errorf("error checking if course %s exists: %w", sub.CourseID, err)
 	}
-	return sub, nil
-}
-
-func (s *Service) FindSubscription(ctx context.Context, id string) (Subscription, error) {
-	sub, err := s.repo.Find(id)
-	if err != nil {
-		return Subscription{}, fmt.Errorf("Service can't find subscription: %w", err)
-	}
-	return sub, nil
-}
-
-func (s *Service) UpdateSubscription(ctx context.Context, subscription *Subscription) (Subscription, error) {
-	sub, err := s.repo.Update(subscription)
-	if err != nil {
-		return Subscription{}, fmt.Errorf("Service can't update subscription: %w", err)
-	}
-	return sub, nil
-}
-
-func (s *Service) DeleteSubscription(ctx context.Context, id string) error {
-	err := s.repo.Delete(id)
-	if err != nil {
-		return fmt.Errorf("Service can't delete subscription: %w", err)
+	if err := s.repo.CreateSubscription(sub); err != nil {
+		return fmt.Errorf("service can't create subscription: %w", err)
 	}
 	return nil
 }
 
-func (s *Service) FindSubscriptionByCourse(ctx context.Context, id string) ([]Subscription, error) {
-	list, err := s.repo.FindBy("course_id", id)
+func (s *Service) Subscription(_ context.Context, id uuid.UUID) (Subscription, error) {
+	sub, err := s.repo.Subscription(id)
 	if err != nil {
-		return []Subscription{}, fmt.Errorf("Service can't find subscriptions to course %s: %w", id, err)
+		return Subscription{}, fmt.Errorf("service can't find subscription: %w", err)
 	}
-	return list, nil
+	return sub, nil
 }
 
-func (s *Service) FindSubscriptionByUser(ctx context.Context, id string) ([]Subscription, error) {
-	list, err := s.repo.FindBy("user_id", id)
-	if err != nil {
-		return []Subscription{}, fmt.Errorf("Service can't find subscriptions to user %s: %w", id, err)
+func (s *Service) UpdateSubscription(_ context.Context, sub *Subscription) error {
+	if err := s.repo.UpdateSubscription(sub); err != nil {
+		return fmt.Errorf("service can't update subscription: %w", err)
 	}
-	return list, nil
+	return nil
+}
+
+func (s *Service) DeleteSubscription(_ context.Context, id uuid.UUID) error {
+	if err := s.repo.DeleteSubscription(id); err != nil {
+		return fmt.Errorf("service can't delete subscription: %w", err)
+	}
+	return nil
 }

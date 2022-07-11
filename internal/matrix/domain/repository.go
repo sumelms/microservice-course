@@ -1,10 +1,11 @@
 package domain
 
+import "github.com/google/uuid"
+
 type Repository interface {
-	Create(*Matrix) (Matrix, error)
-	Find(string) (Matrix, error)
-	Update(*Matrix) (Matrix, error)
-	Delete(string) error
-	List(map[string]interface{}) ([]Matrix, error)
-	FindBy(string, interface{}) ([]Matrix, error)
+	Matrix(uuid.UUID) (Matrix, error)
+	Matrices() ([]Matrix, error)
+	CreateMatrix(*Matrix) error
+	UpdateMatrix(*Matrix) error
+	DeleteMatrix(uuid.UUID) error
 }

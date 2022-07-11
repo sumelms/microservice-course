@@ -6,23 +6,25 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
 
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type findSubscriptionRequest struct {
-	ID string `json:"id"`
+	UUID uuid.UUID `json:"uuid"`
 }
 
 type findSubscriptionResponse struct {
-	ID         uint       `json:"id"`
-	UserID     string     `json:"user_id"`
-	CourseID   string     `json:"course_id"`
-	MatrixID   string     `json:"matrix_id"`
+	UUID       uuid.UUID  `json:"uuid"`
+	UserID     uuid.UUID  `json:"user_id"`
+	CourseID   uuid.UUID  `json:"course_id"`
+	MatrixID   uuid.UUID  `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until,omitempty"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
@@ -44,13 +46,13 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		sub, err := s.FindSubscription(ctx, req.ID)
+		sub, err := s.Subscription(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
 		return &findSubscriptionResponse{
-			ID:         sub.ID,
+			UUID:       sub.UUID,
 			UserID:     sub.UserID,
 			CourseID:   sub.CourseID,
 			MatrixID:   sub.MatrixID,
@@ -61,14 +63,16 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	}
 }
 
-func decodeFindSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+func decodeFindSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return findSubscriptionRequest{ID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return findSubscriptionRequest{UUID: uid}, nil
 }
 
 func encodeFindSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

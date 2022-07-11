@@ -8,16 +8,18 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type findCourseRequest struct {
-	UUID string `json:"uuid"`
+	UUID uuid.UUID `json:"uuid"`
 }
 
 type findCourseResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
 	Excerpt     string    `json:"excerpt"`
@@ -42,7 +44,7 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		c, err := s.FindCourse(ctx, req.UUID)
+		c, err := s.Course(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +66,9 @@ func decodeFindCourseRequest(_ context.Context, r *http.Request) (interface{}, e
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return findCourseRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return findCourseRequest{UUID: uid}, nil
 }
 
 func encodeFindCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

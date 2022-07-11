@@ -1,108 +1,61 @@
 package database
 
 import (
-	"errors"
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
-	"github.com/go-kit/kit/log"
-	"github.com/jinzhu/gorm"
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	merrors "github.com/sumelms/microservice-course/pkg/errors"
+	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-const (
-	whereCourseUUID = "uuid = ?"
-)
-
-// Repository struct
+// Repository Course struct
 type Repository struct {
-	db     *gorm.DB
-	logger log.Logger
+	*sqlx.DB
 }
 
-// NewRepository creates a new profile repository
-func NewRepository(db *gorm.DB, logger log.Logger) *Repository {
-	db.AutoMigrate(&Course{})
-
-	return &Repository{
-		db:     db,
-		logger: logger,
+// Course get the Course by given id
+func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
+	var c domain.Course
+	query := `SELECT * FROM courses WHERE deleted_at IS NULL AND uuid = $1`
+	if err := r.Get(&c, query, id); err != nil {
+		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
+	return c, nil
 }
 
-// List courses
-func (r *Repository) List() ([]domain.Course, error) {
-	var courses []Course
-
-	query := r.db.Find(&courses)
-	if query.RecordNotFound() {
-		return []domain.Course{}, nil
+// Courses list all courses
+func (r *Repository) Courses() ([]domain.Course, error) {
+	var cc []domain.Course
+	query := `SELECT * FROM courses WHERE deleted_at IS NULL`
+	if err := r.Select(&cc, query); err != nil {
+		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting courses")
 	}
-	if err := query.Error; err != nil {
-		return []domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list courses")
-	}
-
-	var list []domain.Course
-	for i := range courses {
-		c := courses[i]
-		list = append(list, toDomainModel(&c))
-	}
-	return list, nil
+	return cc, nil
 }
 
-// Create creates a course
-func (r *Repository) Create(course *domain.Course) (domain.Course, error) {
-	entity := toDBModel(course)
-
-	if err := r.db.Create(&entity).Error; err != nil {
-		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't create course")
+// CreateCourse creates a new course
+func (r *Repository) CreateCourse(c *domain.Course) error {
+	query := `INSERT INTO courses (title, subtitle, excerpt, description) VALUES ($1, $2, $3, $4) RETURNING *`
+	if err := r.Get(c, query, c.Title, c.Subtitle, c.Excerpt, c.Description); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
-	return toDomainModel(&entity), nil
+	return nil
 }
 
-// Find get a course by its ID
-func (r *Repository) Find(id string) (domain.Course, error) {
-	var course Course
-
-	query := r.db.Where(whereCourseUUID, id).First(&course)
-	if query.RecordNotFound() {
-		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
+// UpdateCourse update the given course
+func (r *Repository) UpdateCourse(c *domain.Course) error {
+	query := `UPDATE courses SET title = $1, subtitle = $2, excerpt = $3, description = $4 WHERE uuid = $5 RETURNING *`
+	if err := r.Get(c, query, c.Title, c.Subtitle, c.Excerpt, c.Description, c.UUID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
-	if err := query.Error; err != nil {
-		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find course")
-	}
-
-	return toDomainModel(&course), nil
+	return nil
 }
 
-// Update the given course
-func (r *Repository) Update(c *domain.Course) (domain.Course, error) {
-	var course Course
-
-	query := r.db.Where(whereCourseUUID, c.UUID).First(&course)
-
-	if query.RecordNotFound() {
-		return domain.Course{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "course not found")
+// DeleteCourse soft delete the course by given id
+func (r *Repository) DeleteCourse(id uuid.UUID) error {
+	query := `UPDATE courses SET deleted_at = NOW() WHERE uuid = $1`
+	if _, err := r.Exec(query, id); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
-
-	query = r.db.Model(&course).Update(&c)
-
-	if err := query.Error; err != nil {
-		return domain.Course{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update course")
-	}
-
-	return *c, nil
-}
-
-// Delete a course by its ID
-func (r *Repository) Delete(id string) error {
-	query := r.db.Where(whereCourseUUID, id).Delete(&Course{})
-
-	if err := query.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "course not found")
-		}
-		return merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "delete course")
-	}
-
 	return nil
 }

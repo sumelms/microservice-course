@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type deleteMatrixRequest struct {
-	UUID string `json:"uuid" validate:"required"`
+	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
 func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -32,8 +34,7 @@ func makeDeleteMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		err := s.DeleteMatrix(ctx, req.UUID)
-		if err != nil {
+		if err := s.DeleteMatrix(ctx, req.UUID); err != nil {
 			return nil, err
 		}
 
@@ -48,7 +49,9 @@ func decodeDeleteMatrixRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return deleteMatrixRequest{UUID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return deleteMatrixRequest{UUID: uid}, nil
 }
 
 func encodeDeleteMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

@@ -1,8 +1,10 @@
 package seed
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jmoiron/sqlx"
+)
 
 type Seed struct {
 	Name string
-	Run  func(*gorm.DB) error
+	Run  func(*sqlx.DB) error
 }

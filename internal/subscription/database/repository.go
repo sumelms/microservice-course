@@ -1,117 +1,57 @@
 package database
 
 import (
-	"errors"
-	"fmt"
+	"time"
 
-	"github.com/go-kit/kit/log"
-	"github.com/jinzhu/gorm"
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	merrors "github.com/sumelms/microservice-course/pkg/errors"
-)
-
-const (
-	whereSubscriptionID = "ID = ?"
+	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
 type Repository struct {
-	db     *gorm.DB
-	logger log.Logger
+	*sqlx.DB
 }
 
-func NewRepository(db *gorm.DB, logger log.Logger) *Repository {
-	db.AutoMigrate(&Subscription{})
-
-	return &Repository{db: db, logger: logger}
+func (r *Repository) Subscription(id uuid.UUID) (domain.Subscription, error) {
+	var s domain.Subscription
+	query := `SELECT * FROM subscriptions WHERE deleted_at IS NULL AND uuid = $1`
+	if err := r.Get(&s, query, id); err != nil {
+		return domain.Subscription{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscription")
+	}
+	return s, nil
 }
 
-func (r *Repository) Create(subscription *domain.Subscription) (domain.Subscription, error) {
-	entity := toDBModel(subscription)
-
-	if err := r.db.Create(&entity).Error; err != nil {
-		return domain.Subscription{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't create subscription")
+func (r *Repository) Subscriptions() ([]domain.Subscription, error) {
+	var ss []domain.Subscription
+	query := `SELECT * FROM subscriptions WHERE deleted_at IS NULL`
+	if err := r.Select(&ss, query); err != nil {
+		return []domain.Subscription{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscriptions")
 	}
-	return toDomainModel(&entity), nil
+	return ss, nil
 }
 
-func (r *Repository) Find(id string) (domain.Subscription, error) {
-	var subscription Subscription
-
-	query := r.db.Where(whereSubscriptionID, id).First(&subscription)
-	if query.RecordNotFound() {
-		return domain.Subscription{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "subscription not found")
+func (r *Repository) CreateSubscription(s *domain.Subscription) error {
+	query := `INSERT INTO subscriptions (course_id, matrix_id, user_id, valid_until) VALUES ($1, $2, $3, $4) RETURNING *`
+	if err := r.Get(s, query, s.CourseID, s.MatrixID, s.UserID, s.ValidUntil); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subscription")
 	}
-	if err := query.Error; err != nil {
-		return domain.Subscription{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find subscription")
-	}
-
-	return toDomainModel(&subscription), nil
-}
-
-func (r *Repository) Update(s *domain.Subscription) (domain.Subscription, error) {
-	var subscription Subscription
-
-	query := r.db.Where(whereSubscriptionID, s.ID).First(&subscription)
-
-	if query.RecordNotFound() {
-		return domain.Subscription{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "subscription not found")
-	}
-
-	query = r.db.Model(&subscription).Updates(&s)
-
-	if err := query.Error; err != nil {
-		return domain.Subscription{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update subscription")
-	}
-
-	return *s, nil
-}
-
-func (r *Repository) Delete(id string) error {
-	query := r.db.Where(whereSubscriptionID, id).Delete(&Subscription{})
-
-	if err := query.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "subscription not found")
-		}
-	}
-
 	return nil
 }
 
-func (r *Repository) List(filters map[string]interface{}) ([]domain.Subscription, error) {
-	var subscriptions []Subscription
-
-	query := r.db.Find(&subscriptions, filters)
-	if query.RecordNotFound() {
-		return []domain.Subscription{}, nil
+func (r *Repository) UpdateSubscription(s *domain.Subscription) error {
+	query := `UPDATE subscriptions SET user_id = $1, course_id = $2, matrix_id = $3, valid_until = $4 WHERE uuid = $5 RETURNING *`
+	if err := r.Get(s, query, s.UserID, s.CourseID, s.MatrixID, s.ValidUntil, s.UUID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
 	}
-
-	var list []domain.Subscription
-	for i := range subscriptions {
-		s := subscriptions[i]
-		list = append(list, toDomainModel(&s))
-	}
-
-	return list, nil
+	return nil
 }
 
-func (r *Repository) FindBy(field string, value interface{}) ([]domain.Subscription, error) {
-	var subscriptions []Subscription
-
-	where := fmt.Sprintf("%s = ?", field)
-	query := r.db.Where(where, value).Find(&subscriptions)
-	if query.RecordNotFound() {
-		return []domain.Subscription{}, nil
+func (r *Repository) DeleteSubscription(id uuid.UUID) error {
+	query := `UPDATE subscriptions SET deleted_at = $1 WHERE uuid = $2`
+	if _, err := r.Exec(query, time.Now(), id); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting subscription")
 	}
-	if err := query.Error; err != nil {
-		return []domain.Subscription{}, merrors.WrapErrorf(err, merrors.ErrCodeNotFound, fmt.Sprintf("find subscriptions by %s", field))
-	}
-
-	var list []domain.Subscription
-	for i := range subscriptions {
-		s := subscriptions[i]
-		list = append(list, toDomainModel(&s))
-	}
-
-	return list, nil
+	return nil
 }

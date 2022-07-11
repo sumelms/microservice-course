@@ -8,17 +8,18 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sumelms/microservice-course/internal/matrix"
 	"github.com/sumelms/microservice-course/internal/subscription"
 
-	"github.com/sumelms/microservice-course/internal/matrix"
-
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course"
 
 	"github.com/go-kit/kit/log"
-	"github.com/sumelms/microservice-course/pkg/config"
-	database "github.com/sumelms/microservice-course/pkg/database/gorm"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/sumelms/microservice-course/pkg/config"
+	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 
 	applogger "github.com/sumelms/microservice-course/pkg/logger"
 
@@ -105,7 +106,10 @@ func main() {
 	defer shutdownCancel()
 
 	if httpServer != nil {
-		httpServer.Shutdown(shutdownCtx) // nolint: errcheck
+		if err := httpServer.Shutdown(shutdownCtx); err != nil {
+			logger.Log("msg", "server wasn't gracefully shutdown")
+			os.Exit(2)
+		}
 	}
 
 	if err := g.Wait(); err != nil {

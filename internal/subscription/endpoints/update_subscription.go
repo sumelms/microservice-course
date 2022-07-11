@@ -7,28 +7,30 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/sumelms/microservice-course/pkg/validator"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type updateSubscriptionRequest struct {
-	ID         string     `json:"id" validate:"required"`
-	UserID     string     `json:"user_id" validate:"required"`
-	CourseID   string     `json:"course_id" validate:"required"`
-	MatrixID   string     `json:"matrix_id" validate:"required"`
+	UUID       uuid.UUID  `json:"uuid" validate:"required"`
+	UserID     uuid.UUID  `json:"user_id" validate:"required"`
+	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
+	MatrixID   uuid.UUID  `json:"matrix_id" validate:"required"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
 type updateSubscriptionResponse struct {
-	ID         uint       `json:"id"`
-	UserID     string     `json:"user_id"`
-	CourseID   string     `json:"course_id"`
-	MatrixID   string     `json:"matrix_id"`
+	UUID       uuid.UUID  `json:"uuid"`
+	UserID     uuid.UUID  `json:"user_id"`
+	CourseID   uuid.UUID  `json:"course_id"`
+	MatrixID   uuid.UUID  `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
@@ -57,13 +59,16 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 
 		var sub domain.Subscription
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &sub)
-		if err != nil {
+		if err := json.Unmarshal(data, &sub); err != nil {
+			return nil, err
+		}
+
+		if err := s.UpdateSubscription(ctx, &sub); err != nil {
 			return nil, err
 		}
 
 		return updateSubscriptionResponse{
-			ID:         sub.ID,
+			UUID:       sub.UUID,
 			UserID:     sub.UserID,
 			CourseID:   sub.CourseID,
 			MatrixID:   sub.MatrixID,
@@ -74,7 +79,7 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 	}
 }
 
-func decodeUpdateSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+func decodeUpdateSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["uuid"]
 	if !ok {
@@ -82,12 +87,11 @@ func decodeUpdateSubscriptionRequest(ctx context.Context, r *http.Request) (inte
 	}
 
 	var req updateSubscriptionRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
 	}
 
-	req.ID = id
+	req.UUID = uuid.MustParse(id)
 
 	return req, nil
 }

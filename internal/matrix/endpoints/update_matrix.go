@@ -7,29 +7,32 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
+
 	"github.com/sumelms/microservice-course/pkg/validator"
 
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type updateMatrixRequest struct {
-	UUID        string `json:"uuid" validate:"required"`
-	Title       string `json:"title" validate:"required,max=100"`
-	Description string `json:"description" validate:"required,max=255"`
-	CourseID    string `json:"course_id" validate:"required"`
+	UUID        uuid.UUID `json:"uuid" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=100"`
+	Description string    `json:"description" validate:"required,max=255"`
+	CourseID    uuid.UUID `json:"course_id" validate:"required"`
 }
 
 type updateMatrixResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    string    `json:"course_id"`
+	CourseID    uuid.UUID `json:"course_id"`
 }
 
 func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -55,23 +58,21 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		var m domain.Matrix
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &m)
-		if err != nil {
+		if err := json.Unmarshal(data, &m); err != nil {
 			return nil, err
 		}
 
-		updated, err := s.UpdateMatrix(ctx, &m)
-		if err != nil {
+		if err := s.UpdateMatrix(ctx, &m); err != nil {
 			return nil, err
 		}
 
 		return updateMatrixResponse{
-			UUID:        updated.UUID,
-			Title:       updated.Title,
-			Description: updated.Description,
-			CreatedAt:   updated.CreatedAt,
-			UpdatedAt:   updated.UpdatedAt,
-			CourseID:    updated.CourseID,
+			UUID:        m.UUID,
+			Title:       m.Title,
+			Description: m.Description,
+			CreatedAt:   m.CreatedAt,
+			UpdatedAt:   m.UpdatedAt,
+			CourseID:    m.CourseID,
 		}, nil
 	}
 }
@@ -89,7 +90,7 @@ func decodeUpdateMatrixRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, err
 	}
 
-	req.UUID = id
+	req.UUID = uuid.MustParse(id)
 
 	return req, nil
 }

@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type deleteSubscriptionRequest struct {
-	ID string `json:"id" validate:"required"`
+	ID uuid.UUID `json:"id" validate:"required"`
 }
 
 func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -32,8 +34,7 @@ func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		err := s.DeleteSubscription(ctx, req.ID)
-		if err != nil {
+		if err := s.DeleteSubscription(ctx, req.ID); err != nil {
 			return nil, err
 		}
 
@@ -41,14 +42,16 @@ func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 	}
 }
 
-func decodeDeleteSubscriptionRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+func decodeDeleteSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
-	id, ok := vars["uuid"]
+	id, ok := vars["id"]
 	if !ok {
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	return deleteSubscriptionRequest{ID: id}, nil
+	uid := uuid.MustParse(id)
+
+	return deleteSubscriptionRequest{ID: uid}, nil
 }
 
 func encodeDeleteSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

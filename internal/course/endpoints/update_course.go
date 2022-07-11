@@ -9,21 +9,23 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type updateCourseRequest struct {
-	UUID        string `json:"uuid" validate:"required"`
-	Title       string `json:"title" validate:"required,max=100"`
-	Subtitle    string `json:"subtitle" validate:"required,max=100"`
-	Excerpt     string `json:"excerpt" validate:"required,max=140"`
-	Description string `json:"description" validate:"required,max=255"`
+	UUID        uuid.UUID `json:"uuid" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=100"`
+	Subtitle    string    `json:"subtitle" validate:"required,max=100"`
+	Excerpt     string    `json:"excerpt" validate:"required,max=140"`
+	Description string    `json:"description" validate:"required,max=255"`
 }
 
 type updateCourseResponse struct {
-	UUID        string    `json:"uuid"`
+	UUID        uuid.UUID `json:"uuid"`
 	Title       string    `json:"title"`
 	Subtitle    string    `json:"subtitle"`
 	Excerpt     string    `json:"excerpt"`
@@ -55,22 +57,20 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		c := domain.Course{}
 		data, _ := json.Marshal(req)
-		err := json.Unmarshal(data, &c)
-		if err != nil {
+		if err := json.Unmarshal(data, &c); err != nil {
 			return nil, err
 		}
 
-		updated, err := s.UpdateCourse(ctx, &c)
-		if err != nil {
+		if err := s.UpdateCourse(ctx, &c); err != nil {
 			return nil, err
 		}
 
 		return updateCourseResponse{
-			UUID:        updated.UUID,
-			Title:       updated.Title,
-			Subtitle:    updated.Subtitle,
-			Excerpt:     updated.Excerpt,
-			Description: updated.Description,
+			UUID:        c.UUID,
+			Title:       c.Title,
+			Subtitle:    c.Subtitle,
+			Excerpt:     c.Excerpt,
+			Description: c.Description,
 		}, nil
 	}
 }
@@ -88,7 +88,7 @@ func decodeUpdateCourseRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, err
 	}
 
-	req.UUID = id
+	req.UUID = uuid.MustParse(id)
 
 	return req, nil
 }

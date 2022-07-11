@@ -1,123 +1,63 @@
 package database
 
 import (
-	"errors"
-	"fmt"
+	"time"
 
-	"github.com/go-kit/kit/log"
-	"github.com/jinzhu/gorm"
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	merrors "github.com/sumelms/microservice-course/pkg/errors"
+	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-const (
-	whereMatrixUUID = "UUID = ?"
-)
-
+// Repository Matrix
 type Repository struct {
-	db     *gorm.DB
-	logger log.Logger
+	*sqlx.DB
 }
 
-func NewRepository(db *gorm.DB, logger log.Logger) *Repository {
-	db.AutoMigrate(&Matrix{})
-
-	return &Repository{
-		db:     db,
-		logger: logger,
+// Matrix get the matrix by given id
+func (r *Repository) Matrix(id uuid.UUID) (domain.Matrix, error) {
+	var m domain.Matrix
+	query := `SELECT * FROM matrices WHERE deleted_at IS NULL AND uuid = $1`
+	if err := r.Get(&m, query, id); err != nil {
+		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
+	return m, nil
 }
 
-func (r *Repository) Create(matrix *domain.Matrix) (domain.Matrix, error) {
-	entity := toDBModel(matrix)
-
-	if err := r.db.Create(&entity).Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't create matrix")
+// Matrices get the list of matrices
+func (r *Repository) Matrices() ([]domain.Matrix, error) {
+	var mm []domain.Matrix
+	query := `SELECT * FROM matrices WHERE deleted_at IS NULL`
+	if err := r.Select(&mm, query); err != nil {
+		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
 	}
-	return toDomainModel(&entity), nil
+	return mm, nil
 }
 
-func (r *Repository) Find(id string) (domain.Matrix, error) {
-	var matrix Matrix
-
-	query := r.db.Where(whereMatrixUUID, id).First(&matrix)
-	if query.RecordNotFound() {
-		return domain.Matrix{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "matrix not found")
+// CreateMatrix create a new matrix
+func (r *Repository) CreateMatrix(m *domain.Matrix) error {
+	query := `INSERT INTO matrices (title, description, course_id) VALUES ($1, $2, $3) RETURNING *`
+	if err := r.Get(m, query, m.Title, m.Description, m.CourseID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating matrix")
 	}
-	if err := query.Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "find matrix")
-	}
-
-	return toDomainModel(&matrix), nil
-}
-
-func (r *Repository) Update(m *domain.Matrix) (domain.Matrix, error) {
-	var matrix Matrix
-
-	query := r.db.Where(whereMatrixUUID, m.UUID).First(&matrix)
-
-	if query.RecordNotFound() {
-		return domain.Matrix{}, merrors.NewErrorf(merrors.ErrCodeNotFound, "matrix not found")
-	}
-
-	query = r.db.Model(&matrix).Updates(&m)
-
-	if err := query.Error; err != nil {
-		return domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "can't update matrix")
-	}
-
-	return *m, nil
-}
-
-func (r *Repository) Delete(id string) error {
-	query := r.db.Where(whereMatrixUUID, id).Delete(&Matrix{})
-
-	if err := query.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return merrors.WrapErrorf(err, merrors.ErrCodeNotFound, "matrix not found")
-		}
-	}
-
 	return nil
 }
 
-func (r *Repository) List(filters map[string]interface{}) ([]domain.Matrix, error) {
-	var matrices []Matrix
-
-	query := r.db.Find(&matrices, filters)
-	if query.RecordNotFound() {
-		return []domain.Matrix{}, nil
+// UpdateMatrix updates the given matrix
+func (r *Repository) UpdateMatrix(m *domain.Matrix) error {
+	query := `UPDATE matrices SET title = $1, description = $2, course_id = $3 WHERE uuid = $4 RETURNING *`
+	if err := r.Get(m, query, m.Title, m.Description, m.CourseID, m.UUID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
-	if err := query.Error; err != nil {
-		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, "list matrices")
-	}
-
-	var list []domain.Matrix
-	for i := range matrices {
-		m := matrices[i]
-		list = append(list, toDomainModel(&m))
-	}
-
-	return list, nil
+	return nil
 }
 
-func (r *Repository) FindBy(field string, value interface{}) ([]domain.Matrix, error) {
-	var matrices []Matrix
-
-	where := fmt.Sprintf("%s = ?", field)
-	query := r.db.Where(where, value).Find(&matrices)
-	if query.RecordNotFound() {
-		return []domain.Matrix{}, nil
+// DeleteMatrix delete the given matrix by uuid
+func (r *Repository) DeleteMatrix(id uuid.UUID) error {
+	query := `UPDATE matrices SET deleted_at = $1 WHERE uuid = $2`
+	if _, err := r.Exec(query, time.Now(), id); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting matrix")
 	}
-	if err := query.Error; err != nil {
-		return []domain.Matrix{}, merrors.WrapErrorf(err, merrors.ErrCodeUnknown, fmt.Sprintf("find matrices by %s", field))
-	}
-
-	var list []domain.Matrix
-	for i := range matrices {
-		m := matrices[i]
-		list = append(list, toDomainModel(&m))
-	}
-
-	return list, nil
+	return nil
 }

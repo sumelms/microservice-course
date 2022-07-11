@@ -10,6 +10,7 @@ import (
 	kittransport "github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 

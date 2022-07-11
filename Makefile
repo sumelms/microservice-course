@@ -56,6 +56,19 @@ build: ## Generate the microservice binary
 build-proto: ## Compiles the protobuf
 	protoc --go-grpc_out=proto --go_out=proto proto/**/*.proto
 
+.PHONY: migrations-up
+migrations-up: ## Runs the migrations 
+	go run cmd/migration/main.go up $(args)
+
+.PHONY: migrations-down
+migrations-down: ## Revert the migrations
+	go run cmd/migration/main.go down $(args)
+
+.PHONY: migrations-create
+migrations-create: ## Create a new migration
+	go run cmd/migration/main.go create $(args)
+
+
 ## --------------------------------------
 ## Linting
 ## --------------------------------------

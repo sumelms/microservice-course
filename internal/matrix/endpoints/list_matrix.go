@@ -7,11 +7,13 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
+
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type listMatrixRequest struct {
-	CourseID string `json:"course_id,omitempty"`
+	CourseID uuid.UUID `json:"course_id,omitempty"`
 }
 
 type listMatrixResponse struct {
@@ -35,11 +37,12 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		filters := make(map[string]interface{})
-		if len(req.CourseID) > 0 {
+		if req.CourseID != uuid.Nil {
 			filters["course_id"] = req.CourseID
 		}
 
-		matrices, err := s.ListMatrix(ctx, filters)
+		// @TODO Implement filters to service -- WIP
+		matrices, err := s.Matrices(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +66,9 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 func decodeListMatrixRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	courseID := r.FormValue("course_id")
-	return listMatrixRequest{CourseID: courseID}, nil
+	cuid := uuid.MustParse(courseID)
+
+	return listMatrixRequest{CourseID: cuid}, nil
 }
 
 func encodeListMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
