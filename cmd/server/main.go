@@ -71,7 +71,9 @@ func main() {
 		course.NewHTTPService(router, db, httpLogger)
 		matrix.NewHTTPService(router, db, httpLogger)
 		subscription.NewHTTPService(router, db, httpLogger)
-		subject.NewHTTPService(router, db, httpLogger)
+		if err := subject.NewHTTPService(router, db, httpLogger); err != nil {
+			panic(err) // TODO treat correctly this error
+		}
 
 		// Handle the router
 		srv.Handle("/", router)
