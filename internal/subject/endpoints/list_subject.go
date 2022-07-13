@@ -35,7 +35,11 @@ func makeListSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			c := cc[i]
 			list = append(list, findSubjectResponse{
 				UUID:      c.UUID,
-				Title:     c.Title,
+				Code:      c.Code,
+				Name:      c.Name,
+				Objective: c.Objective,
+				Credit:    c.Credit,
+				Workload:  c.Workload,
 				CreatedAt: c.CreatedAt,
 				UpdatedAt: c.UpdatedAt,
 			})

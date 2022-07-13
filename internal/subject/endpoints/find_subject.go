@@ -19,13 +19,14 @@ type findSubjectRequest struct {
 }
 
 type findSubjectResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Subtitle    string    `json:"subtitle"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	UUID      uuid.UUID `json:"uuid"`
+	Code      string    `json:"code" validate:"required,max=45"`
+	Name      string    `json:"name" validate:"required,max=100"`
+	Objective string    `json:"objective,omitempty" validate:"max=245"`
+	Credit    float32   `json:"credit,omitempty"`
+	Workload  float32   `json:"workload,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewFindSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -50,8 +51,14 @@ func makeFindSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		return &findSubjectResponse{
-			UUID:  c.UUID,
-			Title: c.Title,
+			UUID:      c.UUID,
+			Code:      c.Code,
+			Name:      c.Name,
+			Objective: c.Objective,
+			Credit:    c.Credit,
+			Workload:  c.Workload,
+			CreatedAt: c.CreatedAt,
+			UpdatedAt: c.UpdatedAt,
 		}, nil
 	}
 }

@@ -17,21 +17,23 @@ import (
 )
 
 type updateSubjectRequest struct {
-	UUID        uuid.UUID `json:"uuid" validate:"required"`
-	Title       string    `json:"title" validate:"required,max=100"`
-	Subtitle    string    `json:"subtitle" validate:"required,max=100"`
-	Excerpt     string    `json:"excerpt" validate:"required,max=140"`
-	Description string    `json:"description" validate:"required,max=255"`
+	UUID      uuid.UUID `json:"uuid" validate:"required"`
+	Code      string    `json:"code" validate:"required,max=45"`
+	Name      string    `json:"name" validate:"required,max=100"`
+	Objective string    `json:"objective" validate:"max=245"`
+	Credit    float32   `json:"credit"`
+	Workload  float32   `json:"workload"`
 }
 
 type updateSubjectResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Subtitle    string    `json:"subtitle"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	UUID      uuid.UUID `json:"uuid"`
+	Code      string    `json:"code" validate:"required,max=45"`
+	Name      string    `json:"name" validate:"required,max=100"`
+	Objective string    `json:"objective,omitempty" validate:"max=245"`
+	Credit    float32   `json:"credit,omitempty"`
+	Workload  float32   `json:"workload,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewUpdateSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -66,8 +68,14 @@ func makeUpdateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		return updateSubjectResponse{
-			UUID:  c.UUID,
-			Title: c.Title,
+			UUID:      c.UUID,
+			Code:      c.Code,
+			Name:      c.Name,
+			Objective: c.Objective,
+			Credit:    c.Credit,
+			Workload:  c.Workload,
+			CreatedAt: c.CreatedAt,
+			UpdatedAt: c.UpdatedAt,
 		}, nil
 	}
 }
