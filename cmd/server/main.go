@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/sumelms/microservice-course/internal/matrix"
+	"github.com/sumelms/microservice-course/internal/subject"
 	"github.com/sumelms/microservice-course/internal/subscription"
 
 	"github.com/gorilla/mux"
@@ -70,6 +71,7 @@ func main() {
 		course.NewHTTPService(router, db, httpLogger)
 		matrix.NewHTTPService(router, db, httpLogger)
 		subscription.NewHTTPService(router, db, httpLogger)
+		subject.NewHTTPService(router, db, httpLogger)
 
 		// Handle the router
 		srv.Handle("/", router)
