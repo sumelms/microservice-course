@@ -1,13 +1,13 @@
-package matrix
+package subject
 
 import (
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/matrix/database"
-	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	"github.com/sumelms/microservice-course/internal/matrix/transport"
+	"github.com/sumelms/microservice-course/internal/subject/database"
+	"github.com/sumelms/microservice-course/internal/subject/domain"
+	"github.com/sumelms/microservice-course/internal/subject/transport"
 )
 
 func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) {

@@ -77,9 +77,6 @@ func TestRepository_Course(t *testing.T) {
 			t.Parallel()
 
 			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
 
 			query := "SELECT \\* FROM courses WHERE deleted_at IS NULL AND uuid = \\$1"
 			mock.ExpectQuery(query).WithArgs(tt.args.id).WillReturnRows(tt.rows)
@@ -140,9 +137,6 @@ func TestRepository_Courses(t *testing.T) {
 			t.Parallel()
 
 			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
 
 			query := "SELECT \\* FROM courses WHERE deleted_at IS NULL"
 			mock.ExpectQuery(query).WillReturnRows(rows)
@@ -204,9 +198,6 @@ func TestRepository_CreateCourse(t *testing.T) {
 			t.Parallel()
 
 			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
 
 			query := "INSERT INTO courses \\(title, subtitle, excerpt, description\\) VALUES \\(\\$1, \\$2, \\$3, \\$4\\) RETURNING \\*"
 			mock.ExpectQuery(query).WithArgs(c.Title, c.Subtitle, c.Excerpt, c.Description).WillReturnRows(rows)
@@ -257,10 +248,9 @@ func TestRepository_UpdateCourse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
 
 			query := "UPDATE courses SET title = \\$1, subtitle = \\$2, excerpt = \\$3, description = \\$4 WHERE uuid = \\$5 RETURNING \\*"
 			mock.ExpectQuery(query).WithArgs(c.Title, c.Subtitle, c.Excerpt, c.Description, c.UUID).WillReturnRows(rows)
