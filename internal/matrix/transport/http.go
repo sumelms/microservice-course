@@ -31,4 +31,10 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	r.Handle("/matrices/{uuid}", findMatrixHandler).Methods(http.MethodGet)
 	r.Handle("/matrices/{uuid}", updateMatrixHandler).Methods(http.MethodPut)
 	r.Handle("/matrices/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
+
+	addSubjectHandler := endpoints.NewAddSubjectHandler(s, opts...)
+	removeSubjectHandler := endpoints.NewRemoveSubjectHandler(s, opts...)
+
+	r.Handle("/matrices/subject", addSubjectHandler).Methods(http.MethodPost)
+	r.Handle("/matrices/subject", removeSubjectHandler).Methods(http.MethodDelete)
 }

@@ -16,3 +16,10 @@ type Matrix struct {
 	UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
 	DeletedAt   *time.Time `db:"deleted_at" json:"deleted_at"`
 }
+
+type MatrixSubjects struct {
+	ID         uint      `json:"id"`
+	SubjectID  uuid.UUID `db:"subject_id" json:"subject_id"`
+	MatrixID   uuid.UUID `db:"matrix_id" json:"matrix_id"`
+	IsRequired bool      `db:"is_required" json:"is_required"`
+}

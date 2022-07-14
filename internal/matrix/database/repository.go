@@ -61,3 +61,37 @@ func (r *Repository) DeleteMatrix(id uuid.UUID) error {
 	}
 	return nil
 }
+
+// AddSubject adds the subject to the matrix
+func (r *Repository) AddSubject(matrixID, subjectID uuid.UUID) error {
+	query := `INSERT INTO matrix_subjects (matrix_id, subject_id) VALUES($1, $2) RETURNING *`
+
+	stmt, err := r.Preparex(query)
+	if err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing the statement")
+	}
+
+	record := domain.MatrixSubjects{
+		MatrixID:  matrixID,
+		SubjectID: subjectID,
+	}
+	if err := stmt.Get(record, query, matrixID, subjectID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error adding subject to matrix")
+	}
+	return nil
+}
+
+// RemoveSubject removes the subject from the matrix
+func (r Repository) RemoveSubject(matrixID, subjectID uuid.UUID) error {
+	query := `UPDATE matrix_subjects SET deleted_at = NOW() WHERE matrix_id = $1 AND subject_id = $2`
+
+	stmt, err := r.Preparex(query)
+	if err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing the statement")
+	}
+
+	if _, err := stmt.Exec(query, matrixID, subjectID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error removing subject from matrix")
+	}
+	return nil
+}
