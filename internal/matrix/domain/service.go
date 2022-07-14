@@ -9,11 +9,13 @@ import (
 )
 
 type ServiceInterface interface {
-	Matrix(context.Context, uuid.UUID) (Matrix, error)
-	Matrices(context.Context) ([]Matrix, error)
-	CreateMatrix(context.Context, *Matrix) error
-	UpdateMatrix(context.Context, *Matrix) error
-	DeleteMatrix(context.Context, uuid.UUID) error
+	Matrix(ctx context.Context, id uuid.UUID) (Matrix, error)
+	Matrices(ctx context.Context) ([]Matrix, error)
+	CreateMatrix(ctx context.Context, matrix *Matrix) error
+	UpdateMatrix(ctx context.Context, matrix *Matrix) error
+	DeleteMatrix(ctx context.Context, id uuid.UUID) error
+	AddSubject(ctx context.Context, matrixID, subjectID uuid.UUID) error
+	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
 }
 
 type Service struct {
@@ -61,6 +63,20 @@ func (s *Service) UpdateMatrix(_ context.Context, m *Matrix) error {
 func (s *Service) DeleteMatrix(_ context.Context, id uuid.UUID) error {
 	if err := s.repo.DeleteMatrix(id); err != nil {
 		return fmt.Errorf("service can't delete matrix: %w", err)
+	}
+	return nil
+}
+
+func (s *Service) AddSubject(_ context.Context, matrixID, subjectID uuid.UUID) error {
+	if err := s.repo.AddSubject(matrixID, subjectID); err != nil {
+		return fmt.Errorf("service can't adds the subject to matrix: %w", err)
+	}
+	return nil
+}
+
+func (s *Service) RemoveSubject(_ context.Context, matrixID, SubjectID uuid.UUID) error {
+	if err := s.repo.RemoveSubject(matrixID, SubjectID); err != nil {
+		return fmt.Errorf("service can't removes the subject from matrix: %w", err)
 	}
 	return nil
 }

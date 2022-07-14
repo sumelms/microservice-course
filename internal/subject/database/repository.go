@@ -50,21 +50,21 @@ func (r *Repository) CreateSubject(sub *domain.Subject) error {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement")
 	}
 
-	if err := stmt.Get(sub, query, sub.Title); err != nil {
+	if err := stmt.Get(sub, query, sub.Name); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
 	return nil
 }
 
 func (r *Repository) UpdateSubject(sub *domain.Subject) error {
-	query := `UPDATE subjects SET title = $1 WHERE uuid = $2 RETURNING *`
+	query := `UPDATE subjects SET 'name' = $1 WHERE uuid = $2 RETURNING *`
 
 	stmt, err := r.Preparex(query)
 	if err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement")
 	}
 
-	if err := stmt.Get(sub, query, sub.Title, sub.UUID); err != nil {
+	if err := stmt.Get(sub, query, sub.Name, sub.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
 	return nil
