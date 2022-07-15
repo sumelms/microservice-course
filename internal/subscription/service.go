@@ -21,7 +21,10 @@ func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) error {
 }
 
 func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
-	repository := &database.Repository{DB: db}
+	repository, err := database.NewRepository(db)
+	if err != nil {
+		return nil, err
+	}
 	courseSvc, err := clientService.NewCourseSvc(db, logger)
 	if err != nil {
 		return nil, err
