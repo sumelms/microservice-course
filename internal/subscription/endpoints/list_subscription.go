@@ -52,7 +52,8 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		var list []findSubscriptionResponse
-		for _, sub := range subscriptions {
+		for i := range subscriptions {
+			sub := subscriptions[i]
 			list = append(list, findSubscriptionResponse{
 				UUID:       sub.UUID,
 				UserID:     sub.UserID,

@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+
 	"github.com/sumelms/microservice-course/internal/course"
 	courseDomain "github.com/sumelms/microservice-course/internal/course/domain"
 )
@@ -15,7 +16,7 @@ type courseSvc struct {
 	course courseDomain.ServiceInterface
 }
 
-func NewCourseSvc(db *sqlx.DB, logger log.Logger) courseSvc {
+func NewCourseSvc(db *sqlx.DB, logger log.Logger) courseSvc { // nolint: revive
 	svc := course.NewService(db, logger)
 	return courseSvc{
 		course: svc,

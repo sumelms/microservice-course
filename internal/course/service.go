@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 
 	"github.com/sumelms/microservice-course/internal/course/database"
 	"github.com/sumelms/microservice-course/internal/course/domain"
