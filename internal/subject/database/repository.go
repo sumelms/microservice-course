@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
@@ -10,13 +8,7 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-const (
-	listSubject    = "list subject"
-	getSubject     = "get subject by uuid"
-	delecteSubject = "delete subject by uuid"
-)
-
-func NewRepository(db *sqlx.DB) (repository, error) {
+func NewRepository(db *sqlx.DB) (repository, error) { // nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queries() {
@@ -26,7 +18,7 @@ func NewRepository(db *sqlx.DB) (repository, error) {
 		}
 		sqlStatements[queryName] = stmt
 	}
-	fmt.Println(sqlStatements)
+
 	return repository{
 		statements: sqlStatements,
 	}, nil
@@ -34,16 +26,6 @@ func NewRepository(db *sqlx.DB) (repository, error) {
 
 type repository struct {
 	statements map[string]*sqlx.Stmt
-}
-
-type Query string
-
-func queries() map[string]Query {
-	return map[string]Query{
-		listSubject:    Query("SELECT * FROM subjects"),
-		getSubject:     Query("SELECT * FROM subjects WHERE uuid = $1"),
-		delecteSubject: Query("UPDATE subjects SET deleted_at = NOW() WHERE uuid = $1"),
-	}
 }
 
 func (r repository) Subject(id uuid.UUID) (domain.Subject, error) {
@@ -73,41 +55,33 @@ func (r repository) Subjects() ([]domain.Subject, error) {
 }
 
 func (r repository) CreateSubject(sub *domain.Subject) error {
-	/*
-		query := `INSERT INTO subjects (title) VALUES ($1) RETURNING *`
+	stmt, ok := r.statements[createSubject]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createSubject)
+	}
 
-		stmt, err := r.Preparex(query)
-		if err != nil {
-			return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement")
-		}
-
-		if err := stmt.Get(sub, query, sub.Title); err != nil {
-			return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
-		}
-	*/
+	if err := stmt.Get(sub, sub.Name); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
+	}
 	return nil
 }
 
 func (r repository) UpdateSubject(sub *domain.Subject) error {
-	/*
-		query := `UPDATE subjects SET title = $1 WHERE uuid = $2 RETURNING *`
+	stmt, ok := r.statements[updateSubject]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateSubject)
+	}
 
-		stmt, err := r.Preparex(query)
-		if err != nil {
-			return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement")
-		}
-
-		if err := stmt.Get(sub, query, sub.Title, sub.UUID); err != nil {
-			return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
-		}
-	*/
+	if err := stmt.Get(sub, sub.UUID); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
+	}
 	return nil
 }
 
 func (r repository) DeleteSubject(id uuid.UUID) error {
-	stmt, ok := r.statements[delecteSubject]
+	stmt, ok := r.statements[deleteSubject]
 	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", delecteSubject)
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteSubject)
 	}
 
 	if _, err := stmt.Exec(id); err != nil {
