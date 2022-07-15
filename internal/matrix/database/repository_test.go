@@ -75,7 +75,7 @@ func TestRepository_Matrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &Repository{DB: tt.fields.DB}
+			r := &repository{DB: tt.fields.DB}
 			defer func() {
 				_ = r.Close()
 			}()
@@ -138,7 +138,7 @@ func TestRepository_Matrices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &Repository{DB: tt.fields.DB}
+			r := &repository{DB: tt.fields.DB}
 			defer func() {
 				_ = r.Close()
 			}()

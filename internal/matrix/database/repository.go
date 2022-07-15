@@ -1,8 +1,6 @@
 package database
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
@@ -10,87 +8,115 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// Repository Matrix
-type Repository struct {
-	*sqlx.DB
+// NewRepository creates the matrix repository
+func NewRepository(db *sqlx.DB) (repository, error) {
+	sqlStatements := make(map[string]*sqlx.Stmt)
+
+	for queryName, query := range queries() {
+		stmt, err := db.Preparex(string(query))
+		if err != nil {
+			return repository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+		}
+		sqlStatements[queryName] = stmt
+	}
+
+	return repository{
+		statements: sqlStatements,
+	}, nil
+}
+
+type repository struct {
+	statements map[string]*sqlx.Stmt
 }
 
 // Matrix get the matrix by given id
-func (r *Repository) Matrix(id uuid.UUID) (domain.Matrix, error) {
+func (r repository) Matrix(id uuid.UUID) (domain.Matrix, error) {
+	stmt, ok := r.statements[getMatrix]
+	if !ok {
+		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
+	}
+
 	var m domain.Matrix
-	query := `SELECT * FROM matrices WHERE deleted_at IS NULL AND uuid = $1`
-	if err := r.Get(&m, query, id); err != nil {
-		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
+	if err := stmt.Get(&m, id); err != nil {
+		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
 	}
 	return m, nil
 }
 
 // Matrices get the list of matrices
-func (r *Repository) Matrices() ([]domain.Matrix, error) {
+func (r repository) Matrices() ([]domain.Matrix, error) {
+	stmt, ok := r.statements[listMatrix]
+	if !ok {
+		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrix)
+	}
+
 	var mm []domain.Matrix
-	query := `SELECT * FROM matrices WHERE deleted_at IS NULL`
-	if err := r.Select(&mm, query); err != nil {
+	if err := stmt.Select(&mm); err != nil {
 		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
 	}
 	return mm, nil
 }
 
 // CreateMatrix create a new matrix
-func (r *Repository) CreateMatrix(m *domain.Matrix) error {
-	query := `INSERT INTO matrices (title, description, course_id) VALUES ($1, $2, $3) RETURNING *`
-	if err := r.Get(m, query, m.Title, m.Description, m.CourseID); err != nil {
+func (r repository) CreateMatrix(m *domain.Matrix) error {
+	stmt, ok := r.statements[createMatrix]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createMatrix)
+	}
+
+	if err := stmt.Get(m, m.Title, m.Description, m.CourseID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating matrix")
 	}
 	return nil
 }
 
 // UpdateMatrix updates the given matrix
-func (r *Repository) UpdateMatrix(m *domain.Matrix) error {
-	query := `UPDATE matrices SET title = $1, description = $2, course_id = $3 WHERE uuid = $4 RETURNING *`
-	if err := r.Get(m, query, m.Title, m.Description, m.CourseID, m.UUID); err != nil {
+func (r repository) UpdateMatrix(m *domain.Matrix) error {
+	stmt, ok := r.statements[updateMatrix]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateMatrix)
+	}
+
+	if err := stmt.Get(m, m.Title, m.Description, m.CourseID, m.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
 	return nil
 }
 
 // DeleteMatrix delete the given matrix by uuid
-func (r *Repository) DeleteMatrix(id uuid.UUID) error {
-	query := `UPDATE matrices SET deleted_at = $1 WHERE uuid = $2`
-	if _, err := r.Exec(query, time.Now(), id); err != nil {
+func (r repository) DeleteMatrix(id uuid.UUID) error {
+	stmt, ok := r.statements[deleteMatrix]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteMatrix)
+	}
+
+	if _, err := stmt.Exec(id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting matrix")
 	}
 	return nil
 }
 
 // AddSubject adds the subject to the matrix
-func (r *Repository) AddSubject(matrixID, subjectID uuid.UUID) error {
-	query := `INSERT INTO matrix_subjects (matrix_id, subject_id) VALUES($1, $2) RETURNING *`
-
-	stmt, err := r.Preparex(query)
-	if err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing the statement")
+func (r repository) AddSubject(matrixID, subjectID uuid.UUID) error {
+	stmt, ok := r.statements[addSubject]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", addSubject)
 	}
 
-	record := domain.MatrixSubjects{
-		MatrixID:  matrixID,
-		SubjectID: subjectID,
-	}
-	if err := stmt.Get(record, query, matrixID, subjectID); err != nil {
+	if _, err := stmt.Exec(matrixID, subjectID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error adding subject to matrix")
 	}
 	return nil
 }
 
 // RemoveSubject removes the subject from the matrix
-func (r Repository) RemoveSubject(matrixID, subjectID uuid.UUID) error {
-	query := `UPDATE matrix_subjects SET deleted_at = NOW() WHERE matrix_id = $1 AND subject_id = $2`
-
-	stmt, err := r.Preparex(query)
-	if err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing the statement")
+func (r repository) RemoveSubject(matrixID, subjectID uuid.UUID) error {
+	stmt, ok := r.statements[removeSubject]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", removeSubject)
 	}
 
-	if _, err := stmt.Exec(query, matrixID, subjectID); err != nil {
+	if _, err := stmt.Exec(matrixID, subjectID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error removing subject from matrix")
 	}
 	return nil
