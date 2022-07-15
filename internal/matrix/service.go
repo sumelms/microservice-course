@@ -1,7 +1,7 @@
 package matrix
 
 import (
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 

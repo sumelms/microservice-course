@@ -9,7 +9,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/subscription/endpoints"
 	"github.com/sumelms/microservice-course/pkg/errors"
 
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 
 	"github.com/sumelms/microservice-course/internal/subscription/domain"

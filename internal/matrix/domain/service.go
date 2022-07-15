@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/google/uuid"
 )
 
@@ -74,8 +74,8 @@ func (s *Service) AddSubject(_ context.Context, matrixID, subjectID uuid.UUID) e
 	return nil
 }
 
-func (s *Service) RemoveSubject(_ context.Context, matrixID, SubjectID uuid.UUID) error {
-	if err := s.repo.RemoveSubject(matrixID, SubjectID); err != nil {
+func (s *Service) RemoveSubject(_ context.Context, matrixID, subjectID uuid.UUID) error {
+	if err := s.repo.RemoveSubject(matrixID, subjectID); err != nil {
 		return fmt.Errorf("service can't removes the subject from matrix: %w", err)
 	}
 	return nil

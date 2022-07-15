@@ -16,7 +16,7 @@ import (
 
 	"github.com/sumelms/microservice-course/internal/course"
 
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/sumelms/microservice-course/pkg/config"
@@ -109,8 +109,8 @@ func main() {
 
 	if httpServer != nil {
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
-			logger.Log("msg", "server wasn't gracefully shutdown")
-			os.Exit(2)
+			logger.Log("msg", "server wasn't gracefully shutdown") // nolint: errcheck
+			defer os.Exit(2)
 		}
 	}
 

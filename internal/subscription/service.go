@@ -1,13 +1,13 @@
 package subscription
 
 import (
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/subscription/database"
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	"github.com/sumelms/microservice-course/internal/subscription/service"
+	clientService "github.com/sumelms/microservice-course/internal/subscription/service"
 	"github.com/sumelms/microservice-course/internal/subscription/transport"
 )
 
@@ -18,6 +18,6 @@ func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) {
 
 func NewService(db *sqlx.DB, logger log.Logger) *domain.Service {
 	repository := &database.Repository{DB: db}
-	courseSvc := service.NewCourseSvc(db, logger)
+	courseSvc := clientService.NewCourseSvc(db, logger)
 	return domain.NewService(repository, courseSvc, logger)
 }

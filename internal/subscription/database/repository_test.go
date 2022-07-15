@@ -262,7 +262,8 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 				_ = r.Close()
 			}()
 
-			query := "UPDATE subscriptions SET user_id = \\$1, course_id = \\$2, matrix_id = \\$3, valid_until = \\$4 WHERE uuid = \\$5 RETURNING \\*"
+			// nolint: lll
+			query := `UPDATE subscriptions SET user_id = \\$1, course_id = \\$2, matrix_id = \\$3, valid_until = \\$4 WHERE uuid = \\$5 RETURNING \\*`
 			mock.ExpectQuery(query).WithArgs(s.UserID, s.CourseID, s.MatrixID, s.ValidUntil, s.UUID).WillReturnRows(rows)
 
 			if err := r.UpdateSubscription(tt.args.c); (err != nil) != tt.wantErr {
