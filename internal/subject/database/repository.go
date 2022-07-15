@@ -8,6 +8,7 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
+// NewRepository creates the subject repository
 func NewRepository(db *sqlx.DB) (repository, error) { // nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
@@ -61,7 +62,7 @@ func (r repository) CreateSubject(sub *domain.Subject) error {
 	}
 
 	if err := stmt.Get(sub, sub.Name); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subject")
 	}
 	return nil
 }
@@ -73,7 +74,7 @@ func (r repository) UpdateSubject(sub *domain.Subject) error {
 	}
 
 	if err := stmt.Get(sub, sub.UUID); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subject")
 	}
 	return nil
 }
@@ -85,7 +86,7 @@ func (r repository) DeleteSubject(id uuid.UUID) error {
 	}
 
 	if _, err := stmt.Exec(id); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting subject")
 	}
 	return nil
 }

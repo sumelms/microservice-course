@@ -68,9 +68,15 @@ func main() {
 		router := mux.NewRouter()
 
 		// Initializing the services
-		course.NewHTTPService(router, db, httpLogger)
-		matrix.NewHTTPService(router, db, httpLogger)
-		subscription.NewHTTPService(router, db, httpLogger)
+		if err := course.NewHTTPService(router, db, httpLogger); err != nil {
+			panic(err) // TODO treat correctly this error
+		}
+		if err := matrix.NewHTTPService(router, db, httpLogger); err != nil {
+			panic(err) // TODO treat correctly this error
+		}
+		if err := subscription.NewHTTPService(router, db, httpLogger); err != nil {
+			panic(err) // TODO treat correctly this error
+		}
 		if err := subject.NewHTTPService(router, db, httpLogger); err != nil {
 			panic(err) // TODO treat correctly this error
 		}
