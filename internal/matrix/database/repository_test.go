@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	mtests "github.com/sumelms/microservice-course/tests"
+	mtests "github.com/sumelms/microservice-course/tests/database"
 )
 
 var now = time.Now()
@@ -19,7 +19,7 @@ func newTestMatrix() domain.Matrix {
 	return domain.Matrix{
 		ID:          1,
 		UUID:        uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc"),
-		Title:       "Matrix Title",
+		Title:       "Matrix Name",
 		Description: "Matrix Description",
 		CourseID:    uuid.MustParse("79e1d30d-77f0-4d2f-995c-74aef97c76bf"),
 		CreatedAt:   now,

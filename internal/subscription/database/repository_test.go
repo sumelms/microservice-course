@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	mtests "github.com/sumelms/microservice-course/tests"
+	mtests "github.com/sumelms/microservice-course/tests/database"
 )
 
 var now = time.Now()
