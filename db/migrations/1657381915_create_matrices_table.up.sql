@@ -7,7 +7,7 @@ CREATE TABLE matrices
     id              bigserial       CONSTRAINT matrices_pk PRIMARY KEY,
     uuid            uuid            DEFAULT uuid_generate_v4() NOT NULL,
     code            varchar         NOT NULL UNIQUE,
-    "name"          varchar         NOT NULL,
+    name            varchar         NOT NULL,
     description     text            NULL,
     course_id       uuid            NOT NULL,
     created_at      timestamp       DEFAULT now() NOT NULL,

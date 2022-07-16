@@ -8,7 +8,7 @@ CREATE TABLE subscriptions
     user_id         uuid            NOT NULL,
     course_id       uuid            NOT NULL,
     matrix_id       uuid            NOT NULL,
-    "role"          varchar         NULL,
+    role            varchar         NULL,
     valid_until     timestamp,
     created_at      timestamp       DEFAULT now() NOT NULL,
     updated_at      timestamp       DEFAULT now() NOT NULL,
