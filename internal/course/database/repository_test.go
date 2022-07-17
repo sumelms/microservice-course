@@ -12,7 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	database "github.com/sumelms/microservice-course/tests/database"
+	"github.com/sumelms/microservice-course/tests/database"
 )
 
 var (
@@ -57,7 +57,7 @@ func TestRepository_Course(t *testing.T) {
 	type args struct {
 		id uuid.UUID
 	}
-	
+
 	tests := []struct {
 		name    string
 		args    args
@@ -84,16 +84,16 @@ func TestRepository_Course(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			db, _, stmts := newTestDB()
-			defer db.Close()
+			t.Parallel()
 
+			db, _, stmts := newTestDB()
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[getCourse]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", string(getCourse))
+				t.Fatalf("prepared statement %s not found", getCourse)
 			}
 
 			prep.ExpectQuery().WithArgs(courseUUID).WillReturnRows(validRows)
@@ -144,15 +144,13 @@ func TestRepository_Courses(t *testing.T) {
 			t.Parallel()
 
 			db, _, stmts := newTestDB()
-			defer db.Close()
-
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[listCourse]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", string(getCourse))
+				t.Fatalf("prepared statement %s not found", getCourse)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
@@ -205,15 +203,13 @@ func TestRepository_CreateCourse(t *testing.T) {
 			t.Parallel()
 
 			db, _, stmts := newTestDB()
-			defer db.Close()
-
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[createCourse]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", string(getCourse))
+				t.Fatalf("prepared statement %s not found", getCourse)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
@@ -260,15 +256,13 @@ func TestRepository_UpdateCourse(t *testing.T) {
 			t.Parallel()
 
 			db, _, stmts := newTestDB()
-			defer db.Close()
-
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[updateCourse]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", string(getCourse))
+				t.Fatalf("prepared statement %s not found", getCourse)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
