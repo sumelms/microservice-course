@@ -76,7 +76,7 @@ func TestRepository_Course(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
+			db, mock, stmts := newTestDB()
 			defer db.Close()
 
 			r, err := NewRepository(db)
@@ -89,7 +89,7 @@ func TestRepository_Course(t *testing.T) {
 				log.Fatalf("prepared statement %s not found", string(getCourse))
 			}
 
-			validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+			validRows := mock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
 				"description", "created_at", "updated_at", "deleted_at"}).
 				AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
 					course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
