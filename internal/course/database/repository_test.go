@@ -34,7 +34,7 @@ var (
 	}
 )
 
-func newTestDB() (*sqlx.DB, map[string]*sqlmock.ExpectedPrepare) {
+func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
 	db, mock := database.NewDBMock()
 
 	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
@@ -43,7 +43,8 @@ func newTestDB() (*sqlx.DB, map[string]*sqlmock.ExpectedPrepare) {
 		sqlStatements[queryName] = stmt
 	}
 
-	return db, sqlStatements
+	mock.MatchExpectationsInOrder(false)
+	return db, mock, sqlStatements
 }
 
 func TestRepository_Course(t *testing.T) {
@@ -75,21 +76,25 @@ func TestRepository_Course(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, stmts := newTestDB()
+			db, _, stmts := newTestDB()
 			defer db.Close()
-
-			prep := stmts[getCourse]
-			prep.ExpectQuery().
-				WithArgs(courseUUID).
-				WillReturnRows(sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
-					"description", "created_at", "updated_at", "deleted_at"}).
-					AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-						course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt))
 
 			r, err := NewRepository(db)
 			if err != nil {
 				log.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
+
+			prep, ok := stmts[getCourse]
+			if !ok {
+				log.Fatalf("prepared statement %s not found", string(getCourse))
+			}
+
+			validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+				"description", "created_at", "updated_at", "deleted_at"}).
+				AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
+					course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
+
+			prep.ExpectQuery().WithArgs(courseUUID).WillReturnRows(validRows)
 
 			got, err := r.Course(tt.args.id)
 			if (err != nil) != tt.wantErr {
