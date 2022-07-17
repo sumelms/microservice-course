@@ -9,7 +9,8 @@ import (
 type Matrix struct {
 	ID          uint       `json:"id"`
 	UUID        uuid.UUID  `json:"uuid"`
-	Title       string     `json:"title"`
+	Code        string     `json:"code"`
+	Name        string     `json:"name"`
 	Description string     `json:"description"`
 	CourseID    uuid.UUID  `db:"course_id" json:"course_id"`
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`

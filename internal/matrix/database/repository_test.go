@@ -1,7 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
 	"testing"
 	"time"
 
@@ -10,43 +12,52 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	mtests "github.com/sumelms/microservice-course/tests/database"
+	"github.com/sumelms/microservice-course/tests/database"
 )
 
-var now = time.Now()
-
-func newTestMatrix() domain.Matrix {
-	return domain.Matrix{
+var (
+	now        = time.Now()
+	matrixUUID = uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc")
+	courseUUID = uuid.MustParse("79e1d30d-77f0-4d2f-995c-74aef97c76bf")
+	matrix     = domain.Matrix{
 		ID:          1,
-		UUID:        uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc"),
-		Title:       "Matrix Name",
+		UUID:        matrixUUID,
+		Code:        "SUME123",
+		Name:        "Matrix Name",
 		Description: "Matrix Description",
-		CourseID:    uuid.MustParse("79e1d30d-77f0-4d2f-995c-74aef97c76bf"),
+		CourseID:    courseUUID,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 		DeletedAt:   nil,
 	}
+	emptyRows = sqlmock.NewRows([]string{})
+)
+
+func newTestTB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+	db, mock := database.NewDBMock()
+
+	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
+	for queryName, query := range queries() {
+		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
+		sqlStatements[queryName] = stmt
+	}
+
+	mock.MatchExpectationsInOrder(false)
+	return db, mock, sqlStatements
 }
 
 func TestRepository_Matrix(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-
-	m := newTestMatrix()
-	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "description",
 		"course_id", "created_at", "updated_at", "deleted_at"}).
-		AddRow(m.ID, m.UUID, m.Title, m.Description,
-			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
+		AddRow(matrix.ID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
+			matrix.CourseID, matrix.CreatedAt, matrix.UpdatedAt, matrix.DeletedAt)
 
-	type fields struct {
-		DB *sqlx.DB
-	}
 	type args struct {
 		id uuid.UUID
 	}
 
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		rows    *sqlmock.Rows
 		want    domain.Matrix
@@ -54,17 +65,15 @@ func TestRepository_Matrix(t *testing.T) {
 	}{
 		{
 			name:    "get matrix",
-			fields:  fields{DB: db},
-			args:    args{id: m.UUID},
-			rows:    rows,
-			want:    m,
+			args:    args{id: matrixUUID},
+			rows:    validRows,
+			want:    matrix,
 			wantErr: false,
 		},
 		{
 			name:    "matrix not found error",
-			fields:  fields{DB: db},
 			args:    args{id: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
-			rows:    rows,
+			rows:    emptyRows,
 			want:    domain.Matrix{},
 			wantErr: true,
 		},
@@ -75,13 +84,17 @@ func TestRepository_Matrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			db, _, stmts := newTestTB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+			}
+			prep, ok := stmts[getMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", getMatrix)
+			}
 
-			query := "SELECT \\* FROM matrices WHERE deleted_at IS NULL AND uuid = \\$1"
-			mock.ExpectQuery(query).WithArgs(tt.args.id).WillReturnRows(tt.rows)
+			prep.ExpectQuery().WithArgs(matrixUUID).WillReturnRows(tt.rows)
 
 			got, err := r.Matrix(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -96,38 +109,29 @@ func TestRepository_Matrix(t *testing.T) {
 }
 
 func TestRepository_Matrices(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-
-	m := newTestMatrix()
-	rows := mock.NewRows([]string{"id", "uuid", "title", "description",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "description",
 		"course_id", "created_at", "updated_at", "deleted_at"}).
-		AddRow(m.ID, m.UUID, m.Title, m.Description,
-			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt).
-		AddRow(2, uuid.MustParse("e74868b2-72d4-4591-a90d-122a9ac2d945"), m.Title, m.Description,
-			m.CourseID, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
-
-	type fields struct {
-		DB *sqlx.DB
-	}
+		AddRow(matrix.ID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
+			matrix.CourseID, matrix.CreatedAt, matrix.UpdatedAt, matrix.DeletedAt).
+		AddRow(2, uuid.MustParse("e74868b2-72d4-4591-a90d-122a9ac2d945"),
+			matrix.Code, matrix.Name, matrix.Description, matrix.CourseID, matrix.CreatedAt,
+			matrix.UpdatedAt, matrix.DeletedAt)
 
 	tests := []struct {
 		name    string
-		fields  fields
 		rows    *sqlmock.Rows
 		wantLen int
 		wantErr bool
 	}{
 		{
 			name:    "get all matrices",
-			fields:  fields{DB: db},
-			rows:    rows,
+			rows:    validRows,
 			wantLen: 2,
 			wantErr: false,
 		},
 		{
 			name:    "get no matrices",
-			fields:  fields{DB: db},
-			rows:    nil,
+			rows:    emptyRows,
 			wantLen: 0,
 			wantErr: false,
 		},
@@ -138,13 +142,17 @@ func TestRepository_Matrices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			db, _, stmts := newTestTB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+			}
+			prep, ok := stmts[listMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", listMatrix)
+			}
 
-			query := "SELECT \\* FROM matrices WHERE deleted_at IS NULL"
-			mock.ExpectQuery(query).WillReturnRows(rows)
+			prep.ExpectQuery().WillReturnRows(tt.rows)
 
 			got, err := r.Matrices()
 			if (err != nil) != tt.wantErr {

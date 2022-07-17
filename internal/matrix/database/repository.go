@@ -64,7 +64,7 @@ func (r repository) CreateMatrix(m *domain.Matrix) error {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createMatrix)
 	}
 
-	if err := stmt.Get(m, m.Title, m.Description, m.CourseID); err != nil {
+	if err := stmt.Get(m, m.Code, m.Name, m.Description, m.CourseID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating matrix")
 	}
 	return nil
@@ -77,7 +77,7 @@ func (r repository) UpdateMatrix(m *domain.Matrix) error {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateMatrix)
 	}
 
-	if err := stmt.Get(m, m.Title, m.Description, m.CourseID, m.UUID); err != nil {
+	if err := stmt.Get(m, m.Code, m.Name, m.Description, m.CourseID, m.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
 	return nil

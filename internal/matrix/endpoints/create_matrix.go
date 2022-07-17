@@ -16,15 +16,17 @@ import (
 )
 
 type createMatrixRequest struct {
-	Title       string    `json:"title" validate:"required,max=100"`
-	Description string    `json:"description" validate:"required,max=255"`
+	Code        string    `json:"code" validate:"max=45"`
+	Name        string    `json:"name" validate:"required,max=100"`
+	Description string    `json:"description" validate:"max=255"`
 	CourseID    uuid.UUID `json:"course_id" validate:"required"`
 }
 
 type createMatrixResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
+	Code        string    `json:"code,omitempty"`
+	Name        string    `json:"name"`
+	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	CourseID    uuid.UUID `json:"course_id"`
@@ -64,7 +66,7 @@ func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return createMatrixResponse{
 			UUID:        m.UUID,
-			Title:       m.Title,
+			Name:        m.Name,
 			Description: m.Description,
 			CreatedAt:   m.CreatedAt,
 			UpdatedAt:   m.UpdatedAt,
