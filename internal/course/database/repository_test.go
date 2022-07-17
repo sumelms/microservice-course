@@ -1,7 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
 	"testing"
 	"time"
 
@@ -37,7 +39,7 @@ func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare
 
 	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
 	for queryName, query := range queries() {
-		stmt := mock.ExpectPrepare(string(query))
+		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
 		sqlStatements[queryName] = stmt
 	}
 
