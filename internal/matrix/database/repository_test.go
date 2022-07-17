@@ -165,3 +165,54 @@ func TestRepository_Matrices(t *testing.T) {
 		})
 	}
 }
+
+func TestRepository_UpdateMatrix(t *testing.T) {
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "description",
+		"course_id", "created_at", "updated_at", "deleted_at"}).
+		AddRow(matrix.ID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
+			matrix.CourseID, matrix.CreatedAt, matrix.UpdatedAt, matrix.DeletedAt)
+
+	type args struct {
+		m *domain.Matrix
+	}
+	tests := []struct {
+		name    string
+		args    args
+		rows    *sqlmock.Rows
+		wantErr bool
+	}{
+		{
+			name:    "update matrix",
+			args:    args{m: &matrix},
+			rows:    validRows,
+			wantErr: false,
+		},
+		{
+			name:    "empty matrix",
+			args:    args{m: &domain.Matrix{}},
+			rows:    emptyRows,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, _, stmts := newTestTB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected creating the repository", err)
+			}
+			prep, ok := stmts[updateMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", updateMatrix)
+			}
+
+			prep.ExpectQuery().WillReturnRows(tt.rows)
+
+			if err := r.UpdateMatrix(tt.args.m); (err != nil) != tt.wantErr {
+				t.Errorf("UpdateMatrix() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
