@@ -1,9 +1,7 @@
 package database
 
 import (
-	"log"
 	"reflect"
-	"regexp"
 	"testing"
 	"time"
 
@@ -39,7 +37,7 @@ func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare
 
 	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
 	for queryName, query := range queries() {
-		stmt := mock.ExpectPrepare(regexp.QuoteMeta(string(query)))
+		stmt := mock.ExpectPrepare(string(query))
 		sqlStatements[queryName] = stmt
 	}
 
@@ -74,19 +72,16 @@ func TestRepository_Course(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			db, mock, stmts := newTestDB()
 			defer db.Close()
 
 			r, err := NewRepository(db)
 			if err != nil {
-				log.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
-
 			prep, ok := stmts[getCourse]
 			if !ok {
-				log.Fatalf("prepared statement %s not found", string(getCourse))
+				t.Fatalf("prepared statement %s not found", string(getCourse))
 			}
 
 			validRows := mock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
