@@ -262,7 +262,7 @@ func TestRepository_UpdateCourse(t *testing.T) {
 			}
 			prep, ok := stmts[updateCourse]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", getCourse)
+				t.Fatalf("prepared statement %s not found", updateCourse)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
