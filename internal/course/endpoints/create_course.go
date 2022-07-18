@@ -16,18 +16,22 @@ import (
 )
 
 type createCourseRequest struct {
-	Title       string `json:"title" validate:"required,max=100"`
-	Subtitle    string `json:"subtitle" validate:"required,max=100"`
+	Name        string `json:"name" validate:"required,max=100"`
+	Underline   string `json:"underline" validate:"required,max=100"`
+	Image       string `json:"image"`
+	ImageCover  string `json:"image_cover"`
 	Excerpt     string `json:"excerpt" validate:"required,max=140"`
 	Description string `json:"description" validate:"required,max=255"`
 }
 
 type createCourseResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Subtitle    string    `json:"subtitle"`
+	Name        string    `json:"name"`
+	Underline   string    `json:"underline"`
+	Image       string    `json:"image,omitempty"`
+	ImageCover  string    `json:"image_cover,omitempty"`
 	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description"`
+	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -65,8 +69,10 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return createCourseResponse{
 			UUID:        c.UUID,
-			Title:       c.Title,
-			Subtitle:    c.Subtitle,
+			Name:        c.Name,
+			Underline:   c.Underline,
+			Image:       c.Image,
+			ImageCover:  c.ImageCover,
 			Excerpt:     c.Excerpt,
 			Description: c.Description,
 			CreatedAt:   c.CreatedAt,

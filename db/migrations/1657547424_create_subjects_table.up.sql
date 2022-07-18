@@ -7,7 +7,7 @@ CREATE TABLE subjects
     id              bigserial       CONSTRAINT subjects_pk PRIMARY KEY,
     uuid            uuid            DEFAULT uuid_generate_v4() NOT NULL,
     code            varchar         NOT NULL UNIQUE,
-    "name"          varchar         NOT NULL,
+    name            varchar         NOT NULL,
     objective       text            NULL,
     credit          decimal         NULL,
     workload        decimal         NULL,

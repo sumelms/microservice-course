@@ -10,8 +10,11 @@ import (
 type Course struct {
 	ID          uint       `json:"id"`
 	UUID        uuid.UUID  `json:"uuid"`
-	Title       string     `json:"title"`
-	Subtitle    string     `json:"subtitle"`
+	Code        string     `json:"code"`
+	Name        string     `json:"name"`
+	Underline   string     `json:"underline"`
+	Image       string     `json:"image"`
+	ImageCover  string     `db:"image_cover" json:"image_cover"`
 	Excerpt     string     `json:"excerpt"`
 	Description string     `json:"description"`
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`

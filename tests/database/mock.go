@@ -1,4 +1,4 @@
-package tests
+package database
 
 import (
 	"log"

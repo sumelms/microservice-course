@@ -22,8 +22,9 @@ type findMatrixRequest struct {
 
 type findMatrixResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
+	Code        string    `json:"code,omitempty"`
+	Name        string    `json:"name"`
+	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	CourseID    uuid.UUID `json:"course_id"`
@@ -52,7 +53,8 @@ func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return &findMatrixResponse{
 			UUID:        m.UUID,
-			Title:       m.Title,
+			Code:        m.Code,
+			Name:        m.Name,
 			Description: m.Description,
 			CreatedAt:   m.CreatedAt,
 			UpdatedAt:   m.UpdatedAt,

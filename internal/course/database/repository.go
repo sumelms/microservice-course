@@ -8,53 +8,88 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// Repository Course struct
-type Repository struct {
-	*sqlx.DB
+func NewRepository(db *sqlx.DB) (repository, error) { // nolint: revive
+	sqlStatements := make(map[string]*sqlx.Stmt)
+
+	for queryName, query := range queries() {
+		stmt, err := db.Preparex(string(query))
+		if err != nil {
+			return repository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+		}
+		sqlStatements[queryName] = stmt
+	}
+
+	return repository{
+		statements: sqlStatements,
+	}, nil
+}
+
+type repository struct {
+	statements map[string]*sqlx.Stmt
 }
 
 // Course get the Course by given id
-func (r *Repository) Course(id uuid.UUID) (domain.Course, error) {
+func (r repository) Course(id uuid.UUID) (domain.Course, error) {
+	stmt, ok := r.statements[getCourse]
+	if !ok {
+		return domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getCourse)
+	}
+
 	var c domain.Course
-	query := `SELECT * FROM courses WHERE deleted_at IS NULL AND uuid = $1`
-	if err := r.Get(&c, query, id); err != nil {
+	if err := stmt.Get(&c, id); err != nil {
 		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
 	return c, nil
 }
 
 // Courses list all courses
-func (r *Repository) Courses() ([]domain.Course, error) {
+func (r repository) Courses() ([]domain.Course, error) {
+	stmt, ok := r.statements[listCourse]
+	if !ok {
+		return []domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listCourse)
+	}
+
 	var cc []domain.Course
-	query := `SELECT * FROM courses WHERE deleted_at IS NULL`
-	if err := r.Select(&cc, query); err != nil {
-		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting courses")
+	if err := stmt.Select(&cc); err != nil {
+		return []domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
 	return cc, nil
 }
 
 // CreateCourse creates a new course
-func (r *Repository) CreateCourse(c *domain.Course) error {
-	query := `INSERT INTO courses (title, subtitle, excerpt, description) VALUES ($1, $2, $3, $4) RETURNING *`
-	if err := r.Get(c, query, c.Title, c.Subtitle, c.Excerpt, c.Description); err != nil {
+func (r repository) CreateCourse(c *domain.Course) error {
+	stmt, ok := r.statements[createCourse]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createCourse)
+	}
+
+	if err := stmt.Get(c, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
 	return nil
 }
 
 // UpdateCourse update the given course
-func (r *Repository) UpdateCourse(c *domain.Course) error {
-	query := `UPDATE courses SET title = $1, subtitle = $2, excerpt = $3, description = $4 WHERE uuid = $5 RETURNING *`
-	if err := r.Get(c, query, c.Title, c.Subtitle, c.Excerpt, c.Description, c.UUID); err != nil {
+func (r repository) UpdateCourse(c *domain.Course) error {
+	stmt, ok := r.statements[updateCourse]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
+	}
+
+	if err := stmt.Get(c, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description, c.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
 	return nil
 }
 
 // DeleteCourse soft delete the course by given id
-func (r *Repository) DeleteCourse(id uuid.UUID) error {
-	query := `UPDATE courses SET deleted_at = NOW() WHERE uuid = $1`
-	if _, err := r.Exec(query, id); err != nil {
+func (r repository) DeleteCourse(id uuid.UUID) error {
+	stmt, ok := r.statements[deleteCourse]
+	if !ok {
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteCourse)
+	}
+
+	if _, err := stmt.Exec(id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil

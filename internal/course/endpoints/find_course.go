@@ -20,10 +20,12 @@ type findCourseRequest struct {
 
 type findCourseResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
-	Title       string    `json:"title"`
-	Subtitle    string    `json:"subtitle"`
+	Name        string    `json:"name"`
+	Underline   string    `json:"underline"`
+	Image       string    `json:"image,omitempty"`
+	ImageCover  string    `json:"image_cover,omitempty"`
 	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description"`
+	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -51,8 +53,10 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return &findCourseResponse{
 			UUID:        c.UUID,
-			Title:       c.Title,
-			Subtitle:    c.Subtitle,
+			Name:        c.Name,
+			Underline:   c.Underline,
+			Image:       c.Image,
+			ImageCover:  c.ImageCover,
 			Excerpt:     c.Excerpt,
 			Description: c.Description,
 		}, nil
