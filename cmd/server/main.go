@@ -69,16 +69,20 @@ func main() {
 
 		// Initializing the services
 		if err := course.NewHTTPService(router, db, httpLogger); err != nil {
-			panic(err) // TODO treat correctly this error
+			logger.Log("msg", "unable to start a service: course", "error", err) // nolint: errcheck
+			return err
 		}
 		if err := matrix.NewHTTPService(router, db, httpLogger); err != nil {
-			panic(err) // TODO treat correctly this error
+			logger.Log("msg", "unable to start a service: matrix", "error", err) // nolint: errcheck
+			return err
 		}
 		if err := subscription.NewHTTPService(router, db, httpLogger); err != nil {
-			panic(err) // TODO treat correctly this error
+			logger.Log("msg", "unable to start a service: subscription", "error", err) // nolint: errcheck
+			return err
 		}
 		if err := subject.NewHTTPService(router, db, httpLogger); err != nil {
-			panic(err) // TODO treat correctly this error
+			logger.Log("msg", "unable to start a service: subject", "error", err) // nolint: errcheck
+			return err
 		}
 
 		// Handle the router
