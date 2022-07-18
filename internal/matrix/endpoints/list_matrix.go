@@ -52,7 +52,7 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			m := matrices[i]
 			list = append(list, findMatrixResponse{
 				UUID:        m.UUID,
-				Name:        m.Title,
+				Name:        m.Name,
 				Description: m.Description,
 				CreatedAt:   m.CreatedAt,
 				UpdatedAt:   m.UpdatedAt,

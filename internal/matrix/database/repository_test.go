@@ -33,7 +33,7 @@ var (
 	emptyRows = sqlmock.NewRows([]string{})
 )
 
-func newTestTB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
 	db, mock := database.NewDBMock()
 
 	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
@@ -84,7 +84,7 @@ func TestRepository_Matrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestTB()
+			db, _, stmts := newTestDB()
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
@@ -142,7 +142,7 @@ func TestRepository_Matrices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestTB()
+			db, _, stmts := newTestDB()
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
@@ -198,7 +198,7 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestTB()
+			db, _, stmts := newTestDB()
 			r, err := NewRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected creating the repository", err)
