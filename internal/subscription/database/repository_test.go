@@ -1,7 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
 	"testing"
 	"time"
 
@@ -10,44 +12,54 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	mtests "github.com/sumelms/microservice-course/tests/database"
+	"github.com/sumelms/microservice-course/tests/database"
 )
 
-var now = time.Now()
-
-func newTestSubscription() domain.Subscription {
-	return domain.Subscription{
+var (
+	now              = time.Now()
+	subscriptionUUID = uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc")
+	userUUID         = uuid.MustParse("ef2bc01e-be93-4a1f-9e96-c78d3d432088")
+	courseUUID       = uuid.MustParse("e8276e31-9a87-4cf1-a16c-080f9c5790d1")
+	matrixUUID       = uuid.MustParse("0ac0fe6f-4f34-468d-84f9-9e4fc56b0135")
+	subscription     = domain.Subscription{
 		ID:         1,
-		UUID:       uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc"),
-		UserID:     uuid.MustParse("ef2bc01e-be93-4a1f-9e96-c78d3d432088"),
-		CourseID:   uuid.MustParse("e8276e31-9a87-4cf1-a16c-080f9c5790d1"),
-		MatrixID:   uuid.MustParse("0ac0fe6f-4f34-468d-84f9-9e4fc56b0135"),
+		UUID:       subscriptionUUID,
+		UserID:     userUUID,
+		CourseID:   courseUUID,
+		MatrixID:   matrixUUID,
 		ValidUntil: &now,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 		DeletedAt:  nil,
 	}
+	emptyRows = sqlmock.NewRows([]string{})
+)
+
+func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+	db, mock := database.NewDBMock()
+
+	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
+	for queryName, query := range queries() {
+		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
+		sqlStatements[queryName] = stmt
+	}
+
+	mock.MatchExpectationsInOrder(false)
+	return db, mock, sqlStatements
 }
 
 func TestRepository_Subscription(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-
-	s := newTestSubscription()
-	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
 		"valid_until", "created_at", "updated_at", "deleted_at"}).
-		AddRow(s.ID, s.UUID, s.UserID, s.CourseID, s.MatrixID,
-			s.ValidUntil, s.CreatedAt, s.UpdatedAt, s.DeletedAt)
+		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+			subscription.ValidUntil, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
 
-	type fields struct {
-		DB *sqlx.DB
-	}
 	type args struct {
 		id uuid.UUID
 	}
 
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		rows    *sqlmock.Rows
 		want    domain.Subscription
@@ -55,17 +67,15 @@ func TestRepository_Subscription(t *testing.T) {
 	}{
 		{
 			name:    "get subscription",
-			fields:  fields{DB: db},
-			args:    args{id: s.UUID},
-			rows:    rows,
-			want:    s,
+			args:    args{id: subscriptionUUID},
+			rows:    validRows,
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "course not found error",
-			fields:  fields{DB: db},
 			args:    args{id: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
-			rows:    rows,
+			rows:    emptyRows,
 			want:    domain.Subscription{},
 			wantErr: true,
 		},
@@ -76,13 +86,17 @@ func TestRepository_Subscription(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			db, _, stmts := newTestDB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected creating the repository", err)
+			}
+			prep, ok := stmts[getSubscription]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", getSubscription)
+			}
 
-			query := "SELECT \\* FROM subscriptions WHERE deleted_at IS NULL AND uuid = \\$1"
-			mock.ExpectQuery(query).WithArgs(tt.args.id).WillReturnRows(tt.rows)
+			prep.ExpectQuery().WithArgs(subscriptionUUID).WillReturnRows(tt.rows)
 
 			got, err := r.Subscription(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -97,38 +111,29 @@ func TestRepository_Subscription(t *testing.T) {
 }
 
 func TestRepository_Subscriptions(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-	s := newTestSubscription()
-
-	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id", "valid_until",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id", "valid_until",
 		"created_at", "updated_at", "deleted_at"}).
-		AddRow(s.ID, s.UUID, s.UserID, s.CourseID, s.MatrixID, s.ValidUntil,
-			s.CreatedAt, s.UpdatedAt, s.DeletedAt).
-		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), s.UserID,
-			s.CourseID, s.MatrixID, s.ValidUntil, s.CreatedAt, s.UpdatedAt, s.DeletedAt)
-
-	type fields struct {
-		DB *sqlx.DB
-	}
+		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+			subscription.ValidUntil, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt).
+		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), subscription.UserID,
+			subscription.CourseID, subscription.MatrixID, subscription.ValidUntil, subscription.CreatedAt,
+			subscription.UpdatedAt, subscription.DeletedAt)
 
 	tests := []struct {
 		name    string
-		fields  fields
 		rows    *sqlmock.Rows
 		wantLen int
 		wantErr bool
 	}{
 		{
 			name:    "get all subscriptions",
-			fields:  fields{DB: db},
-			rows:    rows,
+			rows:    validRows,
 			wantLen: 2,
 			wantErr: false,
 		},
 		{
 			name:    "get no subscriptions",
-			fields:  fields{DB: db},
-			rows:    nil,
+			rows:    emptyRows,
 			wantLen: 0,
 			wantErr: false,
 		},
@@ -139,13 +144,17 @@ func TestRepository_Subscriptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			db, _, stmts := newTestDB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected creating the repository", err)
+			}
+			prep, ok := stmts[listSubscription]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", listSubscription)
+			}
 
-			query := "SELECT \\* FROM subscriptions WHERE deleted_at IS NULL"
-			mock.ExpectQuery(query).WillReturnRows(rows)
+			prep.ExpectQuery().WillReturnRows(tt.rows)
 
 			got, err := r.Subscriptions()
 			if (err != nil) != tt.wantErr {
@@ -160,40 +169,31 @@ func TestRepository_Subscriptions(t *testing.T) {
 }
 
 func TestRepository_CreateSubscription(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-
-	s := newTestSubscription()
-	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
 		"valid_until", "created_at", "updated_at", "deleted_at"}).
-		AddRow(s.ID, s.UUID, s.UserID, s.CourseID, s.MatrixID,
-			s.ValidUntil, s.CreatedAt, s.UpdatedAt, s.DeletedAt)
+		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+			subscription.ValidUntil, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
 
-	type fields struct {
-		DB *sqlx.DB
-	}
 	type args struct {
-		c *domain.Subscription
+		s *domain.Subscription
 	}
 
 	tests := []struct {
 		name    string
-		fields  fields
 		rows    *sqlmock.Rows
 		args    args
 		wantErr bool
 	}{
 		{
 			name:    "create subscription",
-			fields:  fields{DB: db},
-			rows:    rows,
-			args:    args{c: &s},
+			rows:    validRows,
+			args:    args{s: &subscription},
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
-			fields:  fields{DB: db},
-			rows:    nil,
-			args:    args{c: &s},
+			rows:    emptyRows,
+			args:    args{s: &subscription},
 			wantErr: true,
 		},
 	}
@@ -203,15 +203,19 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			db, _, stmts := newTestDB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+			}
+			prep, ok := stmts[createSubscription]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", createSubscription)
+			}
 
-			query := "INSERT INTO subscriptions \\(course_id, matrix_id, user_id, valid_until\\) VALUES \\(\\$1, \\$2, \\$3, \\$4\\) RETURNING \\*"
-			mock.ExpectQuery(query).WithArgs(s.CourseID, s.MatrixID, s.UserID, s.ValidUntil).WillReturnRows(rows)
+			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.CreateSubscription(tt.args.c); (err != nil) != tt.wantErr {
+			if err := r.CreateSubscription(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -219,19 +223,16 @@ func TestRepository_CreateSubscription(t *testing.T) {
 }
 
 func TestRepository_UpdateSubscription(t *testing.T) {
-	db, mock := mtests.NewDBMock()
-
-	s := newTestSubscription()
-	rows := mock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
+	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
 		"valid_until", "created_at", "updated_at", "deleted_at"}).
-		AddRow(s.ID, s.UUID, s.UserID, s.CourseID, s.MatrixID,
-			s.ValidUntil, s.CreatedAt, s.UpdatedAt, s.DeletedAt)
+		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+			subscription.ValidUntil, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
 
 	type fields struct {
 		DB *sqlx.DB
 	}
 	type args struct {
-		c *domain.Subscription
+		s *domain.Subscription
 	}
 	tests := []struct {
 		name    string
@@ -242,31 +243,34 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 	}{
 		{
 			name:    "update course",
-			fields:  fields{DB: db},
-			args:    args{c: &s},
-			rows:    rows,
+			args:    args{s: &subscription},
+			rows:    validRows,
 			wantErr: false,
 		},
 		{
 			name:    "empty course",
-			fields:  fields{DB: db},
-			args:    args{c: &domain.Subscription{}},
-			rows:    nil,
+			args:    args{s: &domain.Subscription{}},
+			rows:    emptyRows,
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &Repository{DB: tt.fields.DB}
-			defer func() {
-				_ = r.Close()
-			}()
+			t.Parallel()
 
-			// nolint: lll
-			query := `UPDATE subscriptions SET user_id = \\$1, course_id = \\$2, matrix_id = \\$3, valid_until = \\$4 WHERE uuid = \\$5 RETURNING \\*`
-			mock.ExpectQuery(query).WithArgs(s.UserID, s.CourseID, s.MatrixID, s.ValidUntil, s.UUID).WillReturnRows(rows)
+			db, _, stmts := newTestDB()
+			r, err := NewRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+			}
+			prep, ok := stmts[updateSubscription]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", updateSubscription)
+			}
 
-			if err := r.UpdateSubscription(tt.args.c); (err != nil) != tt.wantErr {
+			prep.ExpectQuery().WillReturnRows(tt.rows)
+
+			if err := r.UpdateSubscription(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
