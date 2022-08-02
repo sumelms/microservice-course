@@ -42,12 +42,11 @@ type createCourseResponse struct {
 // @Tags         course
 // @Accept       json
 // @Produce      json
-// @Param        val1  query      int     true  "used for calc"
-// @Param        val2  query      int     true  "used for calc"
-// @Success      200   {integer}  string  "answer"
-// @Failure      400   {string}   string  "ok"
-// @Failure      404   {string}   string  "ok"
-// @Failure      500   {string}   string  "ok"
+// @Param        course	  body		createCourseRequest		true	"Add Course"
+// @Success      200      {object}  createCourseResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
 // @Router       /courses [post]
 func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
