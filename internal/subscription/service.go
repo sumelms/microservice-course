@@ -7,7 +7,7 @@ import (
 
 	"github.com/sumelms/microservice-course/internal/subscription/database"
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	clientService "github.com/sumelms/microservice-course/internal/subscription/service"
+	courseService "github.com/sumelms/microservice-course/internal/subscription/services/course"
 	"github.com/sumelms/microservice-course/internal/subscription/transport"
 )
 
@@ -25,9 +25,20 @@ func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	courseSvc, err := clientService.NewCourseSvc(db, logger)
+
+	courseSvc, err := courseService.NewCourseService(db)
+	if err != nil {
+		logger.Log("subscription", "service", err, "msg", "unable to create service") // nolint: errcheck
+		return nil, err
+	}
+
+	svc, err := domain.NewService(
+		domain.WithRepository(repository),
+		domain.WithLogger(logger),
+		domain.WithCourseService(courseSvc),
+	)
 	if err != nil {
 		return nil, err
 	}
-	return domain.NewService(repository, courseSvc, logger), nil
+	return svc, nil
 }

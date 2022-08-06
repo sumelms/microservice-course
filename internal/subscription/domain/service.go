@@ -20,17 +20,43 @@ type CourseService interface {
 	ExistCourse(context.Context, uuid.UUID) error
 }
 
+type ServiceConfiguration func(svc *Service) error
+
 type Service struct {
-	repo       Repository
-	coursesSvc CourseService
-	logger     log.Logger
+	repo   Repository
+	course CourseService
+	logger log.Logger
 }
 
-func NewService(repo Repository, courseSvc CourseService, logger log.Logger) *Service {
-	return &Service{
-		repo:       repo,
-		logger:     logger,
-		coursesSvc: courseSvc,
+func NewService(cfgs ...ServiceConfiguration) (*Service, error) {
+	svc := &Service{}
+	for _, cfg := range cfgs {
+		err := cfg(svc)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return svc, nil
+}
+
+func WithRepository(r Repository) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.repo = r
+		return nil
+	}
+}
+
+func WithLogger(l log.Logger) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.logger = l
+		return nil
+	}
+}
+
+func WithCourseService(cs CourseService) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.course = cs
+		return nil
 	}
 }
 
@@ -43,7 +69,7 @@ func (s *Service) Subscriptions(_ context.Context) ([]Subscription, error) {
 }
 
 func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) error {
-	if err := s.coursesSvc.ExistCourse(ctx, sub.CourseID); err != nil {
+	if err := s.course.ExistCourse(ctx, sub.CourseID); err != nil {
 		return fmt.Errorf("error checking if course %s exists: %w", sub.CourseID, err)
 	}
 	if err := s.repo.CreateSubscription(sub); err != nil {
