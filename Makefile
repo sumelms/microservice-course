@@ -68,6 +68,9 @@ migrations-down: ## Revert the migrations
 migrations-create: ## Create a new migration
 	go run cmd/migration/main.go create $(args)
 
+.PHONY: swagger
+swagger: ## Generate Swagger Documentation
+	swag init -g swagger.go -d ./internal -o ./swagger
 
 ## --------------------------------------
 ## Linting

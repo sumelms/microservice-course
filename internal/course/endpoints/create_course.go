@@ -36,6 +36,18 @@ type createCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// NewCreateCourseHandler creates new course handler
+// @Summary      Create course
+// @Description  Create a new course
+// @Tags         course
+// @Accept       json
+// @Produce      json
+// @Param        course	  body		createCourseRequest		true	"Add Course"
+// @Success      200      {object}  createCourseResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /courses [post]
 func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateCourseEndpoint(s),
