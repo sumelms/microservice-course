@@ -11,14 +11,14 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type deleteSubscriptionRequest struct {
 	ID uuid.UUID `json:"id" validate:"required"`
 }
 
-func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewDeleteSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteSubscriptionEndpoint(s),
 		decodeDeleteSubscriptionRequest,
@@ -27,7 +27,7 @@ func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Ser
 	)
 }
 
-func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeDeleteSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(deleteSubscriptionRequest)
 		if !ok {

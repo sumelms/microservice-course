@@ -48,7 +48,7 @@ type createCourseResponse struct {
 // @Failure      404      {object}  error
 // @Failure      500      {object}  error
 // @Router       /courses [post]
-func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewCreateCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateCourseEndpoint(s),
 		decodeCreateCourseRequest,
@@ -57,7 +57,7 @@ func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 	)
 }
 
-func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeCreateCourseEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createCourseRequest)
 		if !ok {

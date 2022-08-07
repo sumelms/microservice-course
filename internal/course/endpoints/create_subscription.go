@@ -14,13 +14,13 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type createSubscriptionRequest struct {
 	UserID     uuid.UUID  `json:"user_id" validate:"required"`
 	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
-	MatrixID   uuid.UUID  `json:"matrix_id" validate:"required"`
+	MatrixID   *uuid.UUID `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
@@ -28,11 +28,11 @@ type createSubscriptionResponse struct {
 	UUID       uuid.UUID  `json:"uuid"`
 	UserID     uuid.UUID  `json:"user_id"`
 	CourseID   uuid.UUID  `json:"course_id"`
-	MatrixID   uuid.UUID  `json:"matrix_id"`
+	MatrixID   *uuid.UUID `json:"matrix_id,omitempty"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
-func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewCreateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateSubscriptionEndpoint(s),
 		decodeCreateSubscriptionRequest,
@@ -41,7 +41,7 @@ func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Ser
 	)
 }
 
-func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeCreateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createSubscriptionRequest)
 		if !ok {

@@ -9,7 +9,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type listSubscriptionRequest struct {
@@ -21,7 +21,7 @@ type listSubscriptionResponse struct {
 	Subscriptions []findSubscriptionResponse `json:"subscriptions"`
 }
 
-func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListSubscriptionEndpoint(s),
 		decodeListSubscriptionRequest,
@@ -30,7 +30,7 @@ func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Serve
 	)
 }
 
-func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeListSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(listSubscriptionRequest)
 		if !ok {
@@ -46,7 +46,7 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		// @TODO Implement filters to service
-		subscriptions, err := s.Subscriptions(ctx)
+		subscriptions, err := s.Service(ctx)
 		if err != nil {
 			return nil, err
 		}

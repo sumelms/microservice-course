@@ -1,51 +1,32 @@
 package database
 
 import (
-	"fmt"
 	"reflect"
-	"regexp"
 	"testing"
-	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
-	"github.com/sumelms/microservice-course/tests/database"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 var (
-	now              = time.Now()
-	subscriptionUUID = uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc")
-	userUUID         = uuid.MustParse("ef2bc01e-be93-4a1f-9e96-c78d3d432088")
-	courseUUID       = uuid.MustParse("e8276e31-9a87-4cf1-a16c-080f9c5790d1")
-	matrixUUID       = uuid.MustParse("0ac0fe6f-4f34-468d-84f9-9e4fc56b0135")
-	subscription     = domain.Subscription{
+	subscription = domain.Subscription{
 		ID:         1,
 		UUID:       subscriptionUUID,
 		UserID:     userUUID,
 		CourseID:   courseUUID,
-		MatrixID:   matrixUUID,
+		MatrixID:   &matrixUUID,
 		ValidUntil: &now,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 		DeletedAt:  nil,
 	}
-	emptyRows = sqlmock.NewRows([]string{})
 )
 
-func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	db, mock := database.NewDBMock()
-
-	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
-	for queryName, query := range queries() {
-		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
-		sqlStatements[queryName] = stmt
-	}
-
-	mock.MatchExpectationsInOrder(false)
-	return db, mock, sqlStatements
+func newSubscriptionTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+	return newTestDB(subscriptionQueries())
 }
 
 func TestRepository_Subscription(t *testing.T) {
@@ -86,8 +67,8 @@ func TestRepository_Subscription(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newSubscriptionTestDB()
+			r, err := NewSubscriptionRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected creating the repository", err)
 			}
@@ -144,8 +125,8 @@ func TestRepository_Subscriptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newSubscriptionTestDB()
+			r, err := NewSubscriptionRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected creating the repository", err)
 			}
@@ -203,8 +184,8 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newSubscriptionTestDB()
+			r, err := NewSubscriptionRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}
@@ -258,8 +239,8 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newSubscriptionTestDB()
+			r, err := NewSubscriptionRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the repository", err)
 			}

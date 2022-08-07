@@ -15,7 +15,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type updateSubscriptionRequest struct {
@@ -36,7 +36,7 @@ type updateSubscriptionResponse struct {
 	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
-func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubscriptionEndpoint(s),
 		decodeUpdateSubscriptionRequest,
@@ -45,7 +45,7 @@ func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Ser
 	)
 }
 
-func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeUpdateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateSubscriptionRequest)
 		if !ok {

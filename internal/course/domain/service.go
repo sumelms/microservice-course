@@ -2,65 +2,63 @@ package domain
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
 )
 
-type ServiceInterface interface {
-	Course(context.Context, uuid.UUID) (Course, error)
-	Courses(context.Context) ([]Course, error)
-	CreateCourse(context.Context, *Course) error
-	UpdateCourse(context.Context, *Course) error
-	DeleteCourse(context.Context, uuid.UUID) error
+// Service defines the domains service interface
+type Service interface {
+	Course(ctx context.Context, courseID uuid.UUID) (Course, error)
+	Courses(ctx context.Context) ([]Course, error)
+	CreateCourse(ctx context.Context, c *Course) error
+	UpdateCourse(ctx context.Context, c *Course) error
+	DeleteCourse(ctx context.Context, courseID uuid.UUID) error
+
+	SubscribeCourse(ctx context.Context, cs *Subscription) error
+	UnsubscribeCourse(ctx context.Context, courseID uuid.UUID, userID uuid.UUID) error
 }
 
-type Service struct {
-	repo   Repository
-	logger log.Logger
+type serviceConfiguration func(svc *service) error
+
+type service struct {
+	courses       CourseRepository
+	subscriptions SubscriptionRepository
+	logger        log.Logger
 }
 
-func NewService(repo Repository, logger log.Logger) *Service {
-	return &Service{
-		repo:   repo,
-		logger: logger,
+// NewService creates a new domain service instance
+func NewService(cfgs ...serviceConfiguration) (*service, error) {
+	svc := &service{}
+	for _, cfg := range cfgs {
+		err := cfg(svc)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return svc, nil
+}
+
+// WithCourseRepository injects the course repository to the domain service
+func WithCourseRepository(cr CourseRepository) serviceConfiguration {
+	return func(svc *service) error {
+		svc.courses = cr
+		return nil
 	}
 }
 
-func (s *Service) Course(_ context.Context, id uuid.UUID) (Course, error) {
-	c, err := s.repo.Course(id)
-	if err != nil {
-		return Course{}, fmt.Errorf("service can't find course: %w", err)
+// WithSubscriptionRepository injects the subscription repository to the domain service
+func WithSubscriptionRepository(sr SubscriptionRepository) serviceConfiguration {
+	return func(svc *service) error {
+		svc.subscriptions = sr
+		return nil
 	}
-	return c, nil
 }
 
-func (s *Service) Courses(_ context.Context) ([]Course, error) {
-	cc, err := s.repo.Courses()
-	if err != nil {
-		return []Course{}, fmt.Errorf("service didn't found any course: %w", err)
+// WithLogger injects the logger to the domain service
+func WithLogger(l log.Logger) serviceConfiguration {
+	return func(svc *service) error {
+		svc.logger = l
+		return nil
 	}
-	return cc, nil
-}
-
-func (s *Service) CreateCourse(_ context.Context, c *Course) error {
-	if err := s.repo.CreateCourse(c); err != nil {
-		return fmt.Errorf("service can't create course: %w", err)
-	}
-	return nil
-}
-
-func (s *Service) UpdateCourse(_ context.Context, c *Course) error {
-	if err := s.repo.UpdateCourse(c); err != nil {
-		return fmt.Errorf("service can't update course: %w", err)
-	}
-	return nil
-}
-
-func (s *Service) DeleteCourse(_ context.Context, id uuid.UUID) error {
-	if err := s.repo.DeleteCourse(id); err != nil {
-		return fmt.Errorf("service can't delete course: %w", err)
-	}
-	return nil
 }

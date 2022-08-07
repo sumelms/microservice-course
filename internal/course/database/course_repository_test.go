@@ -1,24 +1,18 @@
 package database
 
 import (
-	"fmt"
 	"reflect"
-	"regexp"
 	"testing"
-	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	"github.com/sumelms/microservice-course/tests/database"
 )
 
 var (
-	now        = time.Now()
-	courseUUID = uuid.MustParse("dd7c915b-849a-4ba4-bc09-aeecd95c40cc")
-	course     = domain.Course{
+	course = domain.Course{
 		ID:          1,
 		UUID:        courseUUID,
 		Code:        "SUME123",
@@ -32,20 +26,10 @@ var (
 		UpdatedAt:   now,
 		DeletedAt:   nil,
 	}
-	emptyRows = sqlmock.NewRows([]string{})
 )
 
-func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	db, mock := database.NewDBMock()
-
-	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
-	for queryName, query := range queries() {
-		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
-		sqlStatements[queryName] = stmt
-	}
-
-	mock.MatchExpectationsInOrder(false)
-	return db, mock, sqlStatements
+func newCourseTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+	return newTestDB(courseQueries())
 }
 
 func TestRepository_Course(t *testing.T) {
@@ -86,10 +70,10 @@ func TestRepository_Course(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newCourseTestDB()
+			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
 			}
 			prep, ok := stmts[getCourse]
 			if !ok {
@@ -143,10 +127,10 @@ func TestRepository_Courses(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newCourseTestDB()
+			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
 			}
 			prep, ok := stmts[listCourse]
 			if !ok {
@@ -202,10 +186,10 @@ func TestRepository_CreateCourse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newCourseTestDB()
+			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
 			}
 			prep, ok := stmts[createCourse]
 			if !ok {
@@ -255,10 +239,10 @@ func TestRepository_UpdateCourse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
-			r, err := NewRepository(db)
+			db, _, stmts := newCourseTestDB()
+			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
 			}
 			prep, ok := stmts[updateCourse]
 			if !ok {

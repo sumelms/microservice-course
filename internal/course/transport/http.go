@@ -14,11 +14,13 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger) {
+func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(kittransport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(errors.EncodeError),
 	}
+
+	// Course handlers
 
 	listCourseHandler := endpoints.NewListCourseHandler(s, opts...)
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
@@ -31,4 +33,18 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	r.Handle("/courses/{uuid}", findCourseHandler).Methods(http.MethodGet)
 	r.Handle("/courses/{uuid}", updateCourseHandler).Methods(http.MethodPut)
 	r.Handle("/courses/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
+
+	// Subscription handlers
+
+	listSubscriptionHandler := endpoints.NewListSubscriptionHandler(s, opts...)
+	createSubscriptionHandler := endpoints.NewCreateSubscriptionHandler(s, opts...)
+	findSubscriptionHandler := endpoints.NewFindSubscriptionHandler(s, opts...)
+	deleteSubscriptionHandler := endpoints.NewDeleteSubscriptionHandler(s, opts...)
+	updateSubscriptionHandler := endpoints.NewUpdateSubscriptionHandler(s, opts...)
+
+	r.Handle("/subscriptions", listSubscriptionHandler).Methods(http.MethodGet)
+	r.Handle("/subscriptions", createSubscriptionHandler).Methods(http.MethodPost)
+	r.Handle("/subscriptions/{id}", findSubscriptionHandler).Methods(http.MethodGet)
+	r.Handle("/subscriptions/{id}", deleteSubscriptionHandler).Methods(http.MethodDelete)
+	r.Handle("/subscriptions/{id}", updateSubscriptionHandler).Methods(http.MethodPut)
 }

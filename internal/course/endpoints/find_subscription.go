@@ -13,7 +13,7 @@ import (
 
 	kithttp "github.com/go-kit/kit/transport/http"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
 type findSubscriptionRequest struct {
@@ -30,7 +30,7 @@ type findSubscriptionResponse struct {
 	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
-func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubscriptionEndpoint(s),
 		decodeFindSubscriptionRequest,
@@ -39,7 +39,7 @@ func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Serve
 	)
 }
 
-func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeFindSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findSubscriptionRequest)
 		if !ok {

@@ -8,28 +8,28 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-func NewRepository(db *sqlx.DB) (repository, error) { // nolint: revive
+func NewCourseRepository(db *sqlx.DB) (courseRepository, error) { // nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
-	for queryName, query := range queries() {
+	for queryName, query := range courseQueries() {
 		stmt, err := db.Preparex(string(query))
 		if err != nil {
-			return repository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+			return courseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}
 
-	return repository{
+	return courseRepository{
 		statements: sqlStatements,
 	}, nil
 }
 
-type repository struct {
+type courseRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
 // Course get the Course by given id
-func (r repository) Course(id uuid.UUID) (domain.Course, error) {
+func (r courseRepository) Course(id uuid.UUID) (domain.Course, error) {
 	stmt, ok := r.statements[getCourse]
 	if !ok {
 		return domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getCourse)
@@ -43,7 +43,7 @@ func (r repository) Course(id uuid.UUID) (domain.Course, error) {
 }
 
 // Courses list all courses
-func (r repository) Courses() ([]domain.Course, error) {
+func (r courseRepository) Courses() ([]domain.Course, error) {
 	stmt, ok := r.statements[listCourse]
 	if !ok {
 		return []domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listCourse)
@@ -57,7 +57,7 @@ func (r repository) Courses() ([]domain.Course, error) {
 }
 
 // CreateCourse creates a new course
-func (r repository) CreateCourse(c *domain.Course) error {
+func (r courseRepository) CreateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[createCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createCourse)
@@ -70,7 +70,7 @@ func (r repository) CreateCourse(c *domain.Course) error {
 }
 
 // UpdateCourse update the given course
-func (r repository) UpdateCourse(c *domain.Course) error {
+func (r courseRepository) UpdateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[updateCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
@@ -83,7 +83,7 @@ func (r repository) UpdateCourse(c *domain.Course) error {
 }
 
 // DeleteCourse soft delete the course by given id
-func (r repository) DeleteCourse(id uuid.UUID) error {
+func (r courseRepository) DeleteCourse(id uuid.UUID) error {
 	stmt, ok := r.statements[deleteCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteCourse)

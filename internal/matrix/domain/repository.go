@@ -8,7 +8,6 @@ type Repository interface {
 	CreateMatrix(matrix *Matrix) error
 	UpdateMatrix(matrix *Matrix) error
 	DeleteMatrix(id uuid.UUID) error
-	// @TODO Can I make these two methods as an separated interface?
 	AddSubject(matrixID, subjectID uuid.UUID) error
 	RemoveSubject(matrixID, subjectID uuid.UUID) error
 }

@@ -4,32 +4,32 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// NewRepository creates the subscription repository
-func NewRepository(db *sqlx.DB) (repository, error) { // nolint: revive
+// NewSubscriptionRepository creates the subscription subscriptionRepository
+func NewSubscriptionRepository(db *sqlx.DB) (subscriptionRepository, error) { // nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
-	for queryName, query := range queries() {
+	for queryName, query := range subscriptionQueries() {
 		stmt, err := db.Preparex(string(query))
 		if err != nil {
-			return repository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+			return subscriptionRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}
 
-	return repository{
+	return subscriptionRepository{
 		statements: sqlStatements,
 	}, nil
 }
 
-type repository struct {
+type subscriptionRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-func (r repository) Subscription(id uuid.UUID) (domain.Subscription, error) {
+func (r subscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription, error) {
 	stmt, ok := r.statements[getSubscription]
 	if !ok {
 		return domain.Subscription{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubscription)
@@ -42,7 +42,7 @@ func (r repository) Subscription(id uuid.UUID) (domain.Subscription, error) {
 	return sub, nil
 }
 
-func (r repository) Subscriptions() ([]domain.Subscription, error) {
+func (r subscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
 	stmt, ok := r.statements[listSubscription]
 	if !ok {
 		return []domain.Subscription{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubscription)
@@ -55,7 +55,7 @@ func (r repository) Subscriptions() ([]domain.Subscription, error) {
 	return subs, nil
 }
 
-func (r repository) CreateSubscription(s *domain.Subscription) error {
+func (r subscriptionRepository) CreateSubscription(s *domain.Subscription) error {
 	stmt, ok := r.statements[createSubscription]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createSubscription)
@@ -67,7 +67,7 @@ func (r repository) CreateSubscription(s *domain.Subscription) error {
 	return nil
 }
 
-func (r repository) UpdateSubscription(sub *domain.Subscription) error {
+func (r subscriptionRepository) UpdateSubscription(sub *domain.Subscription) error {
 	stmt, ok := r.statements[updateSubscription]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateSubscription)
@@ -79,7 +79,7 @@ func (r repository) UpdateSubscription(sub *domain.Subscription) error {
 	return nil
 }
 
-func (r repository) DeleteSubscription(id uuid.UUID) error {
+func (r subscriptionRepository) DeleteSubscription(id uuid.UUID) error {
 	stmt, ok := r.statements[deleteSubscription]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteSubscription)

@@ -1,10 +1,8 @@
 package domain
 
-import (
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 
-type Repository interface {
+type SubscriptionRepository interface {
 	Subscription(uuid.UUID) (Subscription, error)
 	Subscriptions() ([]Subscription, error)
 	CreateSubscription(*Subscription) error
