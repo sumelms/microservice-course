@@ -23,7 +23,11 @@ func (s *Service) Matrices(_ context.Context) ([]Matrix, error) {
 	return mm, nil
 }
 
-func (s *Service) CreateMatrix(_ context.Context, m *Matrix) error {
+func (s *Service) CreateMatrix(ctx context.Context, m *Matrix) error {
+	err := s.courses.CourseExists(ctx, m.CourseID)
+	if err != nil {
+		return fmt.Errorf("service can't create: %w", err)
+	}
 	if err := s.matrices.CreateMatrix(m); err != nil {
 		return fmt.Errorf("service can't create matrix: %w", err)
 	}
