@@ -10,7 +10,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/transport"
 )
 
-func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
+func NewService(db *sqlx.DB, logger log.Logger, course domain.CourseClient) (*domain.Service, error) {
 	matrix, err := database.NewMatrixRepository(db)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,8 @@ func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
 	service, err := domain.NewService(
 		domain.WithLogger(logger),
 		domain.WithMatrixRepository(matrix),
-		domain.WithSubjectRepository(subject))
+		domain.WithSubjectRepository(subject),
+		domain.WithCourseClient(course))
 	if err != nil {
 		return nil, err
 	}

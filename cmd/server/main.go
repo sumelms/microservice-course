@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/sumelms/microservice-course/internal/matrix"
+	"github.com/sumelms/microservice-course/internal/matrix/clients"
 
 	"github.com/sumelms/microservice-course/internal/course"
 
@@ -67,7 +68,7 @@ func main() {
 		logger.Log("msg", "unable to start course service", err) // nolint: errcheck
 		os.Exit(1)
 	}
-	matrixSvc, err := matrix.NewService(db, svcLogger)
+	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
 	if err != nil {
 		logger.Log("msg", "unable to start matrix service", err) // nolint: errcheck
 		os.Exit(1)

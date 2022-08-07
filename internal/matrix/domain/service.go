@@ -28,6 +28,7 @@ type serviceConfiguration func(svc *Service) error
 type Service struct {
 	matrices MatrixRepository
 	subjects SubjectRepository
+	courses  CourseClient
 	logger   log.Logger
 }
 
@@ -63,6 +64,13 @@ func WithSubjectRepository(sr SubjectRepository) serviceConfiguration {
 func WithLogger(l log.Logger) serviceConfiguration {
 	return func(svc *Service) error {
 		svc.logger = l
+		return nil
+	}
+}
+
+func WithCourseClient(c CourseClient) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.courses = c
 		return nil
 	}
 }
