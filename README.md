@@ -58,7 +58,7 @@ and scalability to your learning environment.
 Clone the repository
 
 ```bash
-$ git clone [git@github.com](mailto:git@github.com):sumelms/microservice-course.git
+$ git clone git@github.com:sumelms/microservice-course.git
 ```
 
 Access the project folder, and download the Go dependencies
