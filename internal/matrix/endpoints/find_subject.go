@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/sumelms/microservice-course/internal/subject/domain"
+	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
 type findSubjectRequest struct {
