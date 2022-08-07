@@ -9,12 +9,13 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	utils "github.com/sumelms/microservice-course/tests"
 )
 
 var (
 	course = domain.Course{
 		ID:          1,
-		UUID:        courseUUID,
+		UUID:        utils.CourseUUID,
 		Code:        "SUME123",
 		Name:        "Course Name",
 		Underline:   "Course Underline",
@@ -22,14 +23,14 @@ var (
 		ImageCover:  "image_cover.png",
 		Excerpt:     "Course Excerpt",
 		Description: "Course Description",
-		CreatedAt:   now,
-		UpdatedAt:   now,
+		CreatedAt:   utils.Now,
+		UpdatedAt:   utils.Now,
 		DeletedAt:   nil,
 	}
 )
 
 func newCourseTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	return newTestDB(queriesCourse())
+	return utils.NewTestDB(queriesCourse())
 }
 
 func TestRepository_Course(t *testing.T) {
@@ -59,7 +60,7 @@ func TestRepository_Course(t *testing.T) {
 		{
 			name:    "course not found error",
 			args:    args{id: uuid.MustParse("6cd7a01c-ff18-4cfb-9b35-16e710115c5f")},
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			want:    domain.Course{},
 			wantErr: true,
 		},
@@ -80,7 +81,7 @@ func TestRepository_Course(t *testing.T) {
 				t.Fatalf("prepared statement %s not found", getCourse)
 			}
 
-			prep.ExpectQuery().WithArgs(courseUUID).WillReturnRows(validRows)
+			prep.ExpectQuery().WithArgs(utils.CourseUUID).WillReturnRows(validRows)
 
 			got, err := r.Course(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -116,7 +117,7 @@ func TestRepository_Courses(t *testing.T) {
 		},
 		{
 			name:    "get no courses",
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			wantLen: 0,
 			wantErr: false,
 		},
@@ -175,7 +176,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 		},
 		{
 			name:    "empty fields",
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			args:    args{c: &course},
 			wantErr: true,
 		},
@@ -230,7 +231,7 @@ func TestRepository_UpdateCourse(t *testing.T) {
 		{
 			name:    "empty course",
 			args:    args{c: &domain.Course{}},
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			wantErr: true,
 		},
 	}

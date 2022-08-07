@@ -9,24 +9,25 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	utils "github.com/sumelms/microservice-course/tests"
 )
 
 var (
 	subscription = domain.Subscription{
 		ID:         1,
-		UUID:       subscriptionUUID,
-		UserID:     userUUID,
-		CourseID:   courseUUID,
-		MatrixID:   &matrixUUID,
-		ValidUntil: &now,
-		CreatedAt:  now,
-		UpdatedAt:  now,
+		UUID:       utils.SubscriptionUUID,
+		UserID:     utils.UserUUID,
+		CourseID:   utils.CourseUUID,
+		MatrixID:   &utils.MatrixUUID,
+		ValidUntil: &utils.Now,
+		CreatedAt:  utils.Now,
+		UpdatedAt:  utils.Now,
 		DeletedAt:  nil,
 	}
 )
 
 func newSubscriptionTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	return newTestDB(queriesSubscription())
+	return utils.NewTestDB(queriesSubscription())
 }
 
 func TestRepository_Subscription(t *testing.T) {
@@ -48,7 +49,7 @@ func TestRepository_Subscription(t *testing.T) {
 	}{
 		{
 			name:    "get subscription",
-			args:    args{id: subscriptionUUID},
+			args:    args{id: utils.SubscriptionUUID},
 			rows:    validRows,
 			want:    subscription,
 			wantErr: false,
@@ -56,7 +57,7 @@ func TestRepository_Subscription(t *testing.T) {
 		{
 			name:    "course not found error",
 			args:    args{id: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			want:    domain.Subscription{},
 			wantErr: true,
 		},
@@ -77,7 +78,7 @@ func TestRepository_Subscription(t *testing.T) {
 				t.Fatalf("prepared statement %s not found", getSubscription)
 			}
 
-			prep.ExpectQuery().WithArgs(subscriptionUUID).WillReturnRows(tt.rows)
+			prep.ExpectQuery().WithArgs(utils.SubscriptionUUID).WillReturnRows(tt.rows)
 
 			got, err := r.Subscription(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -114,7 +115,7 @@ func TestRepository_Subscriptions(t *testing.T) {
 		},
 		{
 			name:    "get no subscriptions",
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			wantLen: 0,
 			wantErr: false,
 		},
@@ -173,7 +174,7 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		},
 		{
 			name:    "empty fields",
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			args:    args{s: &subscription},
 			wantErr: true,
 		},
@@ -231,7 +232,7 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 		{
 			name:    "empty course",
 			args:    args{s: &domain.Subscription{}},
-			rows:    emptyRows,
+			rows:    utils.EmptyRows,
 			wantErr: true,
 		},
 	}
