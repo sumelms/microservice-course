@@ -9,7 +9,7 @@ CREATE TABLE subscriptions
     course_id       uuid            NOT NULL,
     matrix_id       uuid            NULL,
     role            varchar         NULL,
-    valid_until     timestamp       NULL,
+    expires_at      timestamp       NULL,
     created_at      timestamp       DEFAULT now() NOT NULL,
     updated_at      timestamp       DEFAULT now() NOT NULL,
     deleted_at      timestamp
