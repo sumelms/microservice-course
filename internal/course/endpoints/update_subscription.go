@@ -27,13 +27,13 @@ type updateSubscriptionRequest struct {
 }
 
 type updateSubscriptionResponse struct {
-	UUID       uuid.UUID  `json:"uuid"`
-	UserID     uuid.UUID  `json:"user_id"`
-	CourseID   uuid.UUID  `json:"course_id"`
-	MatrixID   *uuid.UUID `json:"matrix_id,omitempty"`
-	ValidUntil *time.Time `json:"valid_until,omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	UUID      uuid.UUID  `json:"uuid"`
+	UserID    uuid.UUID  `json:"user_id"`
+	CourseID  uuid.UUID  `json:"course_id"`
+	MatrixID  *uuid.UUID `json:"matrix_id,omitempty"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -68,13 +68,13 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return updateSubscriptionResponse{
-			UUID:       sub.UUID,
-			UserID:     sub.UserID,
-			CourseID:   sub.CourseID,
-			MatrixID:   sub.MatrixID,
-			ValidUntil: sub.ValidUntil,
-			CreatedAt:  sub.CreatedAt,
-			UpdatedAt:  sub.UpdatedAt,
+			UUID:      sub.UUID,
+			UserID:    sub.UserID,
+			CourseID:  sub.CourseID,
+			MatrixID:  sub.MatrixID,
+			ExpiresAt: sub.ExpiresAt,
+			CreatedAt: sub.CreatedAt,
+			UpdatedAt: sub.UpdatedAt,
 		}, nil
 	}
 }

@@ -18,18 +18,18 @@ import (
 )
 
 type createSubscriptionRequest struct {
-	UserID     uuid.UUID  `json:"user_id" validate:"required"`
-	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
-	MatrixID   *uuid.UUID `json:"matrix_id"`
-	ValidUntil *time.Time `json:"valid_until"`
+	UserID    uuid.UUID  `json:"user_id" validate:"required"`
+	CourseID  uuid.UUID  `json:"course_id" validate:"required"`
+	MatrixID  *uuid.UUID `json:"matrix_id"`
+	ExpiresAt *time.Time `json:"expires_at"`
 }
 
 type createSubscriptionResponse struct {
-	UUID       uuid.UUID  `json:"uuid"`
-	UserID     uuid.UUID  `json:"user_id"`
-	CourseID   uuid.UUID  `json:"course_id"`
-	MatrixID   *uuid.UUID `json:"matrix_id,omitempty"`
-	ValidUntil *time.Time `json:"valid_until"`
+	UUID      uuid.UUID  `json:"uuid"`
+	UserID    uuid.UUID  `json:"user_id"`
+	CourseID  uuid.UUID  `json:"course_id"`
+	MatrixID  *uuid.UUID `json:"matrix_id,omitempty"`
+	ExpiresAt *time.Time `json:"expires_at"`
 }
 
 func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -64,11 +64,11 @@ func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return createSubscriptionResponse{
-			UUID:       sub.UUID,
-			UserID:     sub.UserID,
-			CourseID:   sub.CourseID,
-			MatrixID:   sub.MatrixID,
-			ValidUntil: sub.ValidUntil,
+			UUID:      sub.UUID,
+			UserID:    sub.UserID,
+			CourseID:  sub.CourseID,
+			MatrixID:  sub.MatrixID,
+			ExpiresAt: sub.ExpiresAt,
 		}, nil
 	}
 }
