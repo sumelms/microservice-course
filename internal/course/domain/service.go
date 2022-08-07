@@ -7,29 +7,32 @@ import (
 	"github.com/google/uuid"
 )
 
-// Service defines the domains service interface
-type Service interface {
-	Course(ctx context.Context, courseID uuid.UUID) (Course, error)
+// ServiceInterface defines the domains Service interface
+type ServiceInterface interface {
+	Course(ctx context.Context, id uuid.UUID) (Course, error)
 	Courses(ctx context.Context) ([]Course, error)
 	CreateCourse(ctx context.Context, c *Course) error
 	UpdateCourse(ctx context.Context, c *Course) error
 	DeleteCourse(ctx context.Context, courseID uuid.UUID) error
 
-	SubscribeCourse(ctx context.Context, cs *Subscription) error
-	UnsubscribeCourse(ctx context.Context, courseID uuid.UUID, userID uuid.UUID) error
+	Subscription(ctx context.Context, id uuid.UUID) (Subscription, error)
+	Subscriptions(ctx context.Context) ([]Subscription, error)
+	CreateSubscription(ctx context.Context, cs *Subscription) error
+	UpdateSubscription(ctx context.Context, cs *Subscription) error
+	DeleteSubscription(ctx context.Context, id uuid.UUID) error
 }
 
-type serviceConfiguration func(svc *service) error
+type serviceConfiguration func(svc *Service) error
 
-type service struct {
+type Service struct {
 	courses       CourseRepository
 	subscriptions SubscriptionRepository
 	logger        log.Logger
 }
 
-// NewService creates a new domain service instance
-func NewService(cfgs ...serviceConfiguration) (*service, error) {
-	svc := &service{}
+// NewService creates a new domain Service instance
+func NewService(cfgs ...serviceConfiguration) (*Service, error) {
+	svc := &Service{}
 	for _, cfg := range cfgs {
 		err := cfg(svc)
 		if err != nil {
@@ -39,25 +42,25 @@ func NewService(cfgs ...serviceConfiguration) (*service, error) {
 	return svc, nil
 }
 
-// WithCourseRepository injects the course repository to the domain service
+// WithCourseRepository injects the course repository to the domain Service
 func WithCourseRepository(cr CourseRepository) serviceConfiguration {
-	return func(svc *service) error {
+	return func(svc *Service) error {
 		svc.courses = cr
 		return nil
 	}
 }
 
-// WithSubscriptionRepository injects the subscription repository to the domain service
+// WithSubscriptionRepository injects the subscription repository to the domain Service
 func WithSubscriptionRepository(sr SubscriptionRepository) serviceConfiguration {
-	return func(svc *service) error {
+	return func(svc *Service) error {
 		svc.subscriptions = sr
 		return nil
 	}
 }
 
-// WithLogger injects the logger to the domain service
+// WithLogger injects the logger to the domain Service
 func WithLogger(l log.Logger) serviceConfiguration {
-	return func(svc *service) error {
+	return func(svc *Service) error {
 		svc.logger = l
 		return nil
 	}

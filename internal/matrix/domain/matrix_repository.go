@@ -2,7 +2,7 @@ package domain
 
 import "github.com/google/uuid"
 
-type Repository interface {
+type MatrixRepository interface {
 	Matrix(id uuid.UUID) (Matrix, error)
 	Matrices() ([]Matrix, error)
 	CreateMatrix(matrix *Matrix) error

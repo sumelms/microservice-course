@@ -11,19 +11,27 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/transport"
 )
 
-func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) error {
-	service, err := NewService(db, logger)
-	if err != nil {
-		return err
-	}
-	transport.NewHTTPHandler(router, service, logger)
-	return nil
-}
-
-func NewService(db *sqlx.DB, logger log.Logger) (*domain.service, error) {
-	repository, err := database.NewCourseRepository(db)
+func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
+	course, err := database.NewCourseRepository(db)
 	if err != nil {
 		return nil, err
 	}
-	return domain.NewService(repository, logger), nil
+	subscription, err := database.NewSubscriptionRepository(db)
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := domain.NewService(
+		domain.WithLogger(logger),
+		domain.WithCourseRepository(course),
+		domain.WithSubscriptionRepository(subscription))
+	if err != nil {
+		return nil, err
+	}
+	return service, nil
+}
+
+func NewHTTPService(router *mux.Router, service domain.ServiceInterface, logger log.Logger) error {
+	transport.NewHTTPHandler(router, service, logger)
+	return nil
 }

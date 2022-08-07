@@ -1,8 +1,10 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
-type Repository interface {
+type SubjectRepository interface {
 	Subject(uuid.UUID) (Subject, error)
 	Subjects() ([]Subject, error)
 	CreateSubject(*Subject) error

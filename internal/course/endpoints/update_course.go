@@ -38,7 +38,7 @@ type updateCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func NewUpdateCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateCourseEndpoint(s),
 		decodeUpdateCourseRequest,
@@ -47,7 +47,7 @@ func NewUpdateCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kit
 	)
 }
 
-func makeUpdateCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateCourseRequest)
 		if !ok {

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
+	domain2 "github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/internal/subject/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
@@ -58,7 +59,7 @@ func makeUpdateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		c := domain.Subject{}
+		c := domain2.Subject{}
 		data, _ := json.Marshal(req)
 		if err := json.Unmarshal(data, &c); err != nil {
 			return nil, err

@@ -29,7 +29,7 @@ var (
 )
 
 func newCourseTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	return newTestDB(courseQueries())
+	return newTestDB(queriesCourse())
 }
 
 func TestRepository_Course(t *testing.T) {

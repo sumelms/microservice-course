@@ -22,7 +22,7 @@ type updateSubscriptionRequest struct {
 	UUID       uuid.UUID  `json:"uuid" validate:"required"`
 	UserID     uuid.UUID  `json:"user_id" validate:"required"`
 	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
-	MatrixID   uuid.UUID  `json:"matrix_id" validate:"required"`
+	MatrixID   *uuid.UUID `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until"`
 }
 
@@ -30,13 +30,13 @@ type updateSubscriptionResponse struct {
 	UUID       uuid.UUID  `json:"uuid"`
 	UserID     uuid.UUID  `json:"user_id"`
 	CourseID   uuid.UUID  `json:"course_id"`
-	MatrixID   uuid.UUID  `json:"matrix_id"`
-	ValidUntil *time.Time `json:"valid_until"`
+	MatrixID   *uuid.UUID `json:"matrix_id,omitempty"`
+	ValidUntil *time.Time `json:"valid_until,omitempty"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
-func NewUpdateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubscriptionEndpoint(s),
 		decodeUpdateSubscriptionRequest,
@@ -45,7 +45,7 @@ func NewUpdateSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption
 	)
 }
 
-func makeUpdateSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateSubscriptionRequest)
 		if !ok {

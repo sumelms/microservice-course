@@ -24,13 +24,13 @@ type findSubscriptionResponse struct {
 	UUID       uuid.UUID  `json:"uuid"`
 	UserID     uuid.UUID  `json:"user_id"`
 	CourseID   uuid.UUID  `json:"course_id"`
-	MatrixID   uuid.UUID  `json:"matrix_id"`
+	MatrixID   *uuid.UUID `json:"matrix_id,omitempty"`
 	ValidUntil *time.Time `json:"valid_until,omitempty"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
-func NewFindSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubscriptionEndpoint(s),
 		decodeFindSubscriptionRequest,
@@ -39,7 +39,7 @@ func NewFindSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) 
 	)
 }
 
-func makeFindSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findSubscriptionRequest)
 		if !ok {

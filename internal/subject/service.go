@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/subject/database"
+	"github.com/sumelms/microservice-course/internal/matrix/database"
 	"github.com/sumelms/microservice-course/internal/subject/domain"
 	"github.com/sumelms/microservice-course/internal/subject/transport"
 )
@@ -20,7 +20,7 @@ func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) error {
 }
 
 func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
-	repository, err := database.NewRepository(db)
+	repository, err := database.NewSubjectRepository(db)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-func NewHTTPHandler(r *mux.Router, s domain.Service, logger log.Logger) {
+func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger) {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(kittransport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(errors.EncodeError),

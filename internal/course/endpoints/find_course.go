@@ -30,7 +30,7 @@ type findCourseResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func NewFindCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindCourseEndpoint(s),
 		decodeFindCourseRequest,
@@ -39,7 +39,7 @@ func NewFindCourseHandler(s domain.Service, opts ...kithttp.ServerOption) *kitht
 	)
 }
 
-func makeFindCourseEndpoint(s domain.Service) endpoint.Endpoint {
+func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(findCourseRequest)
 		if !ok {

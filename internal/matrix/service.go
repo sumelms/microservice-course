@@ -10,19 +10,27 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/transport"
 )
 
-func NewHTTPService(router *mux.Router, db *sqlx.DB, logger log.Logger) error {
-	service, err := NewService(db, logger)
-	if err != nil {
-		return err
-	}
-	transport.NewHTTPHandler(router, service, logger)
-	return nil
-}
-
 func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
-	repository, err := database.NewRepository(db)
+	matrix, err := database.NewMatrixRepository(db)
 	if err != nil {
 		return nil, err
 	}
-	return domain.NewService(repository, logger), nil
+	subject, err := database.NewSubjectRepository(db)
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := domain.NewService(
+		domain.WithLogger(logger),
+		domain.WithMatrixRepository(matrix),
+		domain.WithSubjectRepository(subject))
+	if err != nil {
+		return nil, err
+	}
+	return service, nil
+}
+
+func NewHTTPService(router *mux.Router, service domain.ServiceInterface, logger log.Logger) error {
+	transport.NewHTTPHandler(router, service, logger)
+	return nil
 }

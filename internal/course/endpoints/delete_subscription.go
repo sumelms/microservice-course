@@ -18,7 +18,7 @@ type deleteSubscriptionRequest struct {
 	ID uuid.UUID `json:"id" validate:"required"`
 }
 
-func NewDeleteSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteSubscriptionEndpoint(s),
 		decodeDeleteSubscriptionRequest,
@@ -27,7 +27,7 @@ func NewDeleteSubscriptionHandler(s domain.Service, opts ...kithttp.ServerOption
 	)
 }
 
-func makeDeleteSubscriptionEndpoint(s domain.Service) endpoint.Endpoint {
+func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(deleteSubscriptionRequest)
 		if !ok {

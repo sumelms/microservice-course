@@ -11,7 +11,7 @@ import (
 func NewCourseRepository(db *sqlx.DB) (courseRepository, error) { // nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
-	for queryName, query := range courseQueries() {
+	for queryName, query := range queriesCourse() {
 		stmt, err := db.Preparex(string(query))
 		if err != nil {
 			return courseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)

@@ -8,7 +8,7 @@ const (
 	updateSubscription = "update subscription by uuid"
 )
 
-func subscriptionQueries() map[string]string {
+func queriesSubscription() map[string]string {
 	return map[string]string{
 		createSubscription: "INSERT INTO subscriptions (course_id, matrix_id, user_id, valid_until) VALUES ($1, $2, $3, $4) RETURNING *",
 		deleteSubscription: "UPDATE subscriptions SET deleted_at = NOW() WHERE id = $1",

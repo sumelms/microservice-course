@@ -8,7 +8,7 @@ const (
 	updateCourse = "update course by uuid"
 )
 
-func courseQueries() map[string]string {
+func queriesCourse() map[string]string {
 	return map[string]string{
 		createCourse: "INSERT INTO courses (code, name, underline, image, image_cover, excerpt, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
 		deleteCourse: "UPDATE courses SET deleted_at = NOW() WHERE uuid = $1",

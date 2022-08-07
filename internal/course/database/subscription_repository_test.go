@@ -26,7 +26,7 @@ var (
 )
 
 func newSubscriptionTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
-	return newTestDB(subscriptionQueries())
+	return newTestDB(queriesSubscription())
 }
 
 func TestRepository_Subscription(t *testing.T) {
