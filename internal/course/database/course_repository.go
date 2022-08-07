@@ -63,7 +63,7 @@ func (r courseRepository) CreateCourse(c *domain.Course) error {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createCourse)
 	}
 
-	if err := stmt.Get(c, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description); err != nil {
+	if err := stmt.Get(c, c.Code, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
 	return nil
@@ -76,7 +76,7 @@ func (r courseRepository) UpdateCourse(c *domain.Course) error {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
 	}
 
-	if err := stmt.Get(c, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description, c.UUID); err != nil {
+	if err := stmt.Get(c, c.Code, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description, c.UUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
 	return nil
