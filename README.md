@@ -198,16 +198,13 @@ all make sure to read our [Contributor Guideline](https://sumelms.com/docs/contr
 
 Would you like to contribute and participate in our communities? Please read our [Code of Conduct](https://sumelms.com/docs/conduct).
 
-## Team
+## Contributors
 
-### Core
+<a href="https://github.com/sumelms/microservice-course/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=sumelms/microservice-course" />
+</a>
 
-- Ricardo Lüders (@rluders)
-- Ariane Rocha (@arianerocha)
-
-### Contributors
-
-...
+Made with [contrib.rocks](https://contrib.rocks).
 
 ## Support
 
@@ -220,7 +217,6 @@ find help and get in touch with the community.
 
 If you found a bug or have a feature request, the best way to do
 it is [opening an issue](https://github.com/sumelms/microservice-course/issues).
-
 
 ## License
 
