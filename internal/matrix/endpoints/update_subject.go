@@ -45,7 +45,7 @@ func NewUpdateSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOp
 	)
 }
 
-// nolint: dupl
+//nolint:dupl
 func makeUpdateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(updateSubjectRequest)

@@ -8,13 +8,14 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-func NewCourseRepository(db *sqlx.DB) (courseRepository, error) { // nolint: revive
+func NewCourseRepository(db *sqlx.DB) (courseRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesCourse() {
-		stmt, err := db.Preparex(string(query))
+		stmt, err := db.Preparex(query)
 		if err != nil {
-			return courseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+			return courseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown,
+				"error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}

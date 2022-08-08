@@ -100,8 +100,9 @@ func TestRepository_Courses(t *testing.T) {
 		"description", "created_at", "updated_at", "deleted_at"}).
 		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
 			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt).
-		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
+		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), course.Code, course.Name,
+			course.Underline, course.Image, course.ImageCover, course.Excerpt, course.Description, course.CreatedAt,
+			course.UpdatedAt, course.DeletedAt)
 
 	tests := []struct {
 		name    string

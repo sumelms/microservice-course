@@ -30,7 +30,7 @@ func main() {
 	for _, s := range allSeeds() {
 		fmt.Printf("Executing seed '%s'...\n", s.Name)
 		if err := s.Run(db); err != nil {
-			log.Fatalf("Running seed '%s', failed with error: %s", s.Name, err) // nolint: gocritic
+			log.Fatalf("Running seed '%s', failed with error: %s", s.Name, err) //nolint: gocritic
 		}
 	}
 }

@@ -43,7 +43,7 @@ func NewCreateSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOp
 	)
 }
 
-// nolint: dupl
+//nolint:dupl
 func makeCreateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createSubjectRequest)

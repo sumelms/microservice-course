@@ -9,11 +9,11 @@ import (
 )
 
 // NewSubscriptionRepository creates the subscription subscriptionRepository
-func NewSubscriptionRepository(db *sqlx.DB) (subscriptionRepository, error) { // nolint: revive
+func NewSubscriptionRepository(db *sqlx.DB) (subscriptionRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesSubscription() {
-		stmt, err := db.Preparex(string(query))
+		stmt, err := db.Preparex(query)
 		if err != nil {
 			return subscriptionRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}

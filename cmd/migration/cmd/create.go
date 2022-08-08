@@ -6,7 +6,9 @@ import (
 	"os"
 	"time"
 
+	// migration source adapter
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	// database driver
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +35,7 @@ func createFile(fname string) {
 	}
 }
 
-func init() {
+func init() { //nolint: gochecknoinits
 	createCmd.Flags().StringVar(&name, "name", "", "name of the migration")
-	createCmd.MarkFlagRequired("name")
+	createCmd.MarkFlagRequired("name") //nolint: errcheck
 }

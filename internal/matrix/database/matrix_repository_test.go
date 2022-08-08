@@ -33,17 +33,17 @@ var (
 	emptyRows = sqlmock.NewRows([]string{})
 )
 
-func newTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedPrepare) {
+func newTestDB() (db *sqlx.DB, sqlStatements map[string]*sqlmock.ExpectedPrepare) {
 	db, mock := database.NewDBMock()
 
-	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
+	sqlStatements = make(map[string]*sqlmock.ExpectedPrepare)
 	for queryName, query := range queriesMatrix() {
-		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
+		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(query)))
 		sqlStatements[queryName] = stmt
 	}
 
 	mock.MatchExpectationsInOrder(false)
-	return db, mock, sqlStatements
+	return db, sqlStatements
 }
 
 func TestRepository_Matrix(t *testing.T) {
@@ -84,7 +84,7 @@ func TestRepository_Matrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
+			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the matrixRepository", err)
@@ -142,7 +142,7 @@ func TestRepository_Matrices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
+			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the matrixRepository", err)
@@ -198,7 +198,7 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, _, stmts := newTestDB()
+			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected creating the matrixRepository", err)

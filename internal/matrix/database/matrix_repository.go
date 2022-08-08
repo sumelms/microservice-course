@@ -13,7 +13,7 @@ func NewMatrixRepository(db *sqlx.DB) (matrixRepository, error) {
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesMatrix() {
-		stmt, err := db.Preparex(string(query))
+		stmt, err := db.Preparex(query)
 		if err != nil {
 			return matrixRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}

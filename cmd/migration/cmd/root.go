@@ -25,7 +25,7 @@ func Execute() {
 	}
 }
 
-func init() {
+func init() { //nolint: gochecknoinits
 	rootCmd.PersistentFlags().StringVar(&configPath, "config", "./config/config.yml", "config file")
 	rootCmd.PersistentFlags().StringVar(&folderPath, "folder", "./db/migrations", "migrations folder")
 	rootCmd.AddCommand(upCmd)

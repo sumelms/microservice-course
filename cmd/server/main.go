@@ -31,22 +31,37 @@ var (
 	httpServer *http.Server
 )
 
+//nolint:funlen
 func main() {
 	// Logger
 	logger = applogger.NewLogger()
-	logger.Log("msg", "service started") // nolint: errcheck
+	logger.Log("msg", "service started") //nolint: errcheck
 
 	// Configuration
 	cfg, err := loadConfig()
 	if err != nil {
-		logger.Log("exit", err) // nolint: errcheck
+		logger.Log("exit", err) //nolint: errcheck
 		os.Exit(-1)
 	}
 
 	// Database
 	db, err := database.Connect(cfg.Database)
 	if err != nil {
-		logger.Log("msg", "database error", err) // nolint: errcheck
+		logger.Log("msg", "database error", err) //nolint: errcheck
+		os.Exit(1)
+	}
+
+	// Initialize the domain services
+	svcLogger := log.With(logger, "component", "service")
+
+	courseSvc, err := course.NewService(db, svcLogger)
+	if err != nil {
+		logger.Log("msg", "unable to start course service", err) //nolint: errcheck
+		os.Exit(1)
+	}
+	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
+	if err != nil {
+		logger.Log("msg", "unable to start matrix service", err) //nolint: errcheck
 		os.Exit(1)
 	}
 
@@ -60,20 +75,6 @@ func main() {
 
 	g, ctx := errgroup.WithContext(ctx)
 
-	// Initialize the domain services
-	svcLogger := log.With(logger, "component", "service")
-
-	courseSvc, err := course.NewService(db, svcLogger)
-	if err != nil {
-		logger.Log("msg", "unable to start course service", err) // nolint: errcheck
-		os.Exit(1)
-	}
-	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
-	if err != nil {
-		logger.Log("msg", "unable to start matrix service", err) // nolint: errcheck
-		os.Exit(1)
-	}
-
 	g.Go(func() error {
 		// Initialize the router
 		router := mux.NewRouter()
@@ -82,11 +83,11 @@ func main() {
 		httpLogger := log.With(logger, "component", "http")
 
 		if err := course.NewHTTPService(router, courseSvc, httpLogger); err != nil {
-			logger.Log("msg", "unable to start a service: course", "error", err) // nolint: errcheck
+			logger.Log("msg", "unable to start a service: course", "error", err) //nolint: errcheck
 			return err
 		}
 		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger); err != nil {
-			logger.Log("msg", "unable to start a service: matrix", "error", err) // nolint: errcheck
+			logger.Log("msg", "unable to start a service: matrix", "error", err) //nolint: errcheck
 			return err
 		}
 
@@ -97,12 +98,13 @@ func main() {
 		// Middlewares
 		http.Handle("/", accessControl(srv))
 
-		logger.Log("transport", "http", "address", cfg.Server.HTTP.Host, "msg", "listening") // nolint: errcheck
+		logger.Log("transport", "http", "address", cfg.Server.HTTP.Host, "msg", "listening") //nolint: errcheck
 
 		httpServer = &http.Server{
-			Addr:         cfg.Server.HTTP.Host,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			Addr:              cfg.Server.HTTP.Host,
+			ReadTimeout:       10 * time.Second,
+			WriteTimeout:      10 * time.Second,
+			ReadHeaderTimeout: 2 * time.Second,
 		}
 
 		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
@@ -118,26 +120,24 @@ func main() {
 		break
 	}
 
-	logger.Log("msg", "received shutdown signal") // nolint: errcheck
-
-	cancel()
+	logger.Log("msg", "received shutdown signal") //nolint: errcheck
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 
 	if httpServer != nil {
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
-			logger.Log("msg", "server wasn't gracefully shutdown") // nolint: errcheck
+			logger.Log("msg", "server wasn't gracefully shutdown") //nolint: errcheck
 			defer os.Exit(2)
 		}
 	}
 
 	if err := g.Wait(); err != nil {
-		logger.Log("msg", "server returning an error", "error", err) // nolint: errcheck
+		logger.Log("msg", "server returning an error", "error", err) //nolint: errcheck
 		defer os.Exit(2)
 	}
 
-	logger.Log("msg", "service ended") // nolint: errcheck
+	logger.Log("msg", "service ended") //nolint: errcheck
 }
 
 func loadConfig() (*config.Config, error) {
