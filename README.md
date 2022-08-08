@@ -4,12 +4,9 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.com/sumelms/microservice-course">
-    <img alt="Travis" src="https://travis-ci.com/sumelms/microservice-course.svg?branch=main">
-  </a>  
-  <a href="https://codecov.io/gh/sumelms/microservice-course">
-    <img alt="Codeconv" src="https://codecov.io/gh/sumelms/backend/microservice-course/main/graph/badge.svg?token=8E92BS3SR9" />
-  </a>
+  <a href="https://codecov.io/gh/sumelms/microservice-course" >
+    <img src="https://codecov.io/gh/sumelms/microservice-course/branch/main/graph/badge.svg?token=B78WZL5QDY"/>
+    </a>
   <img alt="GitHub" src="https://img.shields.io/github/license/sumelms/microservice-course">
   <a href="https://discord.gg/Yh9q9cd">
     <img alt="Discord" src="https://img.shields.io/discord/726500188021063682">
