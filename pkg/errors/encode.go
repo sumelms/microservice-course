@@ -5,21 +5,45 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type ErrorResponse struct {
-	Error string `json:"error"`
+	Message any `json:"message"`
+	Error   any `json:"error"`
+}
+
+type ValidatorError struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
 }
 
 // EncodeError encodes errors from business-logic
 func EncodeError(_ context.Context, err error, w http.ResponseWriter) {
-	resp := &ErrorResponse{Error: err.Error()}
+	resp := &ErrorResponse{
+		Message: "Invalid error",
+		Error:   err.Error(),
+	}
+
 	code := http.StatusInternalServerError
 
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		msg := make([]ValidatorError, len(ve))
+		for i, fe := range ve {
+			msg[i] = ValidatorError{
+				Field:   fe.Field(),
+				Message: msgForTag(fe.Tag()),
+			}
+		}
+		resp.Message = "invalid input"
+		resp.Message = msg
+		code = http.StatusBadRequest
+	}
+
 	var ierr *Error
-	if !errors.As(err, &ierr) {
-		resp.Error = "internal error"
-	} else {
+	if errors.As(err, &ierr) {
 		switch ierr.Code() {
 		case ErrCodeNotFound:
 			code = http.StatusNotFound
@@ -43,4 +67,14 @@ func EncodeError(_ context.Context, err error, w http.ResponseWriter) {
 	if _, err := w.Write(content); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func msgForTag(tag string) string {
+	switch tag {
+	case "required":
+		return "This field is required"
+	case "email":
+		return "Invalid email"
+	}
+	return ""
 }
