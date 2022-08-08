@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
@@ -16,67 +15,62 @@ type ServiceInterface interface {
 	DeleteMatrix(ctx context.Context, id uuid.UUID) error
 	AddSubject(ctx context.Context, matrixID, subjectID uuid.UUID) error
 	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
+
+	Subject(context.Context, uuid.UUID) (Subject, error)
+	Subjects(context.Context) ([]Subject, error)
+	CreateSubject(context.Context, *Subject) error
+	UpdateSubject(context.Context, *Subject) error
+	DeleteSubject(context.Context, uuid.UUID) error
 }
+
+type serviceConfiguration func(svc *Service) error
 
 type Service struct {
-	repo   Repository
-	logger log.Logger
+	matrices MatrixRepository
+	subjects SubjectRepository
+	courses  CourseClient
+	logger   log.Logger
 }
 
-func NewService(repo Repository, logger log.Logger) *Service {
-	return &Service{
-		repo:   repo,
-		logger: logger,
+// NewService creates a new domain Service instance
+func NewService(cfgs ...serviceConfiguration) (*Service, error) {
+	svc := &Service{}
+	for _, cfg := range cfgs {
+		err := cfg(svc)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return svc, nil
+}
+
+// WithMatrixRepository injects the course repository to the domain Service
+func WithMatrixRepository(cr MatrixRepository) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.matrices = cr
+		return nil
 	}
 }
 
-func (s *Service) Matrix(_ context.Context, id uuid.UUID) (Matrix, error) {
-	m, err := s.repo.Matrix(id)
-	if err != nil {
-		return Matrix{}, fmt.Errorf("service can't find matrix: %w", err)
+// WithSubjectRepository injects the subscription repository to the domain Service
+func WithSubjectRepository(sr SubjectRepository) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.subjects = sr
+		return nil
 	}
-	return m, nil
 }
 
-func (s *Service) Matrices(_ context.Context) ([]Matrix, error) {
-	mm, err := s.repo.Matrices()
-	if err != nil {
-		return []Matrix{}, fmt.Errorf("service didn't found any matrix: %w", err)
+// WithLogger injects the logger to the domain Service
+func WithLogger(l log.Logger) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.logger = l
+		return nil
 	}
-	return mm, nil
 }
 
-func (s *Service) CreateMatrix(_ context.Context, m *Matrix) error {
-	if err := s.repo.CreateMatrix(m); err != nil {
-		return fmt.Errorf("service can't create matrix: %w", err)
+func WithCourseClient(c CourseClient) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.courses = c
+		return nil
 	}
-	return nil
-}
-
-func (s *Service) UpdateMatrix(_ context.Context, m *Matrix) error {
-	if err := s.repo.UpdateMatrix(m); err != nil {
-		return fmt.Errorf("service can't update matrix: %w", err)
-	}
-	return nil
-}
-
-func (s *Service) DeleteMatrix(_ context.Context, id uuid.UUID) error {
-	if err := s.repo.DeleteMatrix(id); err != nil {
-		return fmt.Errorf("service can't delete matrix: %w", err)
-	}
-	return nil
-}
-
-func (s *Service) AddSubject(_ context.Context, matrixID, subjectID uuid.UUID) error {
-	if err := s.repo.AddSubject(matrixID, subjectID); err != nil {
-		return fmt.Errorf("service can't adds the subject to matrix: %w", err)
-	}
-	return nil
-}
-
-func (s *Service) RemoveSubject(_ context.Context, matrixID, subjectID uuid.UUID) error {
-	if err := s.repo.RemoveSubject(matrixID, subjectID); err != nil {
-		return fmt.Errorf("service can't removes the subject from matrix: %w", err)
-	}
-	return nil
 }

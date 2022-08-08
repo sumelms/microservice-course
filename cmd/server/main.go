@@ -8,13 +8,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/gorilla/mux"
 
 	"github.com/sumelms/microservice-course/internal/matrix"
-	"github.com/sumelms/microservice-course/internal/subject"
-	"github.com/sumelms/microservice-course/internal/subscription"
-
-	"github.com/gorilla/mux"
+	"github.com/sumelms/microservice-course/internal/matrix/clients"
 
 	"github.com/sumelms/microservice-course/internal/course"
 
@@ -63,15 +60,33 @@ func main() {
 
 	g, ctx := errgroup.WithContext(ctx)
 
-	g.Go(func() error {
-		httpLogger := log.With(logger, "component", "http")
+	// Initialize the domain services
+	svcLogger := log.With(logger, "component", "service")
 
+	courseSvc, err := course.NewService(db, svcLogger)
+	if err != nil {
+		logger.Log("msg", "unable to start course service", err) // nolint: errcheck
+		os.Exit(1)
+	}
+	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
+	if err != nil {
+		logger.Log("msg", "unable to start matrix service", err) // nolint: errcheck
+		os.Exit(1)
+	}
+
+	g.Go(func() error {
 		// Initialize the router
 		router := mux.NewRouter()
 
-		// Initializing the services
-		err = services(router, db, httpLogger)
-		if err != nil {
+		// Initializing the HTTP Services
+		httpLogger := log.With(logger, "component", "http")
+
+		if err := course.NewHTTPService(router, courseSvc, httpLogger); err != nil {
+			logger.Log("msg", "unable to start a service: course", "error", err) // nolint: errcheck
+			return err
+		}
+		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger); err != nil {
+			logger.Log("msg", "unable to start a service: matrix", "error", err) // nolint: errcheck
 			return err
 		}
 
@@ -123,26 +138,6 @@ func main() {
 	}
 
 	logger.Log("msg", "service ended") // nolint: errcheck
-}
-
-func services(router *mux.Router, db *sqlx.DB, httpLogger log.Logger) error {
-	if err := course.NewHTTPService(router, db, httpLogger); err != nil {
-		logger.Log("msg", "unable to start a service: course", "error", err) // nolint: errcheck
-		return err
-	}
-	if err := matrix.NewHTTPService(router, db, httpLogger); err != nil {
-		logger.Log("msg", "unable to start a service: matrix", "error", err) // nolint: errcheck
-		return err
-	}
-	if err := subscription.NewHTTPService(router, db, httpLogger); err != nil {
-		logger.Log("msg", "unable to start a service: subscription", "error", err) // nolint: errcheck
-		return err
-	}
-	if err := subject.NewHTTPService(router, db, httpLogger); err != nil {
-		logger.Log("msg", "unable to start a service: subject", "error", err) // nolint: errcheck
-		return err
-	}
-	return nil
 }
 
 func loadConfig() (*config.Config, error) {
