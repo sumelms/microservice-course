@@ -9,11 +9,11 @@ import (
 )
 
 // NewSubjectRepository creates the subject subjectRepository
-func NewSubjectRepository(db *sqlx.DB) (subjectRepository, error) { // nolint: revive
+func NewSubjectRepository(db *sqlx.DB) (subjectRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesSubject() {
-		stmt, err := db.Preparex(string(query))
+		stmt, err := db.Preparex(query)
 		if err != nil {
 			return subjectRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}

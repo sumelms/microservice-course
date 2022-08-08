@@ -6,9 +6,13 @@ import (
 
 	migrate "github.com/golang-migrate/migrate/v4"
 	migratePostgres "github.com/golang-migrate/migrate/v4/database/postgres"
+
+	// migration source adapter
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	// database driver
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
+
 	"github.com/sumelms/microservice-course/pkg/config"
 	"github.com/sumelms/microservice-course/pkg/database/postgres"
 )
@@ -51,6 +55,6 @@ var (
 	}
 )
 
-func init() {
+func init() { //nolint: gochecknoinits
 	downCmd.Flags().IntVar(&numSteps, "steps", 0, "num of migrations to down")
 }

@@ -41,7 +41,7 @@ func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 	)
 }
 
-// nolint: dupl
+//nolint:dupl
 func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(createMatrixRequest)
