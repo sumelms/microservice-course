@@ -41,13 +41,13 @@ and scalability to your learning environment.
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
-- [Team](#team)
+- [Contributors](#contributors)
 - [Support](#support)
 - [License](#license)
 
 ## Prerequisites
 
-- Go >= 1.14.6
+- Go >= 1.18
 - PostgreSQL >= 9.5 (with `uuid-ossp` extension)
 
 ## Prepare
@@ -98,14 +98,14 @@ If everything works, you can now [run the microservice using the container image
 
 You can have your local database running the following command:
 
-```
-docker-compose up -d postgres
+```bash
+$ docker-compose up -d postgres
 ```
 
 And then you could run the migrations using 
 
-```
-make migrations-up
+```bash
+$ make migrations-up
 ```
 
 ## Running
