@@ -12,9 +12,9 @@ type Subject struct {
 	UUID      uuid.UUID  `json:"uuid"`
 	Code      string     `json:"code"`
 	Name      string     `json:"name"`
-	Objective string     `json:"objective,omitempty"`
-	Credit    float32    `json:"credit,omitempty"`
-	Workload  float32    `json:"workload,omitempty"`
+	Objective string     `json:"objective"`
+	Credit    float32    `json:"credit"`
+	Workload  float32    `json:"workload"`
 	CreatedAt time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
 	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
