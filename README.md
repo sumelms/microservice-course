@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="https://goreportcard.com/badge/github.com/sumelms/microservice-course">
+  <a href="https://goreportcard.com/report/github.com/sumelms/microservice-course">
     <img alt="goreportcard" src="https://goreportcard.com/badge/github.com/sumelms/microservice-course" />
   </a>
   <a href="https://github.com/sumelms/microservice-course/actions/workflows/main.yaml">
