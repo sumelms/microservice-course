@@ -4,8 +4,14 @@
 </p>
 
 <p align="center">
+  <a href="https://goreportcard.com/badge/github.com/sumelms/microservice-course">
+    <img alt="goreportcard" src="https://goreportcard.com/badge/github.com/sumelms/microservice-course" />
+  </a>
+  <a href="https://github.com/sumelms/microservice-course/actions/workflows/main.yaml">
+    <img alt="github action" src="https://github.com/sumelms/microservice-course/actions/workflows/main.yaml/badge.svg" />
+  </a>
   <a href="https://codecov.io/gh/sumelms/microservice-course" >
-    <img src="https://codecov.io/gh/sumelms/microservice-course/branch/main/graph/badge.svg?token=B78WZL5QDY"/>
+    <img alt="codecov" src="https://codecov.io/gh/sumelms/microservice-course/branch/main/graph/badge.svg?token=B78WZL5QDY"/>
     </a>
   <img alt="GitHub" src="https://img.shields.io/github/license/sumelms/microservice-course">
   <a href="https://discord.gg/Yh9q9cd">
@@ -198,7 +204,7 @@ Would you like to contribute and participate in our communities? Please read our
 ## Contributors
 
 <a href="https://github.com/sumelms/microservice-course/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=sumelms/microservice-course" />
+  <img alt="contributors" src="https://contrib.rocks/image?repo=sumelms/microservice-course" />
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks).
