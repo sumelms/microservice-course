@@ -3,9 +3,9 @@ package domain
 import "github.com/google/uuid"
 
 type CourseRepository interface {
-	Course(uuid.UUID) (Course, error)
+	Course(id uuid.UUID) (Course, error)
 	Courses() ([]Course, error)
-	CreateCourse(*Course) error
-	UpdateCourse(*Course) error
-	DeleteCourse(uuid.UUID) error
+	CreateCourse(lesson *Course) error
+	UpdateCourse(lesson *Course) error
+	DeleteCourse(id uuid.UUID) error
 }
