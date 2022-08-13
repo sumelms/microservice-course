@@ -13,14 +13,14 @@ type ServiceInterface interface {
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
 	UpdateMatrix(ctx context.Context, matrix *Matrix) error
 	DeleteMatrix(ctx context.Context, id uuid.UUID) error
-	AddSubject(ctx context.Context, matrixID, subjectID uuid.UUID) error
+	AddSubject(ctx context.Context, matrixSubject *MatrixSubject) error
 	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
 
-	Subject(context.Context, uuid.UUID) (Subject, error)
-	Subjects(context.Context) ([]Subject, error)
-	CreateSubject(context.Context, *Subject) error
-	UpdateSubject(context.Context, *Subject) error
-	DeleteSubject(context.Context, uuid.UUID) error
+	Subject(ctx context.Context, id uuid.UUID) (Subject, error)
+	Subjects(ctx context.Context) ([]Subject, error)
+	CreateSubject(ctx context.Context, subject *Subject) error
+	UpdateSubject(ctx context.Context, subject *Subject) error
+	DeleteSubject(ctx context.Context, id uuid.UUID) error
 }
 
 type serviceConfiguration func(svc *Service) error

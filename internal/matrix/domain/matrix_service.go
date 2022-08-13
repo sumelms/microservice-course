@@ -48,8 +48,8 @@ func (s *Service) DeleteMatrix(_ context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (s *Service) AddSubject(_ context.Context, matrixID, subjectID uuid.UUID) error {
-	if err := s.matrices.AddSubject(matrixID, subjectID); err != nil {
+func (s *Service) AddSubject(_ context.Context, ms *MatrixSubject) error {
+	if err := s.matrices.AddSubject(ms); err != nil {
 		return fmt.Errorf("service can't adds the subject to matrix: %w", err)
 	}
 	return nil

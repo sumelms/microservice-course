@@ -18,7 +18,7 @@ type Matrix struct {
 	DeletedAt   *time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
-type MatrixSubjects struct {
+type MatrixSubject struct {
 	ID         uint      `json:"id"`
 	SubjectID  uuid.UUID `db:"subject_id" json:"subject_id"`
 	MatrixID   uuid.UUID `db:"matrix_id" json:"matrix_id"`

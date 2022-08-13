@@ -43,7 +43,8 @@ func makeAddSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		if err := s.AddSubject(ctx, req.MatrixID, req.SubjectID); err != nil {
+		ms := &domain.MatrixSubject{MatrixID: req.MatrixID, SubjectID: req.SubjectID}
+		if err := s.AddSubject(ctx, ms); err != nil {
 			return nil, err
 		}
 

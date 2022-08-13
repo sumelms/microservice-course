@@ -8,6 +8,6 @@ type MatrixRepository interface {
 	CreateMatrix(matrix *Matrix) error
 	UpdateMatrix(matrix *Matrix) error
 	DeleteMatrix(id uuid.UUID) error
-	AddSubject(matrixID, subjectID uuid.UUID) error
+	AddSubject(matrixSubject *MatrixSubject) error
 	RemoveSubject(matrixID, subjectID uuid.UUID) error
 }

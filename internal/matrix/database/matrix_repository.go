@@ -97,13 +97,13 @@ func (r matrixRepository) DeleteMatrix(id uuid.UUID) error {
 }
 
 // AddSubject adds the subject to the matrix
-func (r matrixRepository) AddSubject(matrixID, subjectID uuid.UUID) error {
+func (r matrixRepository) AddSubject(ms *domain.MatrixSubject) error {
 	stmt, ok := r.statements[addSubject]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", addSubject)
 	}
 
-	if _, err := stmt.Exec(matrixID, subjectID); err != nil {
+	if _, err := stmt.Exec(ms); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error adding subject to matrix")
 	}
 	return nil
