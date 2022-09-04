@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
 )
@@ -28,6 +29,9 @@ type Service struct {
 	courses       CourseRepository
 	subscriptions SubscriptionRepository
 	logger        log.Logger
+	// Eventbus
+	subscriber message.Subscriber
+	publisher  message.Publisher
 }
 
 // NewService creates a new domain Service instance
@@ -62,6 +66,20 @@ func WithSubscriptionRepository(sr SubscriptionRepository) serviceConfiguration 
 func WithLogger(l log.Logger) serviceConfiguration {
 	return func(svc *Service) error {
 		svc.logger = l
+		return nil
+	}
+}
+
+func WithSubscriber(sub message.Subscriber) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.subscriber = sub
+		return nil
+	}
+}
+
+func WithPublisher(pub message.Publisher) serviceConfiguration {
+	return func(svc *Service) error {
+		svc.publisher = pub
 		return nil
 	}
 }
