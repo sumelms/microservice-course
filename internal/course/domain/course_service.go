@@ -2,8 +2,11 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 )
 
@@ -27,6 +30,22 @@ func (s *Service) CreateCourse(_ context.Context, c *Course) error {
 	if err := s.courses.CreateCourse(c); err != nil {
 		return fmt.Errorf("service can't create course: %w", err)
 	}
+
+	// @TODO Dispatch CourseCreatedEvent
+	// @TODO Create the Event Pub/Sub Adapter to handle Event Types
+	payload, err := json.Marshal(c)
+	if err != nil {
+		// @TODO What would happen when it fails?
+		s.logger.Log("events", "marshal", err)
+	}
+
+	msg := message.NewMessage(watermill.NewUUID(), payload)
+	err = s.publisher.Publish("course.created", msg)
+	if err != nil {
+		// @TODO What would happen when it fails?
+		s.logger.Log("events", "publisher", err)
+	}
+
 	return nil
 }
 
