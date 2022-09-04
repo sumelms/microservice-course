@@ -7,6 +7,7 @@ CREATE TABLE matrix_subjects
     id              bigserial       CONSTRAINT matrix_subjects_pk PRIMARY KEY,
     subject_id      bigserial       NOT NULL,
     matrix_id       bigserial       NOT NULL,
+    group           varchar,
     is_required     boolean         NULL DEFAULT TRUE,
     created_at      timestamp       DEFAULT now() NOT NULL,
     updated_at      timestamp       DEFAULT now() NOT NULL,

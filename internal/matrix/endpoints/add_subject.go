@@ -17,6 +17,7 @@ import (
 type addSubjectRequest struct {
 	MatrixID  uuid.UUID `json:"matrix_id" validate:"required"`
 	SubjectID uuid.UUID `json:"subject_id" validate:"required"`
+	Group     string    `json:"group,omitempty"`
 }
 
 type addSubjectResponse struct{}
@@ -43,7 +44,11 @@ func makeAddSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		ms := &domain.MatrixSubject{MatrixID: req.MatrixID, SubjectID: req.SubjectID}
+		ms := &domain.MatrixSubject{
+			MatrixID:  req.MatrixID,
+			SubjectID: req.SubjectID,
+			Group:     req.Group,
+		}
 		if err := s.AddSubject(ctx, ms); err != nil {
 			return nil, err
 		}

@@ -20,6 +20,7 @@ type Matrix struct {
 
 type MatrixSubject struct {
 	ID         uint      `json:"id"`
+	Group      string    `json:"group"`
 	SubjectID  uuid.UUID `db:"subject_id" json:"subject_id"`
 	MatrixID   uuid.UUID `db:"matrix_id" json:"matrix_id"`
 	IsRequired bool      `db:"is_required" json:"is_required"`
