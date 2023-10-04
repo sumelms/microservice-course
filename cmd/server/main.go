@@ -7,6 +7,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sumelms/microservice-course/internal/course/transport/http"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/sumelms/microservice-course/internal/course"
