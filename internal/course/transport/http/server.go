@@ -3,11 +3,12 @@ package http
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/pkg/config"
-	"net/http"
-	"time"
 )
 
 type Server struct {
@@ -24,10 +25,9 @@ func NewServer(cfg *config.HTTPServer, router *mux.Router, logger log.Logger) (*
 		return nil, fmt.Errorf("invalid server router")
 	}
 
-	addr := fmt.Sprintf("%s", cfg.Host)
 	return &Server{
 		Server: &http.Server{
-			Addr:    addr,
+			Addr:    cfg.Host,
 			Handler: router,
 			// Good practice to set timeouts to avoid Slowloris attacks.
 			WriteTimeout: time.Second * 15,
