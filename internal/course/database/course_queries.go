@@ -15,7 +15,7 @@ func queriesCourse() map[string]string {
 			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
 		deleteCourse: "UPDATE courses SET deleted_at = NOW() WHERE uuid = $1",
 		getCourse:    "SELECT * FROM courses WHERE uuid = $1",
-		listCourse:   "SELECT * FROM courses",
+		listCourse:   "SELECT * FROM courses WHERE deleted_at IS NOT NULL",
 		updateCourse: `UPDATE courses 
 			SET code = $1, name = $2, underline = $3, image = $4, image_cover = $5, excerpt = $6, description = $7 
 			WHERE uuid = $8 RETURNING *`,
