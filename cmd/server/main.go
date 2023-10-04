@@ -16,13 +16,12 @@ import (
 
 	"github.com/sumelms/microservice-course/internal/course"
 
-	"github.com/go-kit/log"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 
-	applogger "github.com/sumelms/microservice-course/pkg/logger"
+	log "github.com/sumelms/microservice-course/pkg/logger"
 
 	_ "github.com/lib/pq"
 )
@@ -35,7 +34,7 @@ var (
 //nolint:funlen
 func main() {
 	// Logger
-	logger = applogger.NewLogger()
+	logger = log.NewLogger()
 	logger.Log("msg", "service started")
 
 	// Configuration
@@ -53,14 +52,14 @@ func main() {
 	}
 
 	// Initialize the domain services
-	svcLogger := log.With(logger, "component", "service")
+	svcLogger := logger.With("component", "service")
 
-	courseSvc, err := course.NewService(db, svcLogger)
+	courseSvc, err := course.NewService(db, svcLogger.Logger())
 	if err != nil {
 		logger.Log("msg", "unable to start course service", "error", err)
 		os.Exit(1)
 	}
-	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
+	matrixSvc, err := matrix.NewService(db, svcLogger.Logger(), clients.NewCourseClient(courseSvc))
 	if err != nil {
 		logger.Log("msg", "unable to start matrix service", "error", err)
 		os.Exit(1)
@@ -84,13 +83,13 @@ func main() {
 		router.Use(http.CorsMiddleware)
 
 		// Initializing the HTTP Services
-		httpLogger := log.With(logger, "component", "http")
+		httpLogger := logger.With("component", "http")
 
-		if err := course.NewHTTPService(router, courseSvc, httpLogger); err != nil {
+		if err := course.NewHTTPService(router, courseSvc, httpLogger.Logger()); err != nil {
 			logger.Log("msg", "unable to start a service: course", "error", err)
 			return err
 		}
-		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger); err != nil {
+		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger.Logger()); err != nil {
 			logger.Log("msg", "unable to start a service: matrix", "error", err)
 			return err
 		}

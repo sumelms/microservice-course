@@ -6,18 +6,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-kit/log"
+	"github.com/sumelms/microservice-course/pkg/logger"
+
 	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/pkg/config"
 )
 
 type Server struct {
 	*http.Server
-	logger log.Logger
+	logger logger.Logger
 	Config *config.HTTPServer
 }
 
-func NewServer(cfg *config.HTTPServer, router *mux.Router, logger log.Logger) (*Server, error) {
+func NewServer(cfg *config.HTTPServer, router *mux.Router, log logger.Logger) (*Server, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("invalid server config")
 	}
@@ -34,7 +35,7 @@ func NewServer(cfg *config.HTTPServer, router *mux.Router, logger log.Logger) (*
 			ReadTimeout:  time.Second * 15,
 			IdleTimeout:  time.Second * 60,
 		},
-		logger: logger,
+		logger: log,
 		Config: cfg,
 	}, nil
 }

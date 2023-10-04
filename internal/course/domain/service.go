@@ -22,7 +22,7 @@ type ServiceInterface interface {
 	DeleteSubscription(ctx context.Context, id uuid.UUID) error
 }
 
-type serviceConfiguration func(svc *Service) error
+type ServiceConfiguration func(svc *Service) error
 
 type Service struct {
 	courses       CourseRepository
@@ -31,7 +31,7 @@ type Service struct {
 }
 
 // NewService creates a new domain Service instance
-func NewService(cfgs ...serviceConfiguration) (*Service, error) {
+func NewService(cfgs ...ServiceConfiguration) (*Service, error) {
 	svc := &Service{}
 	for _, cfg := range cfgs {
 		err := cfg(svc)
@@ -43,7 +43,7 @@ func NewService(cfgs ...serviceConfiguration) (*Service, error) {
 }
 
 // WithCourseRepository injects the course repository to the domain Service
-func WithCourseRepository(cr CourseRepository) serviceConfiguration {
+func WithCourseRepository(cr CourseRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.courses = cr
 		return nil
@@ -51,7 +51,7 @@ func WithCourseRepository(cr CourseRepository) serviceConfiguration {
 }
 
 // WithSubscriptionRepository injects the subscription repository to the domain Service
-func WithSubscriptionRepository(sr SubscriptionRepository) serviceConfiguration {
+func WithSubscriptionRepository(sr SubscriptionRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.subscriptions = sr
 		return nil
@@ -59,7 +59,7 @@ func WithSubscriptionRepository(sr SubscriptionRepository) serviceConfiguration 
 }
 
 // WithLogger injects the logger to the domain Service
-func WithLogger(l log.Logger) serviceConfiguration {
+func WithLogger(l log.Logger) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.logger = l
 		return nil

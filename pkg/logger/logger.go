@@ -1,20 +1,44 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/go-kit/log"
+	kitlog "github.com/go-kit/log"
 )
 
-func NewLogger() log.Logger {
-	var logger log.Logger
-	logger = log.NewLogfmtLogger(os.Stderr)
-	logger = log.NewSyncLogger(logger)
-	logger = log.With(logger,
+type Logger interface {
+	Log(keyvals ...interface{})
+	With(keyvals ...interface{}) Logger
+	Logger() kitlog.Logger
+}
+
+type logger struct {
+	logger kitlog.Logger
+}
+
+func NewLogger() Logger {
+	l := kitlog.NewLogfmtLogger(os.Stderr)
+	l = kitlog.NewSyncLogger(l)
+	l = kitlog.With(l,
 		"service", os.Args[0],
-		"time:", log.DefaultTimestampUTC,
-		"caller", log.DefaultCaller,
+		"time:", kitlog.DefaultTimestampUTC,
+		"caller", kitlog.DefaultCaller,
 	)
 
-	return logger
+	return logger{logger: l}
+}
+
+func (l logger) Log(keyvals ...interface{}) {
+	if err := l.logger.Log(keyvals...); err != nil {
+		fmt.Println("Erro de log:", err)
+	}
+}
+
+func (l logger) With(keyvals ...interface{}) Logger {
+	return &logger{logger: kitlog.With(l.logger, keyvals...)}
+}
+
+func (l logger) Logger() kitlog.Logger {
+	return l.logger
 }
