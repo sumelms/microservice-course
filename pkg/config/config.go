@@ -10,7 +10,7 @@ import (
 // Config struct
 type Config struct {
 	Server struct {
-		HTTP *Server `validate:"required"`
+		HTTP *HTTPServer `validate:"required"`
 	} `validate:"required"`
 	Database *Database `validate:"required"`
 }
@@ -25,9 +25,11 @@ type Database struct {
 	Database string `validate:"required"`
 }
 
-// Server config struct
-type Server struct {
-	Host string `validate:"required"`
+// HTTPServer config struct
+type HTTPServer struct {
+	Host     string `validate:"required"`
+	UseHTTPS bool
+	CertPath string
 }
 
 // NewConfig creates a new configurator
