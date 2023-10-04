@@ -21,7 +21,6 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	}
 
 	// Course handlers
-
 	listCourseHandler := endpoints.NewListCourseHandler(s, opts...)
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
 	findCourseHandler := endpoints.NewFindCourseHandler(s, opts...)
@@ -35,7 +34,6 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	r.Handle("/courses/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
 
 	// Subscription handlers
-
 	listSubscriptionHandler := endpoints.NewListSubscriptionHandler(s, opts...)
 	createSubscriptionHandler := endpoints.NewCreateSubscriptionHandler(s, opts...)
 	findSubscriptionHandler := endpoints.NewFindSubscriptionHandler(s, opts...)
