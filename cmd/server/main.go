@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"github.com/sumelms/microservice-course/internal/course/transport/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/sumelms/microservice-course/internal/course/transport/http"
 
 	"github.com/gorilla/mux"
 
