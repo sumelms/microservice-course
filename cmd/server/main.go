@@ -85,11 +85,12 @@ func main() {
 		// Initializing the HTTP Services
 		httpLogger := logger.With("component", "http")
 
-		if err := course.NewHTTPService(router, courseSvc, httpLogger.Logger()); err != nil {
+		if err = course.NewHTTPService(router, courseSvc, httpLogger.Logger()); err != nil {
 			logger.Log("msg", "unable to start a service: course", "error", err)
 			return err
 		}
-		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger.Logger()); err != nil {
+
+		if err = matrix.NewHTTPService(router, matrixSvc, httpLogger.Logger()); err != nil {
 			logger.Log("msg", "unable to start a service: matrix", "error", err)
 			return err
 		}
