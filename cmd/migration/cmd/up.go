@@ -6,13 +6,11 @@ import (
 
 	migrate "github.com/golang-migrate/migrate/v4"
 	migratePostgres "github.com/golang-migrate/migrate/v4/database/postgres"
-
-	// migration source adapter
+	// migration source adapter.
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	// database driver
+	// database driver.
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
-
 	"github.com/sumelms/microservice-course/pkg/config"
 	"github.com/sumelms/microservice-course/pkg/database/postgres"
 )
@@ -40,7 +38,10 @@ var upCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		if numSteps > 0 {
-			m.Steps(numSteps) //nolint: errcheck
+			if err := m.Steps(numSteps); err != nil {
+				fmt.Printf("error: %v", err)
+			}
+
 			return
 		}
 		m.Up() //nolint: errcheck

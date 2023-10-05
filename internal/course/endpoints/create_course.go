@@ -10,18 +10,17 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type createCourseRequest struct {
-	Code        string `json:"code" validate:"required,max=15"`
-	Name        string `json:"name" validate:"required,max=100"`
-	Underline   string `json:"underline" validate:"required,max=100"`
+	Code        string `json:"code"        validate:"required,max=15"`
+	Name        string `json:"name"        validate:"required,max=100"`
+	Underline   string `json:"underline"   validate:"required,max=100"`
 	Image       string `json:"image"`
 	ImageCover  string `json:"image_cover"`
-	Excerpt     string `json:"excerpt" validate:"required,max=140"`
+	Excerpt     string `json:"excerpt"     validate:"required,max=140"`
 	Description string `json:"description" validate:"required,max=255"`
 }
 
@@ -49,7 +48,7 @@ type createCourseResponse struct {
 // @Failure      400      {object}  error
 // @Failure      404      {object}  error
 // @Failure      500      {object}  error
-// @Router       /courses [post]
+// @Router       /courses [post].
 func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateCourseEndpoint(s),
@@ -102,6 +101,7 @@ func decodeCreateCourseRequest(_ context.Context, r *http.Request) (interface{},
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 

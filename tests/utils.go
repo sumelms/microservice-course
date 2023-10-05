@@ -8,7 +8,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/sumelms/microservice-course/tests/database"
 )
 
@@ -31,5 +30,6 @@ func NewTestDB(queries map[string]string) (*sqlx.DB, sqlmock.Sqlmock, map[string
 	}
 
 	mock.MatchExpectationsInOrder(false)
+
 	return db, mock, sqlStatements
 }

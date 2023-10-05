@@ -3,19 +3,19 @@ package database
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// NewSubscriptionRepository creates the subscription subscriptionRepository
+// NewSubscriptionRepository creates the subscription subscriptionRepository.
 func NewSubscriptionRepository(db *sqlx.DB) (subscriptionRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesSubscription() {
 		stmt, err := db.Preparex(query)
 		if err != nil {
-			return subscriptionRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+			return subscriptionRepository{},
+				errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}
@@ -32,12 +32,14 @@ type subscriptionRepository struct {
 func (r subscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription, error) {
 	stmt, ok := r.statements[getSubscription]
 	if !ok {
-		return domain.Subscription{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubscription)
+		return domain.Subscription{},
+			errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubscription)
 	}
 
 	var sub domain.Subscription
 	if err := stmt.Get(&sub, id); err != nil {
-		return domain.Subscription{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscription")
+		return domain.Subscription{},
+			errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscription")
 	}
 	return sub, nil
 }
@@ -45,12 +47,14 @@ func (r subscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription,
 func (r subscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
 	stmt, ok := r.statements[listSubscription]
 	if !ok {
-		return []domain.Subscription{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubscription)
+		return []domain.Subscription{},
+			errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubscription)
 	}
 
 	var subs []domain.Subscription
 	if err := stmt.Select(&subs); err != nil {
-		return []domain.Subscription{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscriptions")
+		return []domain.Subscription{},
+			errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subscriptions")
 	}
 	return subs, nil
 }

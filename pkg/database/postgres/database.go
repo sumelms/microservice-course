@@ -3,11 +3,10 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
-	// Adding the postgres driver
+	// Adding the postgres driver.
 	_ "github.com/jackc/pgx"
+	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-
 	"github.com/sumelms/microservice-course/pkg/config"
 )
 

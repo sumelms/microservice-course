@@ -7,23 +7,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sumelms/microservice-course/internal/course/transport/http"
-
 	"github.com/gorilla/mux"
-
+	_ "github.com/lib/pq"
+	"github.com/sumelms/microservice-course/internal/course"
+	"github.com/sumelms/microservice-course/internal/course/transport/http"
 	"github.com/sumelms/microservice-course/internal/matrix"
 	"github.com/sumelms/microservice-course/internal/matrix/clients"
-
-	"github.com/sumelms/microservice-course/internal/course"
-
-	"golang.org/x/sync/errgroup"
-
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
-
 	log "github.com/sumelms/microservice-course/pkg/logger"
-
-	_ "github.com/lib/pq"
+	"golang.org/x/sync/errgroup"
 )
 
 var (

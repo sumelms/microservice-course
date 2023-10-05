@@ -3,7 +3,6 @@ package database
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
@@ -29,7 +28,7 @@ type courseRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-// Course get the Course by given id
+// Course get the Course by given id.
 func (r courseRepository) Course(id uuid.UUID) (domain.Course, error) {
 	stmt, ok := r.statements[getCourse]
 	if !ok {
@@ -43,7 +42,7 @@ func (r courseRepository) Course(id uuid.UUID) (domain.Course, error) {
 	return c, nil
 }
 
-// Courses list all courses
+// Courses list all courses.
 func (r courseRepository) Courses() ([]domain.Course, error) {
 	stmt, ok := r.statements[listCourse]
 	if !ok {
@@ -57,7 +56,7 @@ func (r courseRepository) Courses() ([]domain.Course, error) {
 	return cc, nil
 }
 
-// CreateCourse creates a new course
+// CreateCourse creates a new course.
 func (r courseRepository) CreateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[createCourse]
 	if !ok {
@@ -70,20 +69,30 @@ func (r courseRepository) CreateCourse(c *domain.Course) error {
 	return nil
 }
 
-// UpdateCourse update the given course
+// UpdateCourse update the given course.
 func (r courseRepository) UpdateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[updateCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
 	}
 
-	if err := stmt.Get(c, c.Code, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description, c.UUID); err != nil {
+	args := []interface{}{
+		c.Code,
+		c.Name,
+		c.Underline,
+		c.Image,
+		c.ImageCover,
+		c.Excerpt,
+		c.Description,
+		c.UUID,
+	}
+	if err := stmt.Get(c, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
 	return nil
 }
 
-// DeleteCourse soft delete the course by given id
+// DeleteCourse soft delete the course by given id.
 func (r courseRepository) DeleteCourse(id uuid.UUID) error {
 	stmt, ok := r.statements[deleteCourse]
 	if !ok {

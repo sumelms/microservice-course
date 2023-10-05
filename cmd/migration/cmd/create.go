@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	// migration source adapter
+	// migration source adapter.
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	// database driver
+	// database driver.
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
 )

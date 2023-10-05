@@ -19,7 +19,7 @@ type ValidatorError struct {
 	Message string `json:"message"`
 }
 
-// EncodeError encodes errors from business-logic
+// EncodeError encodes errors from business-logic.
 func EncodeError(_ context.Context, err error, w http.ResponseWriter) {
 	resp := &ErrorResponse{
 		Message: "Invalid error",
@@ -59,6 +59,7 @@ func EncodeError(_ context.Context, err error, w http.ResponseWriter) {
 	content, err := json.Marshal(resp)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+
 		return
 	}
 
@@ -76,5 +77,6 @@ func msgForTag(tag string) string {
 	case "email":
 		return "Invalid email"
 	}
+
 	return ""
 }

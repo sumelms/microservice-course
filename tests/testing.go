@@ -1,13 +1,12 @@
 package tests
 
-// nolint: gochecknoinits, dogsled
-
 import (
 	"os"
 	"path"
 	"runtime"
 )
 
+//nolint:all
 func init() {
 	_, filename, _, _ := runtime.Caller(0)
 	dir := path.Join(path.Dir(filename), "..")

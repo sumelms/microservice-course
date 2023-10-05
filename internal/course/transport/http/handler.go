@@ -3,15 +3,13 @@ package http
 import (
 	"net/http"
 
-	"github.com/sumelms/microservice-course/internal/course/endpoints"
-	"github.com/sumelms/microservice-course/pkg/errors"
-
 	kittransport "github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/course/endpoints"
+	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
 func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger) {

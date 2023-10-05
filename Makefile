@@ -1,14 +1,7 @@
-# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
-ifeq (,$(shell go env GOBIN))
-GOBIN=$(shell go env GOPATH)/bin
-else
-GOBIN=$(shell go env GOBIN)
-endif
-
 # Testing
 GO_TEST_FLAGS = $(VERBOSE)
 COVER_PROFILE = cover.out
-GOLANGCI_LINT := $(GOBIN)/golangci-lint
+GOLANGCI_LINT := golangci-lint
 
 # Configuration
 VERSION := $(shell git describe --tags --exact-match 2>/dev/null || echo latest)
@@ -81,15 +74,12 @@ precommit: ## Executes the pre-commit hook (check the stashed changes)
 	./.githooks/pre-commit
 
 .PHONY: lint
-lint: $(GOLANGCI_LINT) ## Executes the linting tool (vet, sec, and others)
+lint: ## Executes the linting tool (vet, sec, and others)
 	$(GOLANGCI_LINT) run $(RUN_FLAGS)
 
 .PHONY: lint-fix
-lint-fix: $(GOLANGCI_LINT) ## Executes the linting with fix
+lint-fix: ## Executes the linting with fix
 	$(GOLANGCI_LINT) run --fix $(RUN_FLAGS)
-
-$(GOLANGCI_LINT):
-	./.travis/install-golangci-lint.sh
 
 ## --------------------------------------
 ## Linting

@@ -7,7 +7,7 @@ import (
 	"github.com/sherifabdlnaby/configuro"
 )
 
-// Config struct
+// Config struct.
 type Config struct {
 	Server struct {
 		HTTP *HTTPServer `validate:"required"`
@@ -15,7 +15,7 @@ type Config struct {
 	Database *Database `validate:"required"`
 }
 
-// Database config struct
+// Database config struct.
 type Database struct {
 	Driver   string `validate:"required"`
 	Host     string `validate:"required"`
@@ -25,14 +25,14 @@ type Database struct {
 	Database string `validate:"required"`
 }
 
-// HTTPServer config struct
+// HTTPServer config struct.
 type HTTPServer struct {
 	Host     string `validate:"required"`
 	UseHTTPS bool
 	CertPath string
 }
 
-// NewConfig creates a new configurator
+// NewConfig creates a new configurator.
 func NewConfig(configPath string) (*Config, error) {
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		return nil, errors.Wrapf(err, "Config file does not exists in %s", configPath)

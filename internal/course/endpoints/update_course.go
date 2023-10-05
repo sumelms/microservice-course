@@ -11,18 +11,17 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type updateCourseRequest struct {
-	UUID        uuid.UUID `json:"uuid" validate:"required"`
-	Name        string    `json:"name" validate:"required,max=100"`
-	Underline   string    `json:"underline" validate:"required,max=100"`
+	UUID        uuid.UUID `json:"uuid"        validate:"required"`
+	Name        string    `json:"name"        validate:"required,max=100"`
+	Underline   string    `json:"underline"   validate:"required,max=100"`
 	Image       string    `json:"image"`
 	ImageCover  string    `json:"image_cover"`
-	Excerpt     string    `json:"excerpt" validate:"required,max=140"`
+	Excerpt     string    `json:"excerpt"     validate:"required,max=140"`
 	Description string    `json:"description" validate:"required,max=255"`
 }
 

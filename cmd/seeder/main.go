@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	"github.com/sumelms/microservice-course/pkg/seed"
@@ -23,6 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %s", err)
 	}
+
 	defer func(db *sqlx.DB) {
 		_ = db.Close()
 	}(db)

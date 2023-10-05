@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sumelms/microservice-course/pkg/logger"
-
 	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/pkg/config"
+	"github.com/sumelms/microservice-course/pkg/logger"
 )
 
 type Server struct {

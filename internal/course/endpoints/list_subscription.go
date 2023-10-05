@@ -8,7 +8,6 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
@@ -72,6 +71,7 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	courseID := r.FormValue("course_id")
 	userID := r.FormValue("user_id")
+
 	return listSubscriptionRequest{
 		CourseID: uuid.MustParse(courseID),
 		UserID:   uuid.MustParse(userID),

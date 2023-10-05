@@ -7,21 +7,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
-
-	"github.com/sumelms/microservice-course/pkg/validator"
-
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
-
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type updateSubscriptionRequest struct {
-	UUID       uuid.UUID  `json:"uuid" validate:"required"`
-	UserID     uuid.UUID  `json:"user_id" validate:"required"`
-	CourseID   uuid.UUID  `json:"course_id" validate:"required"`
+	UUID       uuid.UUID  `json:"uuid"        validate:"required"`
+	UserID     uuid.UUID  `json:"user_id"     validate:"required"`
+	CourseID   uuid.UUID  `json:"course_id"   validate:"required"`
 	MatrixID   *uuid.UUID `json:"matrix_id"`
 	ValidUntil *time.Time `json:"valid_until"`
 }

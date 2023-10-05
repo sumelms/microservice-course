@@ -7,24 +7,20 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-kit/kit/endpoint"
+	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-
-	"github.com/go-kit/kit/endpoint"
-
-	"github.com/sumelms/microservice-course/pkg/validator"
-
-	kithttp "github.com/go-kit/kit/transport/http"
-
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
+	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type updateMatrixRequest struct {
-	UUID        uuid.UUID `json:"uuid" validate:"required"`
+	UUID        uuid.UUID `json:"uuid"        validate:"required"`
 	Code        string    `json:"code"`
-	Name        string    `json:"name" validate:"required,max=100"`
+	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
-	CourseID    uuid.UUID `json:"course_id" validate:"required"`
+	CourseID    uuid.UUID `json:"course_id"   validate:"required"`
 }
 
 type updateMatrixResponse struct {
