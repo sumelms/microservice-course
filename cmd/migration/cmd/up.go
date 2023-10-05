@@ -6,6 +6,7 @@ import (
 
 	migrate "github.com/golang-migrate/migrate/v4"
 	migratePostgres "github.com/golang-migrate/migrate/v4/database/postgres"
+
 	// migration source adapter.
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	// database driver.
