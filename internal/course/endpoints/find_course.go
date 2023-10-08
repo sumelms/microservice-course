@@ -19,6 +19,7 @@ type findCourseRequest struct {
 
 type findCourseResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
+	Code        string    `json:"code"`
 	Name        string    `json:"name"`
 	Underline   string    `json:"underline"`
 	Image       string    `json:"image,omitempty"`
