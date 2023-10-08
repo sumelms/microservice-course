@@ -71,7 +71,7 @@ func main() {
 
 	g.Go(func() error {
 		// Initialize the router
-		router := mux.NewRouter()
+		router := mux.NewRouter().StrictSlash(true)
 		// Global Middlewares
 		router.Use(http.CorsMiddleware)
 

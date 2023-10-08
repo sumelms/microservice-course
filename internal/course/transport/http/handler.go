@@ -27,8 +27,8 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 
 	cr := r.PathPrefix("/courses").Subrouter().StrictSlash(true)
 
-	cr.Handle("/", createCourseHandler).Methods(http.MethodPost)
-	cr.Handle("/", listCourseHandler).Methods(http.MethodGet)
+	cr.Handle("", createCourseHandler).Methods(http.MethodPost)
+	cr.Handle("", listCourseHandler).Methods(http.MethodGet)
 	cr.Handle("/{uuid}", findCourseHandler).Methods(http.MethodGet)
 	cr.Handle("/{uuid}", updateCourseHandler).Methods(http.MethodPut)
 	cr.Handle("/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
@@ -42,8 +42,8 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 
 	sr := r.PathPrefix("/subscriptions").Subrouter().StrictSlash(true)
 
-	sr.Handle("/", listSubscriptionHandler).Methods(http.MethodGet)
-	sr.Handle("/", createSubscriptionHandler).Methods(http.MethodPost)
+	sr.Handle("", listSubscriptionHandler).Methods(http.MethodGet)
+	sr.Handle("", createSubscriptionHandler).Methods(http.MethodPost)
 	sr.Handle("/{uuid}", findSubscriptionHandler).Methods(http.MethodGet)
 	sr.Handle("/{uuid}", deleteSubscriptionHandler).Methods(http.MethodDelete)
 	sr.Handle("/{uuid}", updateSubscriptionHandler).Methods(http.MethodPut)
