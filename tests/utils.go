@@ -25,7 +25,7 @@ func NewTestDB(queries map[string]string) (*sqlx.DB, sqlmock.Sqlmock, map[string
 
 	sqlStatements := make(map[string]*sqlmock.ExpectedPrepare)
 	for queryName, query := range queries {
-		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(string(query))))
+		stmt := mock.ExpectPrepare(fmt.Sprintf("^%s$", regexp.QuoteMeta(query)))
 		sqlStatements[queryName] = stmt
 	}
 
