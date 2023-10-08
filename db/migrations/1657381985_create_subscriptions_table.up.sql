@@ -1,7 +1,5 @@
 BEGIN;
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE subscriptions
 (
     id              bigserial       CONSTRAINT subscriptions_pk PRIMARY KEY,

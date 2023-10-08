@@ -1,7 +1,5 @@
 BEGIN;
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE matrices
 (
     id              bigserial       CONSTRAINT matrices_pk PRIMARY KEY,

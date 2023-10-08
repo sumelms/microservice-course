@@ -53,8 +53,8 @@ and scalability to your learning environment.
 
 ## Prerequisites
 
-- Go >= 1.19
-- PostgreSQL >= 9.5 (with `uuid-ossp` extension)
+- Go >= 1.21
+- PostgreSQL >= 16.0
 
 ## Prepare
 
@@ -88,7 +88,8 @@ It should be pretty simple, once all the dependencies are download just run the 
 $ make build
 ```
 
-It will generate an executable file at the `/bin` directory inside the project folder, and probably you want to know how to [run it](#running).
+It will generate an executable file at the `/bin` directory inside the project folder, and probably you want to know
+how to [run it](#running).
 
 ### Container build
 
@@ -111,7 +112,7 @@ $ docker-compose up -d postgres
 And then you could run the migrations using 
 
 ```bash
-$ make migrations-up
+$ make migration-up
 ```
 
 > *Note*
@@ -136,7 +137,8 @@ Once it is running you can test it: http://localhost:8080/health
 
 ### Container run
 
-If you want to run the microservice using a container runtime, the easiest way to do it is using the `docker-composer` or `podman-compose`.
+If you want to run the microservice using a container runtime, the easiest way to do it is using the `docker-composer`
+or `podman-compose`.
 
 All that you need to do is, execute the command:
 
@@ -144,7 +146,8 @@ All that you need to do is, execute the command:
 $ make compose-up
 ```
 
-It should create 2 containers, one that runs the microservice and another that runs the **Postgres**. If you already have your own **Postgres** instance you can only run the microservice container:
+It should create 2 containers, one that runs the microservice and another that runs the **Postgres**. If you already
+have your own **Postgres** instance you can only run the microservice container:
 
 ```bash
 $ make container-run
@@ -168,8 +171,8 @@ SUMELMS_SERVER_HTTP_PORT = 8080
 SUMELMS_DATABASE_DRIVER = postgres
 SUMELMS_DATABASE_HOST = localhost
 SUMELMS_DATABASE_PORT = 5432
-SUMELMS_DATABASE_USER = nil
-SUMELMS_DATABASE_PASSWORD = nil
+SUMELMS_DATABASE_USER = postgres
+SUMELMS_DATABASE_PASSWORD = password
 SUMELMS_DATABASE_DATABASE = sumelms_course
 ```
 
@@ -190,9 +193,11 @@ The complete Sumé LMS documentation can be found in our [official website](http
 
 ### API
 
-This project uses [Swagger](https://swagger.io/) to generate the API documentation and API mockup, the files can be found  `swagger` directory. 
+This project uses [Swagger](https://swagger.io/) to generate the API documentation and API mockup, the files can be
+found `swagger` directory.
 
-Sometimes, a microservice can cover more than one domain boundary, in this case, the API scheme should be stored in the same directory indicated above, but following the following filename convention: `<domain-name>-api.yaml`
+Sometimes, a microservice can cover more than one domain boundary, in this case, the API scheme should be stored in the
+same directory indicated above, but following the following filename convention: `<domain-name>-api.yaml`
 
 The best way to edit the API scheme is by using the [Swagger Editor](https://editor.swagger.io/).
 
