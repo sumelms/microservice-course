@@ -7,28 +7,28 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// NewSubjectRepository creates the subject subjectRepository.
-func NewSubjectRepository(db *sqlx.DB) (subjectRepository, error) { //nolint: revive
+// NewSubjectRepository creates the subject SubjectRepository.
+func NewSubjectRepository(db *sqlx.DB) (SubjectRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesSubject() {
 		stmt, err := db.Preparex(query)
 		if err != nil {
-			return subjectRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
+			return SubjectRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}
 
-	return subjectRepository{
+	return SubjectRepository{
 		statements: sqlStatements,
 	}, nil
 }
 
-type subjectRepository struct {
+type SubjectRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-func (r subjectRepository) Subject(id uuid.UUID) (domain.Subject, error) {
+func (r SubjectRepository) Subject(id uuid.UUID) (domain.Subject, error) {
 	stmt, ok := r.statements[getSubject]
 	if !ok {
 		return domain.Subject{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubject)
@@ -41,7 +41,7 @@ func (r subjectRepository) Subject(id uuid.UUID) (domain.Subject, error) {
 	return sub, nil
 }
 
-func (r subjectRepository) Subjects() ([]domain.Subject, error) {
+func (r SubjectRepository) Subjects() ([]domain.Subject, error) {
 	stmt, ok := r.statements[listSubject]
 	if !ok {
 		return []domain.Subject{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubject)
@@ -54,7 +54,7 @@ func (r subjectRepository) Subjects() ([]domain.Subject, error) {
 	return subs, nil
 }
 
-func (r subjectRepository) CreateSubject(sub *domain.Subject) error {
+func (r SubjectRepository) CreateSubject(sub *domain.Subject) error {
 	stmt, ok := r.statements[createSubject]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createSubject)
@@ -66,7 +66,7 @@ func (r subjectRepository) CreateSubject(sub *domain.Subject) error {
 	return nil
 }
 
-func (r subjectRepository) UpdateSubject(sub *domain.Subject) error {
+func (r SubjectRepository) UpdateSubject(sub *domain.Subject) error {
 	stmt, ok := r.statements[updateSubject]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateSubject)
@@ -78,7 +78,7 @@ func (r subjectRepository) UpdateSubject(sub *domain.Subject) error {
 	return nil
 }
 
-func (r subjectRepository) DeleteSubject(id uuid.UUID) error {
+func (r SubjectRepository) DeleteSubject(id uuid.UUID) error {
 	stmt, ok := r.statements[deleteSubject]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteSubject)
