@@ -7,29 +7,29 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-func NewCourseRepository(db *sqlx.DB) (courseRepository, error) { //nolint: revive
+func NewCourseRepository(db *sqlx.DB) (CourseRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
 	for queryName, query := range queriesCourse() {
 		stmt, err := db.Preparex(query)
 		if err != nil {
-			return courseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown,
+			return CourseRepository{}, errors.WrapErrorf(err, errors.ErrCodeUnknown,
 				"error preparing statement %s", queryName)
 		}
 		sqlStatements[queryName] = stmt
 	}
 
-	return courseRepository{
+	return CourseRepository{
 		statements: sqlStatements,
 	}, nil
 }
 
-type courseRepository struct {
+type CourseRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
 // Course get the Course by given id.
-func (r courseRepository) Course(id uuid.UUID) (domain.Course, error) {
+func (r CourseRepository) Course(id uuid.UUID) (domain.Course, error) {
 	stmt, ok := r.statements[getCourse]
 	if !ok {
 		return domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getCourse)
@@ -43,7 +43,7 @@ func (r courseRepository) Course(id uuid.UUID) (domain.Course, error) {
 }
 
 // Courses list all courses.
-func (r courseRepository) Courses() ([]domain.Course, error) {
+func (r CourseRepository) Courses() ([]domain.Course, error) {
 	stmt, ok := r.statements[listCourse]
 	if !ok {
 		return []domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listCourse)
@@ -57,20 +57,29 @@ func (r courseRepository) Courses() ([]domain.Course, error) {
 }
 
 // CreateCourse creates a new course.
-func (r courseRepository) CreateCourse(c *domain.Course) error {
+func (r CourseRepository) CreateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[createCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createCourse)
 	}
 
-	if err := stmt.Get(c, c.Code, c.Name, c.Underline, c.Image, c.ImageCover, c.Excerpt, c.Description); err != nil {
+	args := []interface{}{
+		c.Code,
+		c.Name,
+		c.Underline,
+		c.Image,
+		c.ImageCover,
+		c.Excerpt,
+		c.Description,
+	}
+	if err := stmt.Get(c, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
 	return nil
 }
 
 // UpdateCourse update the given course.
-func (r courseRepository) UpdateCourse(c *domain.Course) error {
+func (r CourseRepository) UpdateCourse(c *domain.Course) error {
 	stmt, ok := r.statements[updateCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
@@ -93,7 +102,7 @@ func (r courseRepository) UpdateCourse(c *domain.Course) error {
 }
 
 // DeleteCourse soft delete the course by given id.
-func (r courseRepository) DeleteCourse(id uuid.UUID) error {
+func (r CourseRepository) DeleteCourse(id uuid.UUID) error {
 	stmt, ok := r.statements[deleteCourse]
 	if !ok {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteCourse)

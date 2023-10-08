@@ -74,7 +74,7 @@ func TestRepository_Course(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[getCourse]
 			if !ok {
@@ -132,7 +132,7 @@ func TestRepository_Courses(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[listCourse]
 			if !ok {
@@ -191,7 +191,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[createCourse]
 			if !ok {
@@ -245,7 +245,7 @@ func TestRepository_UpdateCourse(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[updateCourse]
 			if !ok {
