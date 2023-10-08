@@ -6,5 +6,5 @@ database:
   host: localhost
   port: 5432
   username: postgres
-  password: secret@123
+  password: password
   database: sumelms_course
