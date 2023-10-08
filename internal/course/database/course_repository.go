@@ -28,11 +28,19 @@ type CourseRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
+func (r CourseRepository) statement(s string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[s]
+	if !ok {
+		return nil, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", s)
+	}
+	return stmt, nil
+}
+
 // Course get the Course by given id.
 func (r CourseRepository) Course(id uuid.UUID) (domain.Course, error) {
-	stmt, ok := r.statements[getCourse]
-	if !ok {
-		return domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getCourse)
+	stmt, err := r.statement(getCourse)
+	if err != nil {
+		return domain.Course{}, err
 	}
 
 	var c domain.Course
@@ -44,9 +52,9 @@ func (r CourseRepository) Course(id uuid.UUID) (domain.Course, error) {
 
 // Courses list all courses.
 func (r CourseRepository) Courses() ([]domain.Course, error) {
-	stmt, ok := r.statements[listCourse]
-	if !ok {
-		return []domain.Course{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listCourse)
+	stmt, err := r.statement(listCourse)
+	if err != nil {
+		return []domain.Course{}, err
 	}
 
 	var cc []domain.Course
@@ -58,9 +66,9 @@ func (r CourseRepository) Courses() ([]domain.Course, error) {
 
 // CreateCourse creates a new course.
 func (r CourseRepository) CreateCourse(c *domain.Course) error {
-	stmt, ok := r.statements[createCourse]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createCourse)
+	stmt, err := r.statement(createCourse)
+	if err != nil {
+		return err
 	}
 
 	args := []interface{}{
@@ -78,14 +86,15 @@ func (r CourseRepository) CreateCourse(c *domain.Course) error {
 	return nil
 }
 
-// UpdateCourse update the given course.
-func (r CourseRepository) UpdateCourse(c *domain.Course) error {
-	stmt, ok := r.statements[updateCourse]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateCourse)
+// UpdateCourseByID update the given course by ID.
+func (r CourseRepository) UpdateCourseByID(c *domain.Course) error {
+	stmt, err := r.statement(updateCourseByID)
+	if err != nil {
+		return err
 	}
 
 	args := []interface{}{
+		// set
 		c.Code,
 		c.Name,
 		c.Underline,
@@ -93,6 +102,7 @@ func (r CourseRepository) UpdateCourse(c *domain.Course) error {
 		c.ImageCover,
 		c.Excerpt,
 		c.Description,
+		// where
 		c.UUID,
 	}
 	if err := stmt.Get(c, args...); err != nil {
@@ -101,11 +111,35 @@ func (r CourseRepository) UpdateCourse(c *domain.Course) error {
 	return nil
 }
 
+func (r CourseRepository) UpdateCourseByCode(c *domain.Course) error {
+	stmt, err := r.statement(updateCourseByCode)
+	if err != nil {
+		return err
+	}
+
+	args := []interface{}{
+		// set
+		c.Name,
+		c.Underline,
+		c.Image,
+		c.ImageCover,
+		c.Excerpt,
+		c.Description,
+		// where
+		c.Code,
+	}
+
+	if err := stmt.Get(c, args...); err != nil {
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
+	}
+	return nil
+}
+
 // DeleteCourse soft delete the course by given id.
 func (r CourseRepository) DeleteCourse(id uuid.UUID) error {
-	stmt, ok := r.statements[deleteCourse]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteCourse)
+	stmt, err := r.statement(deleteCourse)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(id); err != nil {
