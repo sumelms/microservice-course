@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/sumelms/microservice-course/swagger"
 	"os"
 	"os/signal"
 	"syscall"
@@ -74,6 +75,9 @@ func main() {
 		router := mux.NewRouter().StrictSlash(true)
 		// Global Middlewares
 		router.Use(http.CorsMiddleware)
+
+		// Register Swagger handler
+		swagger.Register(router)
 
 		// Initializing the HTTP Services
 		httpLogger := logger.With("component", "http")

@@ -1,0 +1,140 @@
+basePath: /api/v1
+definitions:
+  endpoints.createCourseRequest:
+    properties:
+      code:
+        maxLength: 15
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      excerpt:
+        maxLength: 140
+        type: string
+      image:
+        type: string
+      image_cover:
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      underline:
+        maxLength: 100
+        type: string
+    required:
+    - code
+    - description
+    - excerpt
+    - name
+    - underline
+    type: object
+  endpoints.createCourseResponse:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      excerpt:
+        type: string
+      image:
+        type: string
+      image_cover:
+        type: string
+      name:
+        type: string
+      underline:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@sumelms.com
+    name: LMS Support
+    url: https://sumelms.com/support
+  description: This is the Sumé LMS API for Course Microservice
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://sumelms.com/docs/terms
+  title: Sumé LMS Course API
+  version: "1.0"
+paths:
+  /courses:
+    post:
+      consumes:
+      - application/json
+      description: Create a new course
+      parameters:
+      - description: Add Course
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.createCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.createCourseResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create course
+      tags:
+      - course
+securityDefinitions:
+  ApiKeyAuth:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+  OAuth2AccessCode:
+    authorizationUrl: https://sso.sumelms.com/oauth/authorize
+    flow: accessCode
+    scopes:
+      admin: '                            Grants read and write access to administrative
+        information'
+    tokenUrl: https://sso.sumelms.com/oauth/token
+    type: oauth2
+  OAuth2Application:
+    flow: application
+    scopes:
+      admin: '                             Grants read and write access to administrative
+        information'
+      write: '                             Grants write access'
+    tokenUrl: https://sso.sumelms.com/oauth/token
+    type: oauth2
+  OAuth2Implicit:
+    authorizationUrl: https://sso.sumelms.com/oauth/authorize
+    flow: implicit
+    scopes:
+      admin: '                          Grants read and write access to administrative
+        information'
+      write: '                          Grants write access'
+    type: oauth2
+  OAuth2Password:
+    flow: password
+    scopes:
+      admin: '                          Grants read and write access to administrative
+        information'
+      read: '                           Grants read access'
+      write: '                          Grants write access'
+    tokenUrl: https://sso.sumelms.com/oauth/token
+    type: oauth2
+swagger: "2.0"
