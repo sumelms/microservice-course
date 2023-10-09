@@ -1,6 +1,9 @@
 # This is a basic workflow to help you get started with Actions
 name: CI
 
+permissions:
+  contents: read
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -23,20 +26,21 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: 📥 Check out the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: 🕵 Lint the code
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
-          args: --timeout=3m
-
       - name: 💿 Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.19
+          go-version: 1.21
+          cache: false
+
+      - name: 🕵 Lint the code
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.54
+          args: --timeout=3m --out-format=colored-line-number
 
       - name: 🏭 Install dependencies
         run: go mod vendor

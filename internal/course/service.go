@@ -1,14 +1,12 @@
 package course
 
 import (
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
-
-	"github.com/go-kit/log"
-
 	"github.com/sumelms/microservice-course/internal/course/database"
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	"github.com/sumelms/microservice-course/internal/course/transport"
+	"github.com/sumelms/microservice-course/internal/course/transport/http"
 )
 
 func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
@@ -32,6 +30,6 @@ func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
 }
 
 func NewHTTPService(router *mux.Router, service domain.ServiceInterface, logger log.Logger) error {
-	transport.NewHTTPHandler(router, service, logger)
+	http.NewHTTPHandler(router, service, logger)
 	return nil
 }

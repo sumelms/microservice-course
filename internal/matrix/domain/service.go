@@ -23,7 +23,7 @@ type ServiceInterface interface {
 	DeleteSubject(ctx context.Context, id uuid.UUID) error
 }
 
-type serviceConfiguration func(svc *Service) error
+type ServiceConfiguration func(svc *Service) error
 
 type Service struct {
 	matrices MatrixRepository
@@ -32,8 +32,8 @@ type Service struct {
 	logger   log.Logger
 }
 
-// NewService creates a new domain Service instance
-func NewService(cfgs ...serviceConfiguration) (*Service, error) {
+// NewService creates a new domain Service instance.
+func NewService(cfgs ...ServiceConfiguration) (*Service, error) {
 	svc := &Service{}
 	for _, cfg := range cfgs {
 		err := cfg(svc)
@@ -41,36 +41,41 @@ func NewService(cfgs ...serviceConfiguration) (*Service, error) {
 			return nil, err
 		}
 	}
+
 	return svc, nil
 }
 
-// WithMatrixRepository injects the course repository to the domain Service
-func WithMatrixRepository(cr MatrixRepository) serviceConfiguration {
+// WithMatrixRepository injects the course repository to the domain Service.
+func WithMatrixRepository(cr MatrixRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.matrices = cr
+
 		return nil
 	}
 }
 
-// WithSubjectRepository injects the subscription repository to the domain Service
-func WithSubjectRepository(sr SubjectRepository) serviceConfiguration {
+// WithSubjectRepository injects the subscription repository to the domain Service.
+func WithSubjectRepository(sr SubjectRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.subjects = sr
+
 		return nil
 	}
 }
 
-// WithLogger injects the logger to the domain Service
-func WithLogger(l log.Logger) serviceConfiguration {
+// WithLogger injects the logger to the domain Service.
+func WithLogger(l log.Logger) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.logger = l
+
 		return nil
 	}
 }
 
-func WithCourseClient(c CourseClient) serviceConfiguration {
+func WithCourseClient(c CourseClient) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.courses = c
+
 		return nil
 	}
 }

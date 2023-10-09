@@ -1,14 +1,7 @@
-# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
-ifeq (,$(shell go env GOBIN))
-GOBIN=$(shell go env GOPATH)/bin
-else
-GOBIN=$(shell go env GOBIN)
-endif
-
 # Testing
 GO_TEST_FLAGS = $(VERBOSE)
 COVER_PROFILE = cover.out
-GOLANGCI_LINT := $(GOBIN)/golangci-lint
+GOLANGCI_LINT := golangci-lint
 
 # Configuration
 VERSION := $(shell git describe --tags --exact-match 2>/dev/null || echo latest)
@@ -16,6 +9,16 @@ MICROSERVICE_NAME := course
 BINARY_NAME := sumelms-${MICROSERVICE_NAME}
 RUN_FLAGS ?= 
 CONFIG_PATH ?= ./config/config.yml
+
+# Database / Migration
+SUMELMS_DATABASE_DRIVER ?= postgres
+SUMELMS_DATABASE_HOST ?= localhost
+SUMELMS_DATABASE_PORT ?= 5432
+SUMELMS_DATABASE_USER ?= postgres
+SUMELMS_DATABASE_PASSWORD ?= password
+SUMELMS_DATABASE_SSL ?= disable
+SUMELMS_DATABASE_DATABASE = sumelms_course
+DATABASE_DSN := "${SUMELMS_DATABASE_DRIVER}://${SUMELMS_DATABASE_USER}:${SUMELMS_DATABASE_PASSWORD}@${SUMELMS_DATABASE_HOST}:${SUMELMS_DATABASE_PORT}/${SUMELMS_DATABASE_DATABASE}?sslmode=${SUMELMS_DATABASE_SSL}"
 
 # Container
 DOCKERHUB_NAMESPACE ?= sumelms
@@ -56,17 +59,13 @@ build: ## Generate the microservice binary
 build-proto: ## Compiles the protobuf
 	protoc --go-grpc_out=proto --go_out=proto proto/**/*.proto
 
-.PHONY: migrations-up
-migrations-up: ## Runs the migrations 
-	go run cmd/migration/main.go up $(args)
+.PHONY: migration-up
+migration-up: ## Runs the migrations up
+	migrate -path ./db/migrations -database ${DATABASE_DSN} up
 
-.PHONY: migrations-down
-migrations-down: ## Revert the migrations
-	go run cmd/migration/main.go down $(args)
-
-.PHONY: migrations-create
-migrations-create: ## Create a new migration
-	go run cmd/migration/main.go create $(args)
+.PHONY: migration-down
+migration-down: ## Runs the migrations down
+	migrate -path ./db/migrations -database ${DATABASE_DSN} down
 
 .PHONY: swagger
 swagger: ## Generate Swagger Documentation
@@ -81,15 +80,12 @@ precommit: ## Executes the pre-commit hook (check the stashed changes)
 	./.githooks/pre-commit
 
 .PHONY: lint
-lint: $(GOLANGCI_LINT) ## Executes the linting tool (vet, sec, and others)
+lint: ## Executes the linting tool (vet, sec, and others)
 	$(GOLANGCI_LINT) run $(RUN_FLAGS)
 
 .PHONY: lint-fix
-lint-fix: $(GOLANGCI_LINT) ## Executes the linting with fix
+lint-fix: ## Executes the linting with fix
 	$(GOLANGCI_LINT) run --fix $(RUN_FLAGS)
-
-$(GOLANGCI_LINT):
-	./.travis/install-golangci-lint.sh
 
 ## --------------------------------------
 ## Linting

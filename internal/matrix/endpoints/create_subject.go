@@ -10,14 +10,13 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
-
 	domain "github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type createSubjectRequest struct {
-	Code      string  `json:"code" validate:"required,max=45"`
-	Name      string  `json:"name" validate:"required,max=100"`
+	Code      string  `json:"code"      validate:"required,max=45"`
+	Name      string  `json:"name"      validate:"required,max=100"`
 	Objective string  `json:"objective" validate:"max=245"`
 	Credit    float32 `json:"credit"`
 	Workload  float32 `json:"workload"`
@@ -25,8 +24,8 @@ type createSubjectRequest struct {
 
 type createSubjectResponse struct {
 	UUID      uuid.UUID `json:"uuid"`
-	Code      string    `json:"code" validate:"required,max=45"`
-	Name      string    `json:"name" validate:"required,max=100"`
+	Code      string    `json:"code"                validate:"required,max=45"`
+	Name      string    `json:"name"                validate:"required,max=100"`
 	Objective string    `json:"objective,omitempty" validate:"max=245"`
 	Credit    float32   `json:"credit,omitempty"`
 	Workload  float32   `json:"workload,omitempty"`

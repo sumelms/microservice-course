@@ -87,7 +87,7 @@ func TestRepository_Matrix(t *testing.T) {
 			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the matrixRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the MatrixRepository", err)
 			}
 			prep, ok := stmts[getMatrix]
 			if !ok {
@@ -145,7 +145,7 @@ func TestRepository_Matrices(t *testing.T) {
 			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the matrixRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the MatrixRepository", err)
 			}
 			prep, ok := stmts[listMatrix]
 			if !ok {
@@ -194,14 +194,15 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	for _, tt := range tests {
+	for _, testCase := range tests {
+		tt := testCase
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			db, stmts := newTestDB()
 			r, err := NewMatrixRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected creating the matrixRepository", err)
+				t.Fatalf("an error '%s' was not expected creating the MatrixRepository", err)
 			}
 			prep, ok := stmts[updateMatrix]
 			if !ok {

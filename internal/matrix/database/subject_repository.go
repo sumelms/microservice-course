@@ -3,12 +3,11 @@ package database
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// NewSubjectRepository creates the subject subjectRepository
+// NewSubjectRepository creates the subject subjectRepository.
 func NewSubjectRepository(db *sqlx.DB) (subjectRepository, error) { //nolint: revive
 	sqlStatements := make(map[string]*sqlx.Stmt)
 

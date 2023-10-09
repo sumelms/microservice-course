@@ -9,13 +9,12 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
-
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type removeSubjectRequest struct {
-	MatrixID  uuid.UUID `json:"matrix_id" validate:"required"`
+	MatrixID  uuid.UUID `json:"matrix_id"  validate:"required"`
 	SubjectID uuid.UUID `json:"subject_id" validate:"required"`
 }
 

@@ -237,7 +237,8 @@ func TestRepository_UpdateCourse(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
+	for _, testCase := range tests {
+		tt := testCase
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

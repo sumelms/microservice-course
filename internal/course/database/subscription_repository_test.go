@@ -236,7 +236,8 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	for _, tt := range tests {
+	for _, testCase := range tests {
+		tt := testCase
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

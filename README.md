@@ -114,6 +114,10 @@ And then you could run the migrations using
 $ make migrations-up
 ```
 
+> *Note*
+> You will have to install the [golang-migrate](https://github.com/golang-migrate/migrate) tool
+> It uses the same environment variables from the configuration section.
+
 ## Running
 
 OK! Now you build it you need to run the microservice. That should also be pretty easy.
@@ -161,12 +165,12 @@ The list of the environment variables and it's default values:
 
 ```bash
 SUMELMS_SERVER_HTTP_PORT = 8080
-SUMELMS_DATABASE_DRIVER = "postgres"
-SUMELMS_DATABASE_HOST = "localhost"
+SUMELMS_DATABASE_DRIVER = postgres
+SUMELMS_DATABASE_HOST = localhost
 SUMELMS_DATABASE_PORT = 5432
 SUMELMS_DATABASE_USER = nil
 SUMELMS_DATABASE_PASSWORD = nil
-SUMELMS_DATABASE_DATABASE = "sumelms_course"
+SUMELMS_DATABASE_DATABASE = sumelms_course
 ```
 
 > We are using [configuro](https://github.com/sherifabdlnaby/configuro) to manage the configuration, so the precedence

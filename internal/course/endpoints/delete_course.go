@@ -1,5 +1,7 @@
 package endpoints
 
+//nolint:dupl
+
 import (
 	"context"
 	"fmt"
@@ -9,7 +11,6 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 

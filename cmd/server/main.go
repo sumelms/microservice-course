@@ -2,28 +2,21 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/gorilla/mux"
-
+	_ "github.com/lib/pq"
+	"github.com/sumelms/microservice-course/internal/course"
+	"github.com/sumelms/microservice-course/internal/course/transport/http"
 	"github.com/sumelms/microservice-course/internal/matrix"
 	"github.com/sumelms/microservice-course/internal/matrix/clients"
-
-	"github.com/sumelms/microservice-course/internal/course"
-
-	"github.com/go-kit/log"
-	"golang.org/x/sync/errgroup"
-
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
-
-	applogger "github.com/sumelms/microservice-course/pkg/logger"
-
-	_ "github.com/lib/pq"
+	log "github.com/sumelms/microservice-course/pkg/logger"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -34,37 +27,38 @@ var (
 //nolint:funlen
 func main() {
 	// Logger
-	logger = applogger.NewLogger()
-	logger.Log("msg", "service started") //nolint: errcheck
+	logger = log.NewLogger()
+	logger.Log("msg", "service started")
 
 	// Configuration
 	cfg, err := loadConfig()
 	if err != nil {
-		logger.Log("exit", err) //nolint: errcheck
+		logger.Log("msg", "exit", "error", err)
 		os.Exit(-1)
 	}
 
 	// Database
 	db, err := database.Connect(cfg.Database)
 	if err != nil {
-		logger.Log("msg", "database error", err) //nolint: errcheck
+		logger.Log("msg", "database error", "error", err)
 		os.Exit(1)
 	}
 
 	// Initialize the domain services
-	svcLogger := log.With(logger, "component", "service")
+	svcLogger := logger.With("component", "service")
 
-	courseSvc, err := course.NewService(db, svcLogger)
+	courseSvc, err := course.NewService(db, svcLogger.Logger())
 	if err != nil {
-		logger.Log("msg", "unable to start course service", err) //nolint: errcheck
+		logger.Log("msg", "unable to start course service", "error", err)
 		os.Exit(1)
 	}
-	matrixSvc, err := matrix.NewService(db, svcLogger, clients.NewCourseClient(courseSvc))
+	matrixSvc, err := matrix.NewService(db, svcLogger.Logger(), clients.NewCourseClient(courseSvc))
 	if err != nil {
-		logger.Log("msg", "unable to start matrix service", err) //nolint: errcheck
+		logger.Log("msg", "unable to start matrix service", "error", err)
 		os.Exit(1)
 	}
 
+	// Gracefully shutdown
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
@@ -78,39 +72,29 @@ func main() {
 	g.Go(func() error {
 		// Initialize the router
 		router := mux.NewRouter()
+		// Global Middlewares
+		router.Use(http.CorsMiddleware)
 
 		// Initializing the HTTP Services
-		httpLogger := log.With(logger, "component", "http")
+		httpLogger := logger.With("component", "http")
 
-		if err := course.NewHTTPService(router, courseSvc, httpLogger); err != nil {
-			logger.Log("msg", "unable to start a service: course", "error", err) //nolint: errcheck
-			return err
-		}
-		if err := matrix.NewHTTPService(router, matrixSvc, httpLogger); err != nil {
-			logger.Log("msg", "unable to start a service: matrix", "error", err) //nolint: errcheck
+		if err = course.NewHTTPService(router, courseSvc, httpLogger.Logger()); err != nil {
+			logger.Log("msg", "unable to start a service: course", "error", err)
 			return err
 		}
 
-		// Handle the mux & router
-		srv := http.NewServeMux()
-		srv.Handle("/", router)
-
-		// Middlewares
-		http.Handle("/", accessControl(srv))
-
-		logger.Log("transport", "http", "address", cfg.Server.HTTP.Host, "msg", "listening") //nolint: errcheck
-
-		httpServer = &http.Server{
-			Addr:              cfg.Server.HTTP.Host,
-			ReadTimeout:       10 * time.Second,
-			WriteTimeout:      10 * time.Second,
-			ReadHeaderTimeout: 2 * time.Second,
-		}
-
-		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		if err = matrix.NewHTTPService(router, matrixSvc, httpLogger.Logger()); err != nil {
+			logger.Log("msg", "unable to start a service: matrix", "error", err)
 			return err
 		}
-		return nil
+
+		// Create the HTTP Server
+		httpServer, err = http.NewServer(cfg.Server.HTTP, router, httpLogger)
+		if err != nil {
+			return err
+		}
+
+		return httpServer.Start()
 	})
 
 	select {
@@ -120,24 +104,21 @@ func main() {
 		break
 	}
 
-	logger.Log("msg", "received shutdown signal") //nolint: errcheck
+	logger.Log("msg", "received shutdown signal")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 
 	if httpServer != nil {
-		if err := httpServer.Shutdown(shutdownCtx); err != nil {
-			logger.Log("msg", "server wasn't gracefully shutdown") //nolint: errcheck
-			defer os.Exit(2)
-		}
+		httpServer.Stop(shutdownCtx)
 	}
 
 	if err := g.Wait(); err != nil {
-		logger.Log("msg", "server returning an error", "error", err) //nolint: errcheck
+		logger.Log("msg", "server returning an error", "error", err)
 		defer os.Exit(2)
 	}
 
-	logger.Log("msg", "service ended") //nolint: errcheck
+	logger.Log("msg", "service ended")
 }
 
 func loadConfig() (*config.Config, error) {
@@ -153,18 +134,4 @@ func loadConfig() (*config.Config, error) {
 	}
 
 	return cfg, nil
-}
-
-func accessControl(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
-
-		if r.Method == "OPTIONS" {
-			return
-		}
-
-		h.ServeHTTP(w, r)
-	})
 }

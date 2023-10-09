@@ -9,13 +9,12 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
-
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type addSubjectRequest struct {
-	MatrixID  uuid.UUID `json:"matrix_id" validate:"required"`
+	MatrixID  uuid.UUID `json:"matrix_id"  validate:"required"`
 	SubjectID uuid.UUID `json:"subject_id" validate:"required"`
 }
 
@@ -30,7 +29,6 @@ func NewAddSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 	)
 }
 
-//nolint:dupl
 func makeAddSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req, ok := request.(addSubjectRequest)
