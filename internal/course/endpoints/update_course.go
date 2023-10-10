@@ -17,7 +17,7 @@ import (
 
 type updateCourseRequest struct {
 	UUID        uuid.UUID `json:"uuid"        validate:"required"`
-	Code        string    `json:"code" validate:"required,max=100"`
+	Code        string    `json:"code"        validate:"required,max=100"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Underline   string    `json:"underline"   validate:"required,max=100"`
 	Image       string    `json:"image"`

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/sumelms/microservice-course/swagger"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +16,7 @@ import (
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	log "github.com/sumelms/microservice-course/pkg/logger"
+	"github.com/sumelms/microservice-course/swagger"
 	"golang.org/x/sync/errgroup"
 )
 
