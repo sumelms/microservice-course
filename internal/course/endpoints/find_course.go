@@ -53,6 +53,7 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return &findCourseResponse{
 			UUID:        c.UUID,
+			Code:        c.Code,
 			Name:        c.Name,
 			Underline:   c.Underline,
 			Image:       c.Image,
