@@ -29,11 +29,18 @@ type SubscriptionRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-func (r SubscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription, error) {
-	stmt, ok := r.statements[getSubscription]
+func (r SubscriptionRepository) statement(s string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[s]
 	if !ok {
-		return domain.Subscription{},
-			errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubscription)
+		return nil, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", s)
+	}
+	return stmt, nil
+}
+
+func (r SubscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription, error) {
+	stmt, err := r.statement(getSubscription)
+	if err != nil {
+		return domain.Subscription{}, err
 	}
 
 	var sub domain.Subscription
@@ -45,10 +52,9 @@ func (r SubscriptionRepository) Subscription(id uuid.UUID) (domain.Subscription,
 }
 
 func (r SubscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
-	stmt, ok := r.statements[listSubscription]
-	if !ok {
-		return []domain.Subscription{},
-			errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubscription)
+	stmt, err := r.statement(listSubscription)
+	if err != nil {
+		return []domain.Subscription{}, err
 	}
 
 	var subs []domain.Subscription
@@ -60,9 +66,9 @@ func (r SubscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
 }
 
 func (r SubscriptionRepository) CreateSubscription(s *domain.Subscription) error {
-	stmt, ok := r.statements[createSubscription]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createSubscription)
+	stmt, err := r.statement(createSubscription)
+	if err != nil {
+		return err
 	}
 
 	args := []interface{}{
@@ -78,9 +84,9 @@ func (r SubscriptionRepository) CreateSubscription(s *domain.Subscription) error
 }
 
 func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) error {
-	stmt, ok := r.statements[updateSubscription]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateSubscription)
+	stmt, err := r.statement(updateSubscription)
+	if err != nil {
+		return err
 	}
 
 	args := []interface{}{
@@ -97,13 +103,43 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 }
 
 func (r SubscriptionRepository) DeleteSubscription(id uuid.UUID) error {
-	stmt, ok := r.statements[deleteSubscription]
-	if !ok {
-		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteSubscription)
+	stmt, err := r.statement(deleteSubscription)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(id); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting subscription")
 	}
 	return nil
+}
+
+func (r SubscriptionRepository) CourseSubscriptions(courseID uuid.UUID) ([]domain.Subscription, error) {
+	stmt, err := r.statement(courseSubscriptions)
+	if err != nil {
+		return []domain.Subscription{}, err
+	}
+
+	var subs []domain.Subscription
+	if err := stmt.Select(&subs, courseID); err != nil {
+		return []domain.Subscription{},
+			errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course subscriptions")
+	}
+
+	return subs, nil
+}
+
+func (r SubscriptionRepository) UserSubscriptions(userID uuid.UUID) ([]domain.Subscription, error) {
+	stmt, err := r.statement(userSubscriptions)
+	if err != nil {
+		return []domain.Subscription{}, err
+	}
+
+	var subs []domain.Subscription
+	if err := stmt.Select(&subs, userID); err != nil {
+		return []domain.Subscription{},
+			errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting user subscriptions")
+	}
+
+	return subs, nil
 }

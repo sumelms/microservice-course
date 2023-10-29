@@ -16,7 +16,7 @@ type ServiceInterface interface {
 	DeleteCourse(ctx context.Context, courseID uuid.UUID) error
 
 	Subscription(ctx context.Context, id uuid.UUID) (Subscription, error)
-	Subscriptions(ctx context.Context) ([]Subscription, error)
+	Subscriptions(ctx context.Context, filters *SubscriptionFilters) ([]Subscription, error)
 	CreateSubscription(ctx context.Context, cs *Subscription) error
 	UpdateSubscription(ctx context.Context, cs *Subscription) error
 	DeleteSubscription(ctx context.Context, id uuid.UUID) error

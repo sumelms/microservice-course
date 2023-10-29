@@ -36,16 +36,15 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		filters := make(map[string]interface{})
+		filters := &domain.SubscriptionFilters{}
 		if req.CourseID != uuid.Nil {
-			filters["course_id"] = req.CourseID
+			filters.CourseID = req.CourseID
 		}
 		if req.UserID != uuid.Nil {
-			filters["user_id"] = req.UserID
+			filters.UserID = req.UserID
 		}
 
-		// @TODO Implement filters to service
-		subscriptions, err := s.Subscriptions(ctx)
+		subscriptions, err := s.Subscriptions(ctx, filters)
 		if err != nil {
 			return nil, err
 		}
@@ -72,10 +71,15 @@ func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interfac
 	courseID := r.FormValue("course_id")
 	userID := r.FormValue("user_id")
 
-	return listSubscriptionRequest{
-		CourseID: uuid.MustParse(courseID),
-		UserID:   uuid.MustParse(userID),
-	}, nil
+	request := listSubscriptionRequest{}
+	if len(courseID) > 0 {
+		request.CourseID = uuid.MustParse(courseID)
+	}
+	if len(userID) > 0 {
+		request.UserID = uuid.MustParse(userID)
+	}
+
+	return request, nil
 }
 
 func encodeListSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

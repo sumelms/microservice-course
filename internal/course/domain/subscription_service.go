@@ -7,6 +7,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type SubscriptionFilters struct {
+	CourseID uuid.UUID `json:"course_id,omitempty"`
+	UserID   uuid.UUID `json:"user_id,omitempty"`
+}
+
 func (s *Service) Subscription(_ context.Context, id uuid.UUID) (Subscription, error) {
 	sub, err := s.subscriptions.Subscription(id)
 	if err != nil {
@@ -16,8 +21,20 @@ func (s *Service) Subscription(_ context.Context, id uuid.UUID) (Subscription, e
 	return sub, nil
 }
 
-func (s *Service) Subscriptions(_ context.Context) ([]Subscription, error) {
-	list, err := s.subscriptions.Subscriptions()
+func (s *Service) Subscriptions(_ context.Context, filters *SubscriptionFilters) ([]Subscription, error) {
+	list, err := func() ([]Subscription, error) {
+		if filters != nil {
+			if filters.UserID != uuid.Nil {
+				return s.subscriptions.UserSubscriptions(filters.UserID)
+			}
+
+			if filters.CourseID != uuid.Nil {
+				return s.subscriptions.CourseSubscriptions(filters.CourseID)
+			}
+		}
+
+		return s.subscriptions.Subscriptions()
+	}()
 	if err != nil {
 		return []Subscription{}, fmt.Errorf("service didn't found any subscription: %w", err)
 	}
