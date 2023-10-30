@@ -22,6 +22,7 @@ type findSubscriptionResponse struct {
 	UserID    uuid.UUID  `json:"user_id"`
 	CourseID  uuid.UUID  `json:"course_id"`
 	MatrixID  *uuid.UUID `json:"matrix_id,omitempty"`
+	Role      string     `json:"role"`
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -53,6 +54,7 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			UserID:    sub.UserID,
 			CourseID:  sub.CourseID,
 			MatrixID:  sub.MatrixID,
+			Role:      sub.Role,
 			ExpiresAt: sub.ExpiresAt,
 			CreatedAt: sub.CreatedAt,
 			UpdatedAt: sub.UpdatedAt,

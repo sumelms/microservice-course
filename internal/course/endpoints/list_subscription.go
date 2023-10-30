@@ -57,6 +57,7 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 				UserID:    sub.UserID,
 				CourseID:  sub.CourseID,
 				MatrixID:  sub.MatrixID,
+				Role:      sub.Role,
 				ExpiresAt: sub.ExpiresAt,
 				CreatedAt: sub.CreatedAt,
 				UpdatedAt: sub.UpdatedAt,

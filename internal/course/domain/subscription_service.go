@@ -47,6 +47,7 @@ func (s *Service) CreateSubscription(_ context.Context, sub *Subscription) error
 	if err != nil {
 		return fmt.Errorf("error checking if course %s exists: %w", sub.CourseID, err)
 	}
+
 	if err := s.subscriptions.CreateSubscription(sub); err != nil {
 		return fmt.Errorf("service can't create subscription: %w", err)
 	}

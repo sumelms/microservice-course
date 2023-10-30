@@ -75,6 +75,7 @@ func (r SubscriptionRepository) CreateSubscription(s *domain.Subscription) error
 		s.CourseID,
 		s.MatrixID,
 		s.UserID,
+		s.Role,
 		s.ExpiresAt,
 	}
 	if err := stmt.Get(s, args...); err != nil {
