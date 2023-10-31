@@ -15,8 +15,8 @@ import (
 )
 
 type createSubscriptionRequest struct {
-	UserID    uuid.UUID  `json:"user_id"    validate:"required"`
-	CourseID  uuid.UUID  `json:"course_id"  validate:"required"`
+	UserID    uuid.UUID  `json:"user_id"      validate:"required"`
+	CourseID  uuid.UUID  `json:"course_id"    validate:"required"`
 	MatrixID  *uuid.UUID `json:"matrix_id"`
 	Role      string     `validate:"required"`
 	ExpiresAt *time.Time `json:"expires_at"`
