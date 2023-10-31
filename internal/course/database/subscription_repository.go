@@ -94,6 +94,7 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 		sub.UserID,
 		sub.CourseID,
 		sub.MatrixID,
+		sub.Role,
 		sub.ExpiresAt,
 		sub.UUID,
 	}
