@@ -34,6 +34,7 @@ func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			c := cc[i]
 			list = append(list, findCourseResponse{
 				UUID:        c.UUID,
+				Code:        c.Code,
 				Name:        c.Name,
 				Underline:   c.Underline,
 				Image:       c.Image,

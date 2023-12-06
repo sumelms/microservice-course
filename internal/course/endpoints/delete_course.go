@@ -49,11 +49,17 @@ func decodeDeleteCourseRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	uid := uuid.MustParse(id)
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
 
 	return deleteCourseRequest{UUID: uid}, nil
 }
 
 func encodeDeleteCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	return kithttp.EncodeJSONResponse(ctx, w, response)
+	if response != nil {
+		return kithttp.EncodeJSONResponse(ctx, w, response)
+	}
+	return nil
 }

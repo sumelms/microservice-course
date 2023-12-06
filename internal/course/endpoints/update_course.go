@@ -17,6 +17,7 @@ import (
 
 type updateCourseRequest struct {
 	UUID        uuid.UUID `json:"uuid"        validate:"required"`
+	Code        string    `json:"code"        validate:"required,max=100"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Underline   string    `json:"underline"   validate:"required,max=100"`
 	Image       string    `json:"image"`
@@ -27,6 +28,7 @@ type updateCourseRequest struct {
 
 type updateCourseResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
+	Code        string    `json:"code"`
 	Name        string    `json:"name"`
 	Underline   string    `json:"underline"`
 	Image       string    `json:"image"`
@@ -70,6 +72,7 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return updateCourseResponse{
 			UUID:        c.UUID,
+			Code:        c.Code,
 			Name:        c.Name,
 			Underline:   c.Underline,
 			Image:       c.Image,

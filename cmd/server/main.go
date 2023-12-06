@@ -16,6 +16,7 @@ import (
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	log "github.com/sumelms/microservice-course/pkg/logger"
+	"github.com/sumelms/microservice-course/swagger"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -71,9 +72,12 @@ func main() {
 
 	g.Go(func() error {
 		// Initialize the router
-		router := mux.NewRouter()
+		router := mux.NewRouter().StrictSlash(true)
 		// Global Middlewares
 		router.Use(http.CorsMiddleware)
+
+		// Register Swagger handler
+		swagger.Register(router)
 
 		// Initializing the HTTP Services
 		httpLogger := logger.With("component", "http")

@@ -19,6 +19,7 @@ type findCourseRequest struct {
 
 type findCourseResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
+	Code        string    `json:"code"`
 	Name        string    `json:"name"`
 	Underline   string    `json:"underline"`
 	Image       string    `json:"image,omitempty"`
@@ -52,6 +53,7 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		return &findCourseResponse{
 			UUID:        c.UUID,
+			Code:        c.Code,
 			Name:        c.Name,
 			Underline:   c.Underline,
 			Image:       c.Image,

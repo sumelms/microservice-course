@@ -74,7 +74,7 @@ func TestRepository_Course(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[getCourse]
 			if !ok {
@@ -132,7 +132,7 @@ func TestRepository_Courses(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[listCourse]
 			if !ok {
@@ -191,7 +191,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
 			prep, ok := stmts[createCourse]
 			if !ok {
@@ -207,7 +207,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 	}
 }
 
-func TestRepository_UpdateCourse(t *testing.T) {
+func TestRepository_UpdateCourseByID(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
 		"description", "created_at", "updated_at", "deleted_at"}).
 		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
@@ -245,18 +245,20 @@ func TestRepository_UpdateCourse(t *testing.T) {
 			db, _, stmts := newCourseTestDB()
 			r, err := NewCourseRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the courseRepository", err)
+				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
-			prep, ok := stmts[updateCourse]
+			prep, ok := stmts[updateCourseByID]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", updateCourse)
+				t.Fatalf("prepared statement %s not found", updateCourseByID)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.UpdateCourse(tt.args.c); (err != nil) != tt.wantErr {
+			if err := r.UpdateCourseByID(tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateCourse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
+
+// TODO Test_UpdateCourseByCode
