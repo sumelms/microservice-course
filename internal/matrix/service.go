@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sumelms/microservice-course/internal/matrix/database"
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
-	"github.com/sumelms/microservice-course/internal/matrix/transport"
+	"github.com/sumelms/microservice-course/internal/matrix/transport/http"
 )
 
 func NewService(db *sqlx.DB, logger log.Logger, course domain.CourseClient) (*domain.Service, error) {
@@ -31,6 +31,6 @@ func NewService(db *sqlx.DB, logger log.Logger, course domain.CourseClient) (*do
 }
 
 func NewHTTPService(router *mux.Router, service domain.ServiceInterface, logger log.Logger) error {
-	transport.NewHTTPHandler(router, service, logger)
+	http.NewHTTPHandler(router, service, logger)
 	return nil
 }
