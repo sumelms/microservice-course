@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/sumelms/microservice-course/internal/course"
-	"github.com/sumelms/microservice-course/internal/course/transport/http"
 	"github.com/sumelms/microservice-course/internal/matrix"
 	"github.com/sumelms/microservice-course/internal/matrix/clients"
+	"github.com/sumelms/microservice-course/internal/shared"
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	log "github.com/sumelms/microservice-course/pkg/logger"
@@ -22,7 +22,7 @@ import (
 
 var (
 	logger     log.Logger
-	httpServer *http.Server
+	httpServer *shared.Server
 )
 
 //nolint:funlen
@@ -74,7 +74,7 @@ func main() {
 		// Initialize the router
 		router := mux.NewRouter().StrictSlash(true)
 		// Global Middlewares
-		router.Use(http.CorsMiddleware)
+		router.Use(shared.CorsMiddleware)
 
 		// Register Swagger handler
 		swagger.Register(router)
@@ -93,7 +93,7 @@ func main() {
 		}
 
 		// Create the HTTP Server
-		httpServer, err = http.NewServer(cfg.Server.HTTP, router, httpLogger)
+		httpServer, err = shared.NewServer(cfg.Server.HTTP, router, httpLogger)
 		if err != nil {
 			return err
 		}

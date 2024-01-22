@@ -1,4 +1,4 @@
-package transport
+package http
 
 import (
 	"net/http"
@@ -18,27 +18,51 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 		kithttp.ServerErrorEncoder(errors.EncodeError),
 	}
 
-	listMatrixHandler := endpoints.NewListMatrixHandler(s, opts...)
-	createMatrixHandler := endpoints.NewCreateMatrixHandler(s, opts...)
-	findMatrixHandler := endpoints.NewFindMatrixHandler(s, opts...)
-	updateMatrixHandler := endpoints.NewUpdateMatrixHandler(s, opts...)
-	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
+	matrixRouter := NewMatrixRouter(s, opts...)
+	subjectRouter := NewSubjectRouter(s, opts...)
 
-	r.Handle("/matrices", listMatrixHandler).Methods(http.MethodGet)
-	r.Handle("/matrices", createMatrixHandler).Methods(http.MethodPost)
-	r.Handle("/matrices/{uuid}", findMatrixHandler).Methods(http.MethodGet)
-	r.Handle("/matrices/{uuid}", updateMatrixHandler).Methods(http.MethodPut)
-	r.Handle("/matrices/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
+	r.PathPrefix("/matrices").Handler(matrixRouter)
+	r.PathPrefix("/subjects").Handler(subjectRouter)
+}
+
+func NewMatrixRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
+	r := mux.NewRouter().PathPrefix("/matrices").Subrouter().StrictSlash(true)
+
+	listMatrixHandler := endpoints.NewListMatrixHandler(s, opts...)
+	r.Handle("", listMatrixHandler).Methods(http.MethodGet)
+
+	createMatrixHandler := endpoints.NewCreateMatrixHandler(s, opts...)
+	r.Handle("", createMatrixHandler).Methods(http.MethodPost)
+
+	findMatrixHandler := endpoints.NewFindMatrixHandler(s, opts...)
+	r.Handle("/{uuid}", findMatrixHandler).Methods(http.MethodGet)
+
+	updateMatrixHandler := endpoints.NewUpdateMatrixHandler(s, opts...)
+	r.Handle("/{uuid}", updateMatrixHandler).Methods(http.MethodPut)
+
+	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
+	r.Handle("/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
+
+	return r
+}
+
+func NewSubjectRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
+	r := mux.NewRouter().PathPrefix("/subjects").Subrouter().StrictSlash(true)
 
 	listSubjectHandler := endpoints.NewListSubjectHandler(s, opts...)
-	createSubjectHandler := endpoints.NewCreateSubjectHandler(s, opts...)
-	findSubjectHandler := endpoints.NewFindSubjectHandler(s, opts...)
-	updateSubjectHandler := endpoints.NewUpdateSubjectHandler(s, opts...)
-	deleteSubjectHandler := endpoints.NewDeleteSubjectHandler(s, opts...)
+	r.Handle("", listSubjectHandler).Methods(http.MethodGet)
 
-	r.Handle("/subjects", createSubjectHandler).Methods(http.MethodPost)
-	r.Handle("/subjects", listSubjectHandler).Methods(http.MethodGet)
-	r.Handle("/subjects/{uuid}", findSubjectHandler).Methods(http.MethodGet)
-	r.Handle("/subjects/{uuid}", updateSubjectHandler).Methods(http.MethodPut)
-	r.Handle("/subjects/{uuid}", deleteSubjectHandler).Methods(http.MethodDelete)
+	createSubjectHandler := endpoints.NewCreateSubjectHandler(s, opts...)
+	r.Handle("", createSubjectHandler).Methods(http.MethodPost)
+
+	findSubjectHandler := endpoints.NewFindSubjectHandler(s, opts...)
+	r.Handle("/{uuid}", findSubjectHandler).Methods(http.MethodGet)
+
+	updateSubjectHandler := endpoints.NewUpdateSubjectHandler(s, opts...)
+	r.Handle("/{uuid}", updateSubjectHandler).Methods(http.MethodPut)
+
+	deleteSubjectHandler := endpoints.NewDeleteSubjectHandler(s, opts...)
+	r.Handle("/{uuid}", deleteSubjectHandler).Methods(http.MethodDelete)
+
+	return r
 }
