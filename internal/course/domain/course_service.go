@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Service) Course(_ context.Context, id uuid.UUID) (Course, error) {
-	c, err := s.courses.Course(id)
+func (s *Service) Course(_ context.Context, courseUUID uuid.UUID) (Course, error) {
+	c, err := s.courses.Course(courseUUID)
 	if err != nil {
 		return Course{}, fmt.Errorf("service can't find course: %w", err)
 	}
@@ -42,7 +42,7 @@ func (s *Service) UpdateCourse(_ context.Context, c *Course) error {
 	if exists.Code == c.Code {
 		err = s.courses.UpdateCourseByCode(c)
 	} else {
-		err = s.courses.UpdateCourseByID(c)
+		err = s.courses.UpdateCourseByUUID(c)
 	}
 
 	if err != nil {
@@ -51,8 +51,8 @@ func (s *Service) UpdateCourse(_ context.Context, c *Course) error {
 	return nil
 }
 
-func (s *Service) DeleteCourse(_ context.Context, id uuid.UUID) error {
-	if err := s.courses.DeleteCourse(id); err != nil {
+func (s *Service) DeleteCourse(_ context.Context, courseUUID uuid.UUID) error {
+	if err := s.courses.DeleteCourse(courseUUID); err != nil {
 		return fmt.Errorf("service can't delete course: %w", err)
 	}
 
