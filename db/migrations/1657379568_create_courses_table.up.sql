@@ -16,9 +16,10 @@ CREATE TABLE courses
     deleted_at      timestamp
 );
 
+COMMENT ON COLUMN courses.deleted_at IS 'This column makes soft deletes possible';
+
 CREATE UNIQUE INDEX courses_uuid_uindex
     ON courses (uuid);
-
 CREATE UNIQUE INDEX courses_code_uindex
     ON courses (code, deleted_at) NULLS NOT DISTINCT;
 

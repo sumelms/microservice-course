@@ -14,7 +14,6 @@ import (
 
 var (
 	course = domain.Course{
-		ID:          1,
 		UUID:        utils.CourseUUID,
 		Code:        "SUME123",
 		Name:        "Course Name",
@@ -25,7 +24,6 @@ var (
 		Description: "Course Description",
 		CreatedAt:   utils.Now,
 		UpdatedAt:   utils.Now,
-		DeletedAt:   nil,
 	}
 )
 
@@ -34,10 +32,10 @@ func newCourseTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedP
 }
 
 func TestRepository_Course(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
-		"description", "created_at", "updated_at", "deleted_at"}).
-		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
+	validRows := sqlmock.NewRows([]string{"uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+		"description", "created_at", "updated_at"}).
+		AddRow(course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
+			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt)
 
 	type args struct {
 		courseUUID uuid.UUID
@@ -96,13 +94,13 @@ func TestRepository_Course(t *testing.T) {
 }
 
 func TestRepository_Courses(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
-		"description", "created_at", "updated_at", "deleted_at"}).
-		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt).
-		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), course.Code, course.Name,
+	validRows := sqlmock.NewRows([]string{"uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+		"description", "created_at", "updated_at"}).
+		AddRow(course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
+			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt).
+		AddRow(uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), course.Code, course.Name,
 			course.Underline, course.Image, course.ImageCover, course.Excerpt, course.Description, course.CreatedAt,
-			course.UpdatedAt, course.DeletedAt)
+			course.UpdatedAt)
 
 	tests := []struct {
 		name    string
@@ -154,10 +152,10 @@ func TestRepository_Courses(t *testing.T) {
 }
 
 func TestRepository_CreateCourse(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
-		"description", "created_at", "updated_at", "deleted_at"}).
-		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
+	validRows := sqlmock.NewRows([]string{"uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+		"description", "created_at", "updated_at"}).
+		AddRow(course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
+			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt)
 
 	type args struct {
 		c *domain.Course
@@ -208,10 +206,10 @@ func TestRepository_CreateCourse(t *testing.T) {
 }
 
 func TestRepository_UpdateCourseByUUID(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
-		"description", "created_at", "updated_at", "deleted_at"}).
-		AddRow(course.ID, course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
-			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt, course.DeletedAt)
+	validRows := sqlmock.NewRows([]string{"uuid", "code", "name", "underline", "image", "image_cover", "excerpt",
+		"description", "created_at", "updated_at"}).
+		AddRow(course.UUID, course.Code, course.Name, course.Underline, course.Image, course.ImageCover,
+			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt)
 
 	type args struct {
 		c *domain.Course
