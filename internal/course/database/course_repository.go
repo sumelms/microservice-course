@@ -111,30 +111,6 @@ func (r CourseRepository) UpdateCourseByUUID(c *domain.Course) error {
 	return nil
 }
 
-func (r CourseRepository) UpdateCourseByCode(c *domain.Course) error {
-	stmt, err := r.statement(updateCourseByCode)
-	if err != nil {
-		return err
-	}
-
-	args := []interface{}{
-		// set
-		c.Name,
-		c.Underline,
-		c.Image,
-		c.ImageCover,
-		c.Excerpt,
-		c.Description,
-		// where
-		c.Code,
-	}
-
-	if err := stmt.Get(c, args...); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
-	}
-	return nil
-}
-
 // DeleteCourse soft delete the course by given uuid.
 func (r CourseRepository) DeleteCourse(courseUUID uuid.UUID) error {
 	stmt, err := r.statement(deleteCourse)

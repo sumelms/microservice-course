@@ -7,6 +7,5 @@ type CourseRepository interface {
 	Courses() ([]Course, error)
 	CreateCourse(c *Course) error
 	UpdateCourseByUUID(c *Course) error
-	UpdateCourseByCode(c *Course) error
 	DeleteCourse(courseUUID uuid.UUID) error
 }

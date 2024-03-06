@@ -258,5 +258,3 @@ func TestRepository_UpdateCourseByUUID(t *testing.T) {
 		})
 	}
 }
-
-// TODO Test_UpdateCourseByCode
