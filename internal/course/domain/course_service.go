@@ -34,7 +34,7 @@ func (s *Service) CreateCourse(_ context.Context, c *Course) error {
 }
 
 func (s *Service) UpdateCourse(_ context.Context, c *Course) error {
-	if err := s.courses.UpdateCourseByUUID(c); err != nil {
+	if err := s.courses.UpdateCourse(c); err != nil {
 		return fmt.Errorf("service can't update course: %w", err)
 	}
 	return nil

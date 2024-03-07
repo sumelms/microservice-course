@@ -86,9 +86,9 @@ func (r CourseRepository) CreateCourse(c *domain.Course) error {
 	return nil
 }
 
-// UpdateCourseByUUID update the given course by ID.
-func (r CourseRepository) UpdateCourseByUUID(c *domain.Course) error {
-	stmt, err := r.statement(updateCourseByUUID)
+// UpdateCourse update the given course by ID.
+func (r CourseRepository) UpdateCourse(c *domain.Course) error {
+	stmt, err := r.statement(updateCourse)
 	if err != nil {
 		return err
 	}

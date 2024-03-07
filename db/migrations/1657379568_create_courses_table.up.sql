@@ -16,7 +16,7 @@ CREATE TABLE courses
     deleted_at      timestamp
 );
 
-COMMENT ON COLUMN courses.deleted_at IS 'This column makes soft deletes possible';
+COMMENT ON COLUMN courses.deleted_at IS 'Timestamp indicating when a course was softly deleted, allowing for data recovery and historical queries without permanently removing the record from the database. A NULL value means the subscription is active.';
 
 CREATE UNIQUE INDEX courses_uuid_uindex
     ON courses (uuid);
