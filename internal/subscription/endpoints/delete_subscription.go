@@ -9,7 +9,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
 type deleteSubscriptionRequest struct {

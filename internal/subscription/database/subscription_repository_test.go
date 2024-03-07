@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/subscription/domain"
 	utils "github.com/sumelms/microservice-course/tests"
 )
 
