@@ -2,7 +2,7 @@ BEGIN;
 
 CREATE TABLE courses
 (
-    id              integer         PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id              bigint          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     uuid            uuid            DEFAULT uuid_generate_v4() NOT NULL,
     code            varchar         NOT NULL,
     name            varchar         NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE courses
     deleted_at      timestamp
 );
 
-COMMENT ON COLUMN courses.deleted_at IS 'Timestamp indicating when a course was softly deleted, allowing for data recovery and historical queries without permanently removing the record from the database. A NULL value means the subscription is active.';
+COMMENT ON COLUMN courses.deleted_at IS 'Timestamp indicating when a course was softly deleted, allowing for data recovery. A NULL value means the course is active.';
 
 CREATE UNIQUE INDEX courses_uuid_uindex
     ON courses (uuid);
