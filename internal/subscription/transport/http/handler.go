@@ -27,7 +27,6 @@ func NewSubscriptionRouter(s domain.ServiceInterface, opts ...kithttp.ServerOpti
 	r := mux.NewRouter().PathPrefix("/subscriptions").Subrouter().StrictSlash(true)
 
 	listSubscriptionHandler := endpoints.NewListSubscriptionHandler(s, opts...)
-	// listQueryParams := []string{"user_id", "{user_id}", "course_id", "{course_id}"}
 	r.Handle("", listSubscriptionHandler).Methods(http.MethodGet)
 
 	createSubscriptionHandler := endpoints.NewCreateSubscriptionHandler(s, opts...)
