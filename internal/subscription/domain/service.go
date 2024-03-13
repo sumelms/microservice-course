@@ -20,6 +20,8 @@ type ServiceConfiguration func(svc *Service) error
 
 type Service struct {
 	subscriptions SubscriptionRepository
+	courses       CourseClient
+	matrices      MatrixClient
 	logger        log.Logger
 }
 
@@ -40,6 +42,22 @@ func NewService(cfgs ...ServiceConfiguration) (*Service, error) {
 func WithSubscriptionRepository(sr SubscriptionRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.subscriptions = sr
+
+		return nil
+	}
+}
+
+func WithCourseClient(c CourseClient) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.courses = c
+
+		return nil
+	}
+}
+
+func WithMatrixClient(m MatrixClient) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.matrices = m
 
 		return nil
 	}
