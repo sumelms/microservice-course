@@ -36,15 +36,15 @@ func (r CourseRepository) statement(s string) (*sqlx.Stmt, error) {
 	return stmt, nil
 }
 
-// Course get the Course by given id.
-func (r CourseRepository) Course(id uuid.UUID) (domain.Course, error) {
+// Course get the Course by given uuid.
+func (r CourseRepository) Course(courseUUID uuid.UUID) (domain.Course, error) {
 	stmt, err := r.statement(getCourse)
 	if err != nil {
 		return domain.Course{}, err
 	}
 
 	var c domain.Course
-	if err := stmt.Get(&c, id); err != nil {
+	if err := stmt.Get(&c, courseUUID); err != nil {
 		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
 	return c, nil
@@ -86,9 +86,9 @@ func (r CourseRepository) CreateCourse(c *domain.Course) error {
 	return nil
 }
 
-// UpdateCourseByID update the given course by ID.
-func (r CourseRepository) UpdateCourseByID(c *domain.Course) error {
-	stmt, err := r.statement(updateCourseByID)
+// UpdateCourse update the given course by ID.
+func (r CourseRepository) UpdateCourse(c *domain.Course) error {
+	stmt, err := r.statement(updateCourse)
 	if err != nil {
 		return err
 	}
@@ -111,38 +111,14 @@ func (r CourseRepository) UpdateCourseByID(c *domain.Course) error {
 	return nil
 }
 
-func (r CourseRepository) UpdateCourseByCode(c *domain.Course) error {
-	stmt, err := r.statement(updateCourseByCode)
-	if err != nil {
-		return err
-	}
-
-	args := []interface{}{
-		// set
-		c.Name,
-		c.Underline,
-		c.Image,
-		c.ImageCover,
-		c.Excerpt,
-		c.Description,
-		// where
-		c.Code,
-	}
-
-	if err := stmt.Get(c, args...); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
-	}
-	return nil
-}
-
-// DeleteCourse soft delete the course by given id.
-func (r CourseRepository) DeleteCourse(id uuid.UUID) error {
+// DeleteCourse soft delete the course by given uuid.
+func (r CourseRepository) DeleteCourse(courseUUID uuid.UUID) error {
 	stmt, err := r.statement(deleteCourse)
 	if err != nil {
 		return err
 	}
 
-	if _, err := stmt.Exec(id); err != nil {
+	if _, err := stmt.Exec(courseUUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil

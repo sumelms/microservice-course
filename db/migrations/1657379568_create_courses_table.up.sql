@@ -2,9 +2,9 @@ BEGIN;
 
 CREATE TABLE courses
 (
-    id              bigserial       CONSTRAINT courses_pk PRIMARY KEY,
+    id              bigint          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     uuid            uuid            DEFAULT uuid_generate_v4() NOT NULL,
-    code            varchar         NOT NULL UNIQUE,
+    code            varchar         NOT NULL,
     name            varchar         NOT NULL,
     underline       varchar         NOT NULL,
     image           varchar         NULL,
@@ -16,9 +16,11 @@ CREATE TABLE courses
     deleted_at      timestamp
 );
 
-CREATE UNIQUE INDEX courses_id_uindex
-    ON courses (id);
+COMMENT ON COLUMN courses.deleted_at IS 'Timestamp indicating when a course was softly deleted, allowing for data recovery. A NULL value means the course is active.';
+
 CREATE UNIQUE INDEX courses_uuid_uindex
     ON courses (uuid);
+CREATE UNIQUE INDEX courses_code_uindex
+    ON courses (code, deleted_at) NULLS NOT DISTINCT;
 
 COMMIT;
