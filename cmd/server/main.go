@@ -13,6 +13,7 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix"
 	"github.com/sumelms/microservice-course/internal/matrix/clients"
 	"github.com/sumelms/microservice-course/internal/shared"
+	"github.com/sumelms/microservice-course/internal/subscription"
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
 	log "github.com/sumelms/microservice-course/pkg/logger"
@@ -53,6 +54,13 @@ func main() {
 		logger.Log("msg", "unable to start course service", "error", err)
 		os.Exit(1)
 	}
+
+	subscriptionSvc, err := subscription.NewService(db, svcLogger.Logger())
+	if err != nil {
+		logger.Log("msg", "unable to start subscription service", "error", err)
+		os.Exit(1)
+	}
+
 	matrixSvc, err := matrix.NewService(db, svcLogger.Logger(), clients.NewCourseClient(courseSvc))
 	if err != nil {
 		logger.Log("msg", "unable to start matrix service", "error", err)
@@ -89,6 +97,11 @@ func main() {
 
 		if err = matrix.NewHTTPService(router, matrixSvc, httpLogger.Logger()); err != nil {
 			logger.Log("msg", "unable to start a service: matrix", "error", err)
+			return err
+		}
+
+		if err = subscription.NewHTTPService(router, subscriptionSvc, httpLogger.Logger()); err != nil {
+			logger.Log("msg", "unable to start a service: subscription", "error", err)
 			return err
 		}
 

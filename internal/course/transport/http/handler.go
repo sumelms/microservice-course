@@ -19,10 +19,8 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 	}
 
 	courseRouter := NewCourseRouter(s, opts...)
-	subscriptionRouter := NewSubscriptionRouter(s, opts...)
 
 	r.PathPrefix("/courses").Handler(courseRouter)
-	r.PathPrefix("/subscriptions").Handler(subscriptionRouter)
 }
 
 func NewCourseRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
@@ -42,28 +40,6 @@ func NewCourseRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *m
 
 	deleteCourseHandler := endpoints.NewDeleteCourseHandler(s, opts...)
 	r.Handle("/{uuid}", deleteCourseHandler).Methods(http.MethodDelete)
-
-	return r
-}
-
-func NewSubscriptionRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
-	r := mux.NewRouter().PathPrefix("/subscriptions").Subrouter().StrictSlash(true)
-
-	listSubscriptionHandler := endpoints.NewListSubscriptionHandler(s, opts...)
-	// listQueryParams := []string{"user_id", "{user_id}", "course_id", "{course_id}"}
-	r.Handle("", listSubscriptionHandler).Methods(http.MethodGet)
-
-	createSubscriptionHandler := endpoints.NewCreateSubscriptionHandler(s, opts...)
-	r.Handle("", createSubscriptionHandler).Methods(http.MethodPost)
-
-	findSubscriptionHandler := endpoints.NewFindSubscriptionHandler(s, opts...)
-	r.Handle("/{uuid}", findSubscriptionHandler).Methods(http.MethodGet)
-
-	deleteSubscriptionHandler := endpoints.NewDeleteSubscriptionHandler(s, opts...)
-	r.Handle("/{uuid}", deleteSubscriptionHandler).Methods(http.MethodDelete)
-
-	updateSubscriptionHandler := endpoints.NewUpdateSubscriptionHandler(s, opts...)
-	r.Handle("/{uuid}", updateSubscriptionHandler).Methods(http.MethodPut)
 
 	return r
 }
