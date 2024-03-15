@@ -9,8 +9,8 @@ CREATE TABLE subscriptions
     matrix_id       bigint          NULL REFERENCES matrices (id),
     role            varchar         NULL,
     expires_at      timestamp       NULL,
-    created_at      timestamp       DEFAULT now() NOT NULL,
-    updated_at      timestamp       DEFAULT now() NOT NULL,
+    created_at      timestamp       DEFAULT NOW() NOT NULL,
+    updated_at      timestamp       DEFAULT NOW() NOT NULL,
     deleted_at      timestamp       NULL,
     reason          varchar         NULL,
     CONSTRAINT reason_required_if_deleted CHECK ((deleted_at IS NULL) OR (reason IS NOT NULL))
@@ -25,6 +25,6 @@ COMMENT ON COLUMN subscriptions.matrix_id IS 'Internal identifier used exclusive
 CREATE UNIQUE INDEX subscriptions_uuid_uindex
     ON subscriptions (uuid);
 CREATE UNIQUE INDEX subscriptions_uindex
-    ON subscriptions (user_uuid, course_id, matrix_id) NULLS NOT DISTINCT;
+    ON subscriptions (user_uuid, course_id, matrix_id, deleted_at) NULLS NOT DISTINCT;
 
 COMMIT;

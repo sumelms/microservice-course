@@ -12,8 +12,8 @@ import (
 )
 
 type listSubscriptionRequest struct {
-	CourseID uuid.UUID `json:"course_id"`
-	UserID   uuid.UUID `json:"user_id"`
+	CourseUUID uuid.UUID `json:"course_uuid"`
+	UserUUID   uuid.UUID `json:"user_uuid"`
 }
 
 type listSubscriptionResponse struct {
@@ -37,11 +37,11 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		filters := &domain.SubscriptionFilters{}
-		if req.CourseID != uuid.Nil {
-			filters.CourseID = req.CourseID
+		if req.CourseUUID != uuid.Nil {
+			filters.CourseUUID = req.CourseUUID
 		}
-		if req.UserID != uuid.Nil {
-			filters.UserID = req.UserID
+		if req.UserUUID != uuid.Nil {
+			filters.UserUUID = req.UserUUID
 		}
 
 		subscriptions, err := s.Subscriptions(ctx, filters)
@@ -53,14 +53,14 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		for i := range subscriptions {
 			sub := subscriptions[i]
 			list = append(list, findSubscriptionResponse{
-				UUID:      sub.UUID,
-				UserID:    sub.UserID,
-				CourseID:  sub.CourseID,
-				MatrixID:  sub.MatrixID,
-				Role:      sub.Role,
-				ExpiresAt: sub.ExpiresAt,
-				CreatedAt: sub.CreatedAt,
-				UpdatedAt: sub.UpdatedAt,
+				UUID:       sub.UUID,
+				UserUUID:   sub.UserUUID,
+				CourseUUID: sub.CourseUUID,
+				MatrixUUID: sub.MatrixUUID,
+				Role:       sub.Role,
+				ExpiresAt:  sub.ExpiresAt,
+				CreatedAt:  sub.CreatedAt,
+				UpdatedAt:  sub.UpdatedAt,
 			})
 		}
 
@@ -69,15 +69,15 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 }
 
 func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	courseID := r.FormValue("course_id")
-	userID := r.FormValue("user_id")
+	courseUUID := r.FormValue("course_uuid")
+	userUUID := r.FormValue("user_uuid")
 
 	request := listSubscriptionRequest{}
-	if len(courseID) > 0 {
-		request.CourseID = uuid.MustParse(courseID)
+	if len(courseUUID) > 0 {
+		request.CourseUUID = uuid.MustParse(courseUUID)
 	}
-	if len(userID) > 0 {
-		request.UserID = uuid.MustParse(userID)
+	if len(userUUID) > 0 {
+		request.UserUUID = uuid.MustParse(userUUID)
 	}
 
 	return request, nil

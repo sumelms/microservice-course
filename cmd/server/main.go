@@ -61,7 +61,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	subscriptionSvc, err := subscription.NewService(db, svcLogger.Logger(), clients.NewCourseClient(courseSvc), clients.NewMatrixClient(matrixSvc))
+	subscriptionSvc, err := subscription.NewService(
+		db, svcLogger.Logger(),
+		clients.NewCourseClient(courseSvc),
+		clients.NewMatrixClient(matrixSvc))
 	if err != nil {
 		logger.Log("msg", "unable to start subscription service", "error", err)
 		os.Exit(1)
