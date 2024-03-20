@@ -15,8 +15,8 @@ func NewMatrixClient(svc *domain.Service) *MatrixClient {
 	return &MatrixClient{service: svc}
 }
 
-func (c MatrixClient) MatrixExists(ctx context.Context, matrixUUID uuid.UUID) error {
-	_, err := c.service.Matrix(ctx, matrixUUID)
+func (c MatrixClient) CourseMatrixExists(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) error {
+	_, err := c.service.CourseMatrix(ctx, courseUUID, matrixUUID)
 	if err != nil {
 		return err
 	}

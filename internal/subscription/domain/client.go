@@ -11,5 +11,5 @@ type CourseClient interface {
 }
 
 type MatrixClient interface {
-	MatrixExists(ctx context.Context, matrixUUID uuid.UUID) error
+	CourseMatrixExists(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) error
 }

@@ -56,8 +56,7 @@ func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) err
 		return nil
 	}
 
-	// TODO: Verify if Course and Matrix relationship exists
-	if err := s.matrices.MatrixExists(ctx, *sub.MatrixUUID); err != nil {
+	if err := s.matrices.CourseMatrixExists(ctx, *sub.CourseUUID, *sub.MatrixUUID); err != nil {
 		return fmt.Errorf("error checking if matrix %s exists: %w", sub.MatrixUUID, err)
 	}
 
