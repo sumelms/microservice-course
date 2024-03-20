@@ -150,7 +150,6 @@ func (r SubscriptionRepository) CourseSubscriptions(courseUUID uuid.UUID) ([]dom
 	return subs, nil
 }
 
-// TODO: Fix UserSubscriptions Repository function.
 func (r SubscriptionRepository) UserSubscriptions(userUUID uuid.UUID) ([]domain.Subscription, error) {
 	stmt, err := r.statement(userSubscriptions)
 	if err != nil {

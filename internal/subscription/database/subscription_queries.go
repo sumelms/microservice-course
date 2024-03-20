@@ -81,5 +81,20 @@ func queriesSubscription() map[string]string {
 				AND subscriptions.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningColumns),
+		userSubscriptions: fmt.Sprintf(`SELECT
+				%s,
+				courses.uuid AS "courses.uuid",
+				courses.code AS "courses.code",
+				courses.name AS "courses.name",
+				matrices.uuid AS "matrices.uuid",
+				matrices.code AS "matrices.code",
+				matrices.name AS "matrices.name"
+			FROM subscriptions
+				LEFT JOIN courses ON subscriptions.course_id = courses.id
+				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
+			WHERE subscriptions.user_uuid = $1
+				AND subscriptions.deleted_at IS NULL
+				AND matrices.deleted_at IS NULL
+				AND courses.deleted_at IS NULL`, returningColumns),
 	}
 }
