@@ -17,7 +17,7 @@ type listSubscriptionRequest struct {
 }
 
 type listSubscriptionResponse struct {
-	Subscriptions []findSubscriptionResponse `json:"subscriptions"`
+	Subscriptions []domain.Subscription `json:"subscriptions"`
 }
 
 func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -49,22 +49,7 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		var list []findSubscriptionResponse
-		for i := range subscriptions {
-			sub := subscriptions[i]
-			list = append(list, findSubscriptionResponse{
-				UUID:       sub.UUID,
-				UserUUID:   sub.UserUUID,
-				CourseUUID: sub.CourseUUID,
-				MatrixUUID: sub.MatrixUUID,
-				Role:       sub.Role,
-				ExpiresAt:  sub.ExpiresAt,
-				CreatedAt:  sub.CreatedAt,
-				UpdatedAt:  sub.UpdatedAt,
-			})
-		}
-
-		return &listSubscriptionResponse{Subscriptions: list}, nil
+		return &listSubscriptionResponse{Subscriptions: subscriptions}, nil
 	}
 }
 

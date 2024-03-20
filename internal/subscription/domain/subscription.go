@@ -6,28 +6,24 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
-	UUID uuid.UUID `json:"uuid"`
-	Name string    `json:"name"`
-}
-
 type Course struct {
-	UUID uuid.UUID `db:"course.uuid" json:"uuid"`
-	Name string    `db:"course.name" json:"name"`
+	UUID uuid.UUID `db:"uuid" json:"uuid"`
+	Code string    `db:"code" json:"code"`
+	Name string    `db:"name" json:"name"`
 }
 
 type Matrix struct {
-	UUID uuid.UUID `db:"matrix.uuid" json:"uuid"`
-	Name string    `db:"matrix.name" json:"name"`
+	UUID *uuid.UUID `db:"uuid" json:"uuid"`
+	Code *string    `db:"code" json:"code"`
+	Name *string    `db:"name" json:"name"`
 }
 
 type Subscription struct {
 	UUID       uuid.UUID  `db:"uuid"        json:"uuid"`
-	User       User       `db:"-"           json:"user,omitempty"`
 	UserUUID   uuid.UUID  `db:"user_uuid"   json:"user_uuid"`
-	Course     Course     `db:"-"           json:"course,omitempty"`
-	CourseUUID uuid.UUID  `db:"course_uuid" json:"course_uuid"`
-	Matrix     Matrix     `db:"-"           json:"matrix,omitempty"`
+	Course     *Course    `db:"courses"     json:"course,omitempty"`
+	CourseUUID *uuid.UUID `db:"course_uuid" json:"course_uuid,omitempty"`
+	Matrix     *Matrix    `db:"matrices"    json:"matrix,omitempty"`
 	MatrixUUID *uuid.UUID `db:"matrix_uuid" json:"matrix_uuid,omitempty"`
 	Role       string     `db:"role"        json:"role"`
 	Reason     *string    `db:"reason"      json:"reason,omitempty"`

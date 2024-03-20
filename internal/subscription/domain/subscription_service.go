@@ -43,7 +43,7 @@ func (s *Service) Subscriptions(_ context.Context, filters *SubscriptionFilters)
 }
 
 func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) error {
-	err := s.courses.CourseExists(ctx, sub.CourseUUID)
+	err := s.courses.CourseExists(ctx, *sub.CourseUUID)
 	if err != nil {
 		return fmt.Errorf("error checking if course %s exists: %w", sub.CourseUUID, err)
 	}

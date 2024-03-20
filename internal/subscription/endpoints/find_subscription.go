@@ -52,7 +52,7 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		return &findSubscriptionResponse{
 			UUID:       sub.UUID,
 			UserUUID:   sub.UserUUID,
-			CourseUUID: sub.CourseUUID,
+			CourseUUID: *sub.CourseUUID,
 			MatrixUUID: sub.MatrixUUID,
 			Role:       sub.Role,
 			ExpiresAt:  sub.ExpiresAt,

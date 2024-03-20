@@ -47,8 +47,8 @@ func queriesSubscription() map[string]string {
 				matrices.uuid AS matrix_uuid,
 				%s
 			FROM subscriptions
-			LEFT JOIN courses ON subscriptions.course_id = courses.id
-			LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
+				LEFT JOIN courses ON subscriptions.course_id = courses.id
+				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
 			WHERE
 				subscriptions.uuid = $1
 				AND subscriptions.deleted_at IS NULL
@@ -59,8 +59,8 @@ func queriesSubscription() map[string]string {
 				matrices.uuid AS matrix_uuid,
 				%s
 			FROM subscriptions
-			LEFT JOIN courses ON subscriptions.course_id = courses.id
-			LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
+				LEFT JOIN courses ON subscriptions.course_id = courses.id
+				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
 			WHERE
 				subscriptions.deleted_at IS NULL
 				AND courses.deleted_at IS NULL
@@ -69,9 +69,17 @@ func queriesSubscription() map[string]string {
 			SET role = $2, expires_at = $3, updated_at = NOW()
 			WHERE uuid = $1 AND deleted_at IS NULL
 			RETURNING %s`, returningColumns),
-		// TODO: Fix courseSubscriptions Query
-		courseSubscriptions: `SELECT * FROM subscriptions WHERE course_id = $1 AND deleted_at IS NULL`,
-		// TODO: Fix userSubscriptions Query
-		userSubscriptions: `SELECT * FROM subscriptions WHERE user_uuid = $1 and deleted_at IS NULL`,
+		courseSubscriptions: fmt.Sprintf(`SELECT
+				%s,
+				matrices.uuid AS "matrices.uuid",
+				matrices.code AS "matrices.code",
+				matrices.name AS "matrices.name"
+			FROM subscriptions
+				LEFT JOIN courses ON subscriptions.course_id = courses.id
+				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
+			WHERE courses.uuid = $1
+				AND subscriptions.deleted_at IS NULL
+				AND matrices.deleted_at IS NULL
+				AND courses.deleted_at IS NULL`, returningColumns),
 	}
 }

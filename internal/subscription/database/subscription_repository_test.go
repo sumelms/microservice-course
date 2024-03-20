@@ -16,7 +16,7 @@ var (
 	subscription = domain.Subscription{
 		UUID:       utils.SubscriptionUUID,
 		UserUUID:   utils.UserUUID,
-		CourseUUID: utils.CourseUUID,
+		CourseUUID: &utils.CourseUUID,
 		MatrixUUID: &utils.MatrixUUID,
 		Role:       utils.Role,
 		ExpiresAt:  &utils.Now,

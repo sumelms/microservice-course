@@ -135,7 +135,6 @@ func (r SubscriptionRepository) DeleteSubscription(sub *domain.Subscription) err
 	return nil
 }
 
-// TODO: Fix CourseSubscriptions Repository function.
 func (r SubscriptionRepository) CourseSubscriptions(courseUUID uuid.UUID) ([]domain.Subscription, error) {
 	stmt, err := r.statement(courseSubscriptions)
 	if err != nil {
