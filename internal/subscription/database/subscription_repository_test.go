@@ -164,18 +164,21 @@ func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
 		name    string
 		rows    *sqlmock.Rows
 		args    args
+		want    domain.Subscription
 		wantErr bool
 	}{
 		{
 			name:    "create subscription",
 			rows:    validRows,
 			args:    args{s: &subscription},
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
 			args:    args{s: &subscription},
+			want:    domain.Subscription{},
 			wantErr: true,
 		},
 	}
@@ -201,7 +204,9 @@ func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			// TODO: Expect tt.args.s = tt.rows
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			}
 		})
 	}
 }
@@ -222,18 +227,21 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		name    string
 		rows    *sqlmock.Rows
 		args    args
+		want    domain.Subscription
 		wantErr bool
 	}{
 		{
 			name:    "create subscription",
 			rows:    validRows,
 			args:    args{s: &subscription},
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
 			args:    args{s: &subscription},
+			want:    domain.Subscription{},
 			wantErr: true,
 		},
 	}
@@ -259,7 +267,9 @@ func TestRepository_CreateSubscription(t *testing.T) {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			// TODO: Expect tt.args.s = tt.rows
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			}
 		})
 	}
 }
@@ -281,20 +291,23 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
 		rows    *sqlmock.Rows
+		args    args
+		want    domain.Subscription
 		wantErr bool
 	}{
 		{
 			name:    "update course",
-			args:    args{s: &subscription},
 			rows:    validRows,
+			args:    args{s: &subscription},
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty course",
-			args:    args{s: &domain.Subscription{}},
 			rows:    utils.EmptyRows,
+			args:    args{s: &domain.Subscription{}},
+			want:    domain.Subscription{},
 			wantErr: true,
 		},
 	}
@@ -317,6 +330,10 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 
 			if err := r.UpdateSubscription(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateSubscription() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
 			}
 		})
 	}

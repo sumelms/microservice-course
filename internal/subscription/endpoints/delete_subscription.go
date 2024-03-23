@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -21,9 +20,7 @@ type deleteSubscriptionRequest struct {
 }
 
 type deleteSubscriptionResponse struct {
-	UUID      uuid.UUID `json:"uuid"`
-	Reason    string    `json:"reason"`
-	DeletedAt time.Time `json:"deleted_at"`
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -58,9 +55,7 @@ func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return deleteSubscriptionResponse{
-			UUID:      sub.UUID,
-			Reason:    *sub.Reason,
-			DeletedAt: *sub.DeletedAt,
+			Subscription: &sub,
 		}, nil
 	}
 }

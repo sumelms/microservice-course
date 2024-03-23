@@ -23,14 +23,7 @@ type createSubscriptionRequest struct {
 }
 
 type createSubscriptionResponse struct {
-	UUID       uuid.UUID  `json:"uuid"`
-	UserUUID   uuid.UUID  `json:"user_uuid"`
-	CourseUUID uuid.UUID  `json:"course_uuid"`
-	MatrixUUID *uuid.UUID `json:"matrix_uuid,omitempty"`
-	Role       string     `json:"role"`
-	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -63,16 +56,8 @@ func makeCreateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		if err := s.CreateSubscription(ctx, &sub); err != nil {
 			return nil, err
 		}
-
 		return createSubscriptionResponse{
-			UUID:       sub.UUID,
-			UserUUID:   req.UserUUID,
-			CourseUUID: req.CourseUUID,
-			MatrixUUID: req.MatrixUUID,
-			Role:       sub.Role,
-			ExpiresAt:  sub.ExpiresAt,
-			CreatedAt:  sub.CreatedAt,
-			UpdatedAt:  sub.UpdatedAt,
+			Subscription: &sub,
 		}, nil
 	}
 }

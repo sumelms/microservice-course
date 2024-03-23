@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -18,14 +17,7 @@ type findSubscriptionRequest struct {
 }
 
 type findSubscriptionResponse struct {
-	UUID       uuid.UUID  `json:"uuid"`
-	UserUUID   uuid.UUID  `json:"user_uuid"`
-	CourseUUID uuid.UUID  `json:"course_uuid"`
-	MatrixUUID *uuid.UUID `json:"matrix_uuid,omitempty"`
-	Role       string     `json:"role"`
-	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -50,14 +42,7 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		return &findSubscriptionResponse{
-			UUID:       sub.UUID,
-			UserUUID:   sub.UserUUID,
-			CourseUUID: *sub.CourseUUID,
-			MatrixUUID: sub.MatrixUUID,
-			Role:       sub.Role,
-			ExpiresAt:  sub.ExpiresAt,
-			CreatedAt:  sub.CreatedAt,
-			UpdatedAt:  sub.UpdatedAt,
+			Subscription: &sub,
 		}, nil
 	}
 }

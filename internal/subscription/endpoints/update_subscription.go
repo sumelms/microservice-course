@@ -22,10 +22,7 @@ type updateSubscriptionRequest struct {
 }
 
 type updateSubscriptionResponse struct {
-	UUID      uuid.UUID  `json:"uuid"`
-	Role      string     `json:"role"`
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -60,10 +57,7 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return updateSubscriptionResponse{
-			UUID:      sub.UUID,
-			Role:      sub.Role,
-			ExpiresAt: sub.ExpiresAt,
-			UpdatedAt: sub.UpdatedAt,
+			Subscription: &sub,
 		}, nil
 	}
 }

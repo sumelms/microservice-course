@@ -38,10 +38,10 @@ func queriesSubscription() map[string]string {
 			WHERE
 				courses.uuid = $1 AND courses.deleted_at IS NULL
 			RETURNING %s`, returningColumns),
-		deleteSubscription: `UPDATE subscriptions
+		deleteSubscription: fmt.Sprintf(`UPDATE subscriptions
 			SET deleted_at = NOW(), reason = $2
 			WHERE uuid = $1 AND deleted_at IS NULL
-			RETURNING uuid, reason, deleted_at`,
+			RETURNING %s, reason, deleted_at`, returningColumns),
 		getSubscription: fmt.Sprintf(`SELECT
 				courses.uuid AS course_uuid,
 				matrices.uuid AS matrix_uuid,
@@ -50,8 +50,7 @@ func queriesSubscription() map[string]string {
 				LEFT JOIN courses ON subscriptions.course_id = courses.id
 				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
 			WHERE
-				subscriptions.uuid = $1
-				AND subscriptions.deleted_at IS NULL
+				subscriptions.uuid = $1 AND subscriptions.deleted_at IS NULL
 				AND courses.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL`, returningColumns),
 		listSubscription: fmt.Sprintf(`SELECT
@@ -77,10 +76,9 @@ func queriesSubscription() map[string]string {
 			FROM subscriptions
 				LEFT JOIN courses ON subscriptions.course_id = courses.id
 				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
-			WHERE courses.uuid = $1
+			WHERE courses.uuid = $1 AND courses.deleted_at IS NULL
 				AND subscriptions.deleted_at IS NULL
-				AND matrices.deleted_at IS NULL
-				AND courses.deleted_at IS NULL`, returningColumns),
+				AND matrices.deleted_at IS NULL`, returningColumns),
 		userSubscriptions: fmt.Sprintf(`SELECT
 				%s,
 				courses.uuid AS "courses.uuid",
@@ -92,8 +90,7 @@ func queriesSubscription() map[string]string {
 			FROM subscriptions
 				LEFT JOIN courses ON subscriptions.course_id = courses.id
 				LEFT JOIN matrices ON subscriptions.matrix_id = matrices.id
-			WHERE subscriptions.user_uuid = $1
-				AND subscriptions.deleted_at IS NULL
+			WHERE subscriptions.user_uuid = $1 AND subscriptions.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningColumns),
 	}
