@@ -14,10 +14,10 @@ import (
 )
 
 type createMatrixRequest struct {
+	CourseUUID  uuid.UUID `json:"course_uuid" validate:"required"`
 	Code        string    `json:"code"        validate:"max=45"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
-	CourseUUID  uuid.UUID `json:"course_uuid" validate:"required"`
 }
 
 type createMatrixResponse struct {
