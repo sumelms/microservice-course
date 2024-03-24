@@ -7,11 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type SubscriptionFilters struct {
-	CourseUUID uuid.UUID `json:"course_uuid,omitempty"`
-	UserUUID   uuid.UUID `json:"user_uuid,omitempty"`
-}
-
 func (s *Service) Subscription(_ context.Context, subscriptionUUID uuid.UUID) (Subscription, error) {
 	sub, err := s.subscriptions.Subscription(subscriptionUUID)
 	if err != nil {

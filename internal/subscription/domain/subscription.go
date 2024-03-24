@@ -6,6 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type SubscriptionFilters struct {
+	CourseUUID uuid.UUID `json:"course_uuid,omitempty"`
+	UserUUID   uuid.UUID `json:"user_uuid,omitempty"`
+}
+
 type Course struct {
 	UUID uuid.UUID `db:"uuid" json:"uuid"`
 	Code string    `db:"code" json:"code"`
