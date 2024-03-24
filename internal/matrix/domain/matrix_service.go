@@ -23,12 +23,19 @@ func (s *Service) Matrix(_ context.Context, id uuid.UUID) (Matrix, error) {
 	return m, nil
 }
 
-func (s *Service) Matrices(_ context.Context) ([]Matrix, error) {
-	mm, err := s.matrices.Matrices()
+func (s *Service) Matrices(_ context.Context, filters *MatrixFilters) ([]Matrix, error) {
+	list, err := func() ([]Matrix, error) {
+		if filters != nil {
+			return []Matrix{}, fmt.Errorf("not implemented")
+		}
+
+		return s.matrices.Matrices()
+	}()
 	if err != nil {
 		return []Matrix{}, fmt.Errorf("service didn't found any matrix: %w", err)
 	}
-	return mm, nil
+
+	return list, nil
 }
 
 func (s *Service) CreateMatrix(ctx context.Context, m *Matrix) error {

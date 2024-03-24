@@ -6,16 +6,26 @@ import (
 	"github.com/google/uuid"
 )
 
+type MatrixFilters struct {
+	CourseUUID uuid.UUID `json:"course_uuid,omitempty"`
+}
+
+type Course struct {
+	UUID uuid.UUID `db:"uuid" json:"uuid"`
+	Code string    `db:"code" json:"code"`
+	Name string    `db:"name" json:"name"`
+}
+
 type Matrix struct {
-	ID          uint       `json:"id"`
-	UUID        uuid.UUID  `json:"uuid"`
-	Code        string     `json:"code"`
-	Name        string     `json:"name"`
-	Description string     `json:"description"`
-	CourseID    uuid.UUID  `db:"course_id"     json:"course_id"`
-	CreatedAt   time.Time  `db:"created_at"    json:"created_at"`
-	UpdatedAt   time.Time  `db:"updated_at"    json:"updated_at"`
-	DeletedAt   *time.Time `db:"deleted_at"    json:"deleted_at"`
+	UUID        uuid.UUID  `db:"uuid"        json:"uuid"`
+	Code        string     `db:"code"        json:"code"`
+	Name        string     `db:"name"        json:"name"`
+	Description string     `db:"description" json:"description"`
+	CourseUUID  *uuid.UUID `db:"course_uuid" json:"course_uuid,omitempty"`
+	Course      *Course    `db:"courses"     json:"course,omitempty"`
+	CreatedAt   time.Time  `db:"created_at"  json:"created_at"`
+	UpdatedAt   time.Time  `db:"updated_at"  json:"updated_at"`
+	DeletedAt   *time.Time `db:"deleted_at"  json:"deleted_at"`
 }
 
 type MatrixSubject struct {

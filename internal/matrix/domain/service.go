@@ -10,7 +10,7 @@ import (
 type ServiceInterface interface {
 	Matrix(ctx context.Context, id uuid.UUID) (Matrix, error)
 	CourseMatrix(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
-	Matrices(ctx context.Context) ([]Matrix, error)
+	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
 	UpdateMatrix(ctx context.Context, matrix *Matrix) error
 	DeleteMatrix(ctx context.Context, id uuid.UUID) error
