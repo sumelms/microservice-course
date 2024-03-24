@@ -12,11 +12,11 @@ import (
 )
 
 type listMatrixRequest struct {
-	CourseID uuid.UUID `json:"course_id,omitempty"`
+	CourseUUID uuid.UUID `json:"course_uuid,omitempty"`
 }
 
 type listMatrixResponse struct {
-	Matrices []findMatrixResponse `json:"matrices"`
+	Matrices []domain.Matrix `json:"matrices"`
 }
 
 func NewListMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -35,39 +35,28 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		filters := make(map[string]interface{})
-		if req.CourseID != uuid.Nil {
-			filters["course_id"] = req.CourseID
+		filters := &domain.MatrixFilters{}
+		if req.CourseUUID != uuid.Nil {
+			filters.CourseUUID = req.CourseUUID
 		}
 
-		// @TODO Implement filters to service -- WIP
-		matrices, err := s.Matrices(ctx)
+		matrices, err := s.Matrices(ctx, filters)
 		if err != nil {
 			return nil, err
 		}
 
-		var list []findMatrixResponse
-		for i := range matrices {
-			m := matrices[i]
-			list = append(list, findMatrixResponse{
-				UUID:        m.UUID,
-				Name:        m.Name,
-				Description: m.Description,
-				CreatedAt:   m.CreatedAt,
-				UpdatedAt:   m.UpdatedAt,
-				CourseID:    m.CourseID,
-			})
-		}
-
-		return &listMatrixResponse{Matrices: list}, nil
+		return &listMatrixResponse{Matrices: matrices}, nil
 	}
 }
 
 func decodeListMatrixRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	courseID := r.FormValue("course_id")
-	cuid := uuid.MustParse(courseID)
+	courseUUID := r.FormValue("course_uuid")
 
-	return listMatrixRequest{CourseID: cuid}, nil
+	request := listMatrixRequest{}
+	if len(courseUUID) > 0 {
+		request.CourseUUID = uuid.MustParse(courseUUID)
+	}
+	return request, nil
 }
 
 func encodeListMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

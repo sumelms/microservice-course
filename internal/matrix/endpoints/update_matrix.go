@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -24,13 +23,7 @@ type updateMatrixRequest struct {
 }
 
 type updateMatrixResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code,omitempty"`
-	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    uuid.UUID `json:"course_id"`
+	Matrix *domain.Matrix `json:"matrix"`
 }
 
 func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -55,23 +48,18 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		var m domain.Matrix
+		var matrix domain.Matrix
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &m); err != nil {
+		if err := json.Unmarshal(data, &matrix); err != nil {
 			return nil, err
 		}
 
-		if err := s.UpdateMatrix(ctx, &m); err != nil {
+		if err := s.UpdateMatrix(ctx, &matrix); err != nil {
 			return nil, err
 		}
 
 		return updateMatrixResponse{
-			UUID:        m.UUID,
-			Name:        m.Name,
-			Description: m.Description,
-			CreatedAt:   m.CreatedAt,
-			UpdatedAt:   m.UpdatedAt,
-			CourseID:    m.CourseID,
+			Matrix: &matrix,
 		}, nil
 	}
 }
