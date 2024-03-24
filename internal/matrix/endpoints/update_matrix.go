@@ -19,7 +19,6 @@ type updateMatrixRequest struct {
 	Code        string    `json:"code"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
-	CourseID    uuid.UUID `json:"course_id"   validate:"required"`
 }
 
 type updateMatrixResponse struct {

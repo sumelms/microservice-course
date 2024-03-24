@@ -8,12 +8,12 @@ import (
 )
 
 type ServiceInterface interface {
-	Matrix(ctx context.Context, id uuid.UUID) (Matrix, error)
+	Matrix(ctx context.Context, matrixUUID uuid.UUID) (Matrix, error)
 	CourseMatrix(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
 	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
 	UpdateMatrix(ctx context.Context, matrix *Matrix) error
-	DeleteMatrix(ctx context.Context, id uuid.UUID) error
+	DeleteMatrix(ctx context.Context, matrixUUID uuid.UUID) error
 	AddSubject(ctx context.Context, matrixSubject *MatrixSubject) error
 	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
 
