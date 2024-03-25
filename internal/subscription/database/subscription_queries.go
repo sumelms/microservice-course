@@ -19,6 +19,7 @@ const (
 	deleteSubscription = "delete subscription by uuid"
 )
 
+//nolint:funlen
 func queriesSubscription() map[string]string {
 	return map[string]string{
 		createSubscription: fmt.Sprintf(`INSERT INTO subscriptions (
