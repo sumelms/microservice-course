@@ -12,10 +12,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/shared"
 )
 
 type deleteCourseRequest struct {
 	UUID uuid.UUID `json:"uuid" validate:"required"`
+}
+
+type deleteCourseResponse struct {
+	Course *shared.Deleted `json:"course"`
 }
 
 func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -34,11 +39,14 @@ func makeDeleteCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		if err := s.DeleteCourse(ctx, req.UUID); err != nil {
+		deleted := shared.Deleted{UUID: req.UUID}
+		if err := s.DeleteCourse(ctx, &deleted); err != nil {
 			return nil, err
 		}
 
-		return nil, nil
+		return deleteCourseResponse{
+			Course: &deleted,
+		}, nil
 	}
 }
 

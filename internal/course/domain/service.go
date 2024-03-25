@@ -5,15 +5,16 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
+	"github.com/sumelms/microservice-course/internal/shared"
 )
 
 // ServiceInterface defines the domains Service interface.
 type ServiceInterface interface {
 	Course(ctx context.Context, id uuid.UUID) (Course, error)
 	Courses(ctx context.Context) ([]Course, error)
-	CreateCourse(ctx context.Context, c *Course) error
-	UpdateCourse(ctx context.Context, c *Course) error
-	DeleteCourse(ctx context.Context, courseID uuid.UUID) error
+	CreateCourse(ctx context.Context, course *Course) error
+	UpdateCourse(ctx context.Context, course *Course) error
+	DeleteCourse(ctx context.Context, course *shared.Deleted) error
 }
 
 type ServiceConfiguration func(svc *Service) error

@@ -158,7 +158,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt)
 
 	type args struct {
-		c *domain.Course
+		course *domain.Course
 	}
 
 	tests := []struct {
@@ -170,13 +170,13 @@ func TestRepository_CreateCourse(t *testing.T) {
 		{
 			name:    "create course",
 			rows:    validRows,
-			args:    args{c: &course},
+			args:    args{course: &course},
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
-			args:    args{c: &course},
+			args:    args{course: &course},
 			wantErr: true,
 		},
 	}
@@ -198,7 +198,7 @@ func TestRepository_CreateCourse(t *testing.T) {
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.CreateCourse(tt.args.c); (err != nil) != tt.wantErr {
+			if err := r.CreateCourse(tt.args.course); (err != nil) != tt.wantErr {
 				t.Errorf("CreateCourse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -212,7 +212,7 @@ func TestRepository_UpdateCourse(t *testing.T) {
 			course.Excerpt, course.Description, course.CreatedAt, course.UpdatedAt)
 
 	type args struct {
-		c *domain.Course
+		course *domain.Course
 	}
 
 	tests := []struct {
@@ -223,13 +223,13 @@ func TestRepository_UpdateCourse(t *testing.T) {
 	}{
 		{
 			name:    "update course",
-			args:    args{c: &course},
+			args:    args{course: &course},
 			rows:    validRows,
 			wantErr: false,
 		},
 		{
 			name:    "empty course",
-			args:    args{c: &domain.Course{}},
+			args:    args{course: &domain.Course{}},
 			rows:    utils.EmptyRows,
 			wantErr: true,
 		},
@@ -252,7 +252,7 @@ func TestRepository_UpdateCourse(t *testing.T) {
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.UpdateCourse(tt.args.c); (err != nil) != tt.wantErr {
+			if err := r.UpdateCourse(tt.args.course); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateCourse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

@@ -5,15 +5,16 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/sumelms/microservice-course/internal/shared"
 )
 
 func (s *Service) Course(_ context.Context, courseUUID uuid.UUID) (Course, error) {
-	c, err := s.courses.Course(courseUUID)
+	course, err := s.courses.Course(courseUUID)
 	if err != nil {
 		return Course{}, fmt.Errorf("service can't find course: %w", err)
 	}
 
-	return c, nil
+	return course, nil
 }
 
 func (s *Service) Courses(_ context.Context) ([]Course, error) {
@@ -25,23 +26,23 @@ func (s *Service) Courses(_ context.Context) ([]Course, error) {
 	return cc, nil
 }
 
-func (s *Service) CreateCourse(_ context.Context, c *Course) error {
-	if err := s.courses.CreateCourse(c); err != nil {
+func (s *Service) CreateCourse(_ context.Context, course *Course) error {
+	if err := s.courses.CreateCourse(course); err != nil {
 		return fmt.Errorf("service can't create course: %w", err)
 	}
 
 	return nil
 }
 
-func (s *Service) UpdateCourse(_ context.Context, c *Course) error {
-	if err := s.courses.UpdateCourse(c); err != nil {
+func (s *Service) UpdateCourse(_ context.Context, course *Course) error {
+	if err := s.courses.UpdateCourse(course); err != nil {
 		return fmt.Errorf("service can't update course: %w", err)
 	}
 	return nil
 }
 
-func (s *Service) DeleteCourse(_ context.Context, courseUUID uuid.UUID) error {
-	if err := s.courses.DeleteCourse(courseUUID); err != nil {
+func (s *Service) DeleteCourse(_ context.Context, course *shared.Deleted) error {
+	if err := s.courses.DeleteCourse(course); err != nil {
 		return fmt.Errorf("service can't delete course: %w", err)
 	}
 

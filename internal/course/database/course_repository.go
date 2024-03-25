@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/sumelms/microservice-course/internal/course/domain"
+	"github.com/sumelms/microservice-course/internal/shared"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
@@ -43,11 +44,11 @@ func (r CourseRepository) Course(courseUUID uuid.UUID) (domain.Course, error) {
 		return domain.Course{}, err
 	}
 
-	var c domain.Course
-	if err := stmt.Get(&c, courseUUID); err != nil {
+	var course domain.Course
+	if err := stmt.Get(&course, courseUUID); err != nil {
 		return domain.Course{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting course")
 	}
-	return c, nil
+	return course, nil
 }
 
 // Courses list all courses.
@@ -65,29 +66,29 @@ func (r CourseRepository) Courses() ([]domain.Course, error) {
 }
 
 // CreateCourse creates a new course.
-func (r CourseRepository) CreateCourse(c *domain.Course) error {
+func (r CourseRepository) CreateCourse(course *domain.Course) error {
 	stmt, err := r.statement(createCourse)
 	if err != nil {
 		return err
 	}
 
 	args := []interface{}{
-		c.Code,
-		c.Name,
-		c.Underline,
-		c.Image,
-		c.ImageCover,
-		c.Excerpt,
-		c.Description,
+		course.Code,
+		course.Name,
+		course.Underline,
+		course.Image,
+		course.ImageCover,
+		course.Excerpt,
+		course.Description,
 	}
-	if err := stmt.Get(c, args...); err != nil {
+	if err := stmt.Get(course, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating course")
 	}
 	return nil
 }
 
 // UpdateCourse update the given course by ID.
-func (r CourseRepository) UpdateCourse(c *domain.Course) error {
+func (r CourseRepository) UpdateCourse(course *domain.Course) error {
 	stmt, err := r.statement(updateCourse)
 	if err != nil {
 		return err
@@ -95,30 +96,33 @@ func (r CourseRepository) UpdateCourse(c *domain.Course) error {
 
 	args := []interface{}{
 		// set
-		c.Code,
-		c.Name,
-		c.Underline,
-		c.Image,
-		c.ImageCover,
-		c.Excerpt,
-		c.Description,
+		course.Code,
+		course.Name,
+		course.Underline,
+		course.Image,
+		course.ImageCover,
+		course.Excerpt,
+		course.Description,
 		// where
-		c.UUID,
+		course.UUID,
 	}
-	if err := stmt.Get(c, args...); err != nil {
+	if err := stmt.Get(course, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating course")
 	}
 	return nil
 }
 
 // DeleteCourse soft delete the course by given uuid.
-func (r CourseRepository) DeleteCourse(courseUUID uuid.UUID) error {
+func (r CourseRepository) DeleteCourse(course *shared.Deleted) error {
 	stmt, err := r.statement(deleteCourse)
 	if err != nil {
 		return err
 	}
 
-	if _, err := stmt.Exec(courseUUID); err != nil {
+	args := []interface{}{
+		course.UUID,
+	}
+	if err := stmt.Get(course, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting course")
 	}
 	return nil

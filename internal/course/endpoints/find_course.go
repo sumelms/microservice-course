@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -18,16 +17,7 @@ type findCourseRequest struct {
 }
 
 type findCourseResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code"`
-	Name        string    `json:"name"`
-	Underline   string    `json:"underline"`
-	Image       string    `json:"image,omitempty"`
-	ImageCover  string    `json:"image_cover,omitempty"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Course *domain.Course `json:"course"`
 }
 
 func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -46,20 +36,13 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		c, err := s.Course(ctx, req.UUID)
+		course, err := s.Course(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
 		return &findCourseResponse{
-			UUID:        c.UUID,
-			Code:        c.Code,
-			Name:        c.Name,
-			Underline:   c.Underline,
-			Image:       c.Image,
-			ImageCover:  c.ImageCover,
-			Excerpt:     c.Excerpt,
-			Description: c.Description,
+			Course: &course,
 		}, nil
 	}
 }
