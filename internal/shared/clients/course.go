@@ -15,8 +15,8 @@ func NewCourseClient(svc *domain.Service) *CourseClient {
 	return &CourseClient{service: svc}
 }
 
-func (c CourseClient) CourseExists(ctx context.Context, id uuid.UUID) error {
-	_, err := c.service.Course(ctx, id)
+func (c CourseClient) CourseExists(ctx context.Context, courseUUID uuid.UUID) error {
+	_, err := c.service.Course(ctx, courseUUID)
 	if err != nil {
 		return err
 	}

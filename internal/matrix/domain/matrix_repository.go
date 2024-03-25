@@ -4,6 +4,7 @@ import "github.com/google/uuid"
 
 type MatrixRepository interface {
 	Matrix(id uuid.UUID) (Matrix, error)
+	CourseMatrix(courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
 	Matrices() ([]Matrix, error)
 	CreateMatrix(matrix *Matrix) error
 	UpdateMatrix(matrix *Matrix) error

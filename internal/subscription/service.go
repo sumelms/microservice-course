@@ -9,7 +9,11 @@ import (
 	"github.com/sumelms/microservice-course/internal/subscription/transport/http"
 )
 
-func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
+func NewService(db *sqlx.DB,
+	logger log.Logger,
+	course domain.CourseClient,
+	matrix domain.MatrixClient,
+) (*domain.Service, error) {
 	subscription, err := database.NewSubscriptionRepository(db)
 	if err != nil {
 		return nil, err
@@ -17,7 +21,9 @@ func NewService(db *sqlx.DB, logger log.Logger) (*domain.Service, error) {
 
 	service, err := domain.NewService(
 		domain.WithLogger(logger),
-		domain.WithSubscriptionRepository(subscription))
+		domain.WithSubscriptionRepository(subscription),
+		domain.WithCourseClient(course),
+		domain.WithMatrixClient(matrix))
 	if err != nil {
 		return nil, err
 	}

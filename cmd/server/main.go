@@ -11,8 +11,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/sumelms/microservice-course/internal/course"
 	"github.com/sumelms/microservice-course/internal/matrix"
-	"github.com/sumelms/microservice-course/internal/matrix/clients"
 	"github.com/sumelms/microservice-course/internal/shared"
+	"github.com/sumelms/microservice-course/internal/shared/clients"
 	"github.com/sumelms/microservice-course/internal/subscription"
 	"github.com/sumelms/microservice-course/pkg/config"
 	database "github.com/sumelms/microservice-course/pkg/database/postgres"
@@ -55,15 +55,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	subscriptionSvc, err := subscription.NewService(db, svcLogger.Logger())
-	if err != nil {
-		logger.Log("msg", "unable to start subscription service", "error", err)
-		os.Exit(1)
-	}
-
 	matrixSvc, err := matrix.NewService(db, svcLogger.Logger(), clients.NewCourseClient(courseSvc))
 	if err != nil {
 		logger.Log("msg", "unable to start matrix service", "error", err)
+		os.Exit(1)
+	}
+
+	subscriptionSvc, err := subscription.NewService(
+		db, svcLogger.Logger(),
+		clients.NewCourseClient(courseSvc),
+		clients.NewMatrixClient(matrixSvc))
+	if err != nil {
+		logger.Log("msg", "unable to start subscription service", "error", err)
 		os.Exit(1)
 	}
 

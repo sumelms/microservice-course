@@ -7,6 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
+func (s *Service) CourseMatrix(_ context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error) {
+	m, err := s.matrices.CourseMatrix(courseUUID, matrixUUID)
+	if err != nil {
+		return Matrix{}, fmt.Errorf("service can't find matrix: %w", err)
+	}
+	return m, nil
+}
+
 func (s *Service) Matrix(_ context.Context, id uuid.UUID) (Matrix, error) {
 	m, err := s.matrices.Matrix(id)
 	if err != nil {
