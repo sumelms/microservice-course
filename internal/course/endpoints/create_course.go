@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
-	"github.com/google/uuid"
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
@@ -25,16 +23,7 @@ type createCourseRequest struct {
 }
 
 type createCourseResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code"`
-	Name        string    `json:"name"`
-	Underline   string    `json:"underline"`
-	Image       string    `json:"image,omitempty"`
-	ImageCover  string    `json:"image_cover,omitempty"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Course *domain.Course `json:"course"`
 }
 
 // NewCreateCourseHandler creates new course handler
@@ -70,27 +59,18 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		c := domain.Course{}
+		course := domain.Course{}
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &c); err != nil {
+		if err := json.Unmarshal(data, &course); err != nil {
 			return nil, err
 		}
 
-		if err := s.CreateCourse(ctx, &c); err != nil {
+		if err := s.CreateCourse(ctx, &course); err != nil {
 			return nil, err
 		}
 
 		return createCourseResponse{
-			UUID:        c.UUID,
-			Code:        c.Code,
-			Name:        c.Name,
-			Underline:   c.Underline,
-			Image:       c.Image,
-			ImageCover:  c.ImageCover,
-			Excerpt:     c.Excerpt,
-			Description: c.Description,
-			CreatedAt:   c.CreatedAt,
-			UpdatedAt:   c.UpdatedAt,
+			Course: &course,
 		}, nil
 	}
 }

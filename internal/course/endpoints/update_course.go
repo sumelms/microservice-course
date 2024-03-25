@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -27,16 +26,7 @@ type updateCourseRequest struct {
 }
 
 type updateCourseResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code"`
-	Name        string    `json:"name"`
-	Underline   string    `json:"underline"`
-	Image       string    `json:"image"`
-	ImageCover  string    `json:"image_cover"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Course *domain.Course `json:"course"`
 }
 
 func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -71,14 +61,7 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		}
 
 		return updateCourseResponse{
-			UUID:        c.UUID,
-			Code:        c.Code,
-			Name:        c.Name,
-			Underline:   c.Underline,
-			Image:       c.Image,
-			ImageCover:  c.ImageCover,
-			Excerpt:     c.Excerpt,
-			Description: c.Description,
+			Course: &c,
 		}, nil
 	}
 }
