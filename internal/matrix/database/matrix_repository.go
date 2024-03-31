@@ -42,6 +42,19 @@ func (r MatrixRepository) Matrix(id uuid.UUID) (domain.Matrix, error) {
 	return m, nil
 }
 
+func (r MatrixRepository) CourseMatrix(courseUUID uuid.UUID, matrixUUID uuid.UUID) (domain.Matrix, error) {
+	stmt, ok := r.statements[getCourseMatrix]
+	if !ok {
+		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
+	}
+
+	var m domain.Matrix
+	if err := stmt.Get(&m, courseUUID, matrixUUID); err != nil {
+		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
+	}
+	return m, nil
+}
+
 // Matrices get the list of matrices.
 func (r MatrixRepository) Matrices() ([]domain.Matrix, error) {
 	stmt, ok := r.statements[listMatrix]

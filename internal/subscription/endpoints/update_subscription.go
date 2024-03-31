@@ -16,23 +16,13 @@ import (
 )
 
 type updateSubscriptionRequest struct {
-	UUID       uuid.UUID  `json:"uuid"        validate:"required"`
-	UserID     uuid.UUID  `json:"user_id"     validate:"required"`
-	CourseID   uuid.UUID  `json:"course_id"   validate:"required"`
-	MatrixID   *uuid.UUID `json:"matrix_id"`
-	Role       string     `json:"role"`
-	ValidUntil *time.Time `json:"valid_until"`
+	UUID      uuid.UUID  `json:"uuid"       validate:"required"`
+	Role      string     `json:"role"`
+	ExpiresAt *time.Time `json:"expires_at"`
 }
 
 type updateSubscriptionResponse struct {
-	UUID      uuid.UUID  `json:"uuid"`
-	UserID    uuid.UUID  `json:"user_id"`
-	CourseID  uuid.UUID  `json:"course_id"`
-	MatrixID  *uuid.UUID `json:"matrix_id,omitempty"`
-	Role      string     `json:"role"`
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -67,14 +57,7 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 		}
 
 		return updateSubscriptionResponse{
-			UUID:      sub.UUID,
-			UserID:    sub.UserID,
-			CourseID:  sub.CourseID,
-			MatrixID:  sub.MatrixID,
-			Role:      sub.Role,
-			ExpiresAt: sub.ExpiresAt,
-			CreatedAt: sub.CreatedAt,
-			UpdatedAt: sub.UpdatedAt,
+			Subscription: &sub,
 		}, nil
 	}
 }

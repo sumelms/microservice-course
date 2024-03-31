@@ -9,17 +9,19 @@ import (
 
 // ServiceInterface defines the domains Service interface.
 type ServiceInterface interface {
-	Subscription(ctx context.Context, id uuid.UUID) (Subscription, error)
+	Subscription(ctx context.Context, subscriptionUUID uuid.UUID) (Subscription, error)
 	Subscriptions(ctx context.Context, filters *SubscriptionFilters) ([]Subscription, error)
 	CreateSubscription(ctx context.Context, cs *Subscription) error
 	UpdateSubscription(ctx context.Context, cs *Subscription) error
-	DeleteSubscription(ctx context.Context, id uuid.UUID) error
+	DeleteSubscription(ctx context.Context, cs *Subscription) error
 }
 
 type ServiceConfiguration func(svc *Service) error
 
 type Service struct {
 	subscriptions SubscriptionRepository
+	courses       CourseClient
+	matrices      MatrixClient
 	logger        log.Logger
 }
 
@@ -40,6 +42,22 @@ func NewService(cfgs ...ServiceConfiguration) (*Service, error) {
 func WithSubscriptionRepository(sr SubscriptionRepository) ServiceConfiguration {
 	return func(svc *Service) error {
 		svc.subscriptions = sr
+
+		return nil
+	}
+}
+
+func WithCourseClient(c CourseClient) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.courses = c
+
+		return nil
+	}
+}
+
+func WithMatrixClient(m MatrixClient) ServiceConfiguration {
+	return func(svc *Service) error {
+		svc.matrices = m
 
 		return nil
 	}

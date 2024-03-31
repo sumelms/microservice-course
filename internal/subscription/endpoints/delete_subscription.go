@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -10,10 +11,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
+	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
 type deleteSubscriptionRequest struct {
-	ID uuid.UUID `json:"id" validate:"required"`
+	UUID   uuid.UUID `json:"uuid"   validate:"required"`
+	Reason string    `json:"reason" validate:"required"`
+}
+
+type deleteSubscriptionResponse struct {
+	Subscription *domain.Subscription `json:"subscription"`
 }
 
 func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -32,24 +39,42 @@ func makeDeleteSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		if err := s.DeleteSubscription(ctx, req.ID); err != nil {
+		v := validator.NewValidator()
+		if err := v.Validate(req); err != nil {
 			return nil, err
 		}
 
-		return nil, nil
+		var sub domain.Subscription
+		data, _ := json.Marshal(req)
+		if err := json.Unmarshal(data, &sub); err != nil {
+			return nil, err
+		}
+
+		if err := s.DeleteSubscription(ctx, &sub); err != nil {
+			return nil, err
+		}
+
+		return deleteSubscriptionResponse{
+			Subscription: &sub,
+		}, nil
 	}
 }
 
 func decodeDeleteSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
-	id, ok := vars["uuid"]
+	UUID, ok := vars["uuid"]
 	if !ok {
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	uid := uuid.MustParse(id)
+	var req deleteSubscriptionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return nil, err
+	}
 
-	return deleteSubscriptionRequest{ID: uid}, nil
+	req.UUID = uuid.MustParse(UUID)
+
+	return req, nil
 }
 
 func encodeDeleteSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

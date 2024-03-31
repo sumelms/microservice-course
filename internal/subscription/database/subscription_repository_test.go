@@ -14,15 +14,14 @@ import (
 
 var (
 	subscription = domain.Subscription{
-		ID:        1,
-		UUID:      utils.SubscriptionUUID,
-		UserID:    utils.UserUUID,
-		CourseID:  utils.CourseUUID,
-		MatrixID:  &utils.MatrixUUID,
-		ExpiresAt: &utils.Now,
-		CreatedAt: utils.Now,
-		UpdatedAt: utils.Now,
-		DeletedAt: nil,
+		UUID:       utils.SubscriptionUUID,
+		UserUUID:   utils.UserUUID,
+		CourseUUID: &utils.CourseUUID,
+		MatrixUUID: &utils.MatrixUUID,
+		Role:       utils.Role,
+		ExpiresAt:  &utils.Now,
+		CreatedAt:  utils.Now,
+		UpdatedAt:  utils.Now,
 	}
 )
 
@@ -31,13 +30,13 @@ func newSubscriptionTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.Exp
 }
 
 func TestRepository_Subscription(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
+	validRows := sqlmock.NewRows([]string{"uuid", "user_uuid", "course_uuid", "matrix_uuid", "role",
 		"expires_at", "created_at", "updated_at", "deleted_at"}).
-		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+		AddRow(subscription.UUID, subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
 			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
 
 	type args struct {
-		id uuid.UUID
+		UUID uuid.UUID
 	}
 
 	tests := []struct {
@@ -49,14 +48,14 @@ func TestRepository_Subscription(t *testing.T) {
 	}{
 		{
 			name:    "get subscription",
-			args:    args{id: utils.SubscriptionUUID},
+			args:    args{UUID: utils.SubscriptionUUID},
 			rows:    validRows,
 			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "course not found error",
-			args:    args{id: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
+			args:    args{UUID: uuid.MustParse("00000000-0000-0000-0000-000000000000")},
 			rows:    utils.EmptyRows,
 			want:    domain.Subscription{},
 			wantErr: true,
@@ -80,26 +79,25 @@ func TestRepository_Subscription(t *testing.T) {
 
 			prep.ExpectQuery().WithArgs(utils.SubscriptionUUID).WillReturnRows(tt.rows)
 
-			got, err := r.Subscription(tt.args.id)
+			got, err := r.Subscription(tt.args.UUID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Course() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Subscription() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Course() got = %v, want %v", got, tt.want)
+				t.Errorf("Subscription() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestRepository_Subscriptions(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id", "expires_at",
-		"created_at", "updated_at", "deleted_at"}).
-		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
+	validRows := sqlmock.NewRows([]string{"uuid", "user_uuid", "course_uuid", "matrix_uuid", "role",
+		"expires_at", "created_at", "updated_at", "deleted_at"}).
+		AddRow(subscription.UUID, subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
 			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt).
-		AddRow(2, uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), subscription.UserID,
-			subscription.CourseID, subscription.MatrixID, subscription.ExpiresAt, subscription.CreatedAt,
-			subscription.UpdatedAt, subscription.DeletedAt)
+		AddRow(uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
 
 	tests := []struct {
 		name    string
@@ -150,11 +148,13 @@ func TestRepository_Subscriptions(t *testing.T) {
 	}
 }
 
-func TestRepository_CreateSubscription(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
-		"expires_at", "created_at", "updated_at", "deleted_at"}).
-		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
+func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
+	validRows := sqlmock.NewRows([]string{
+		"uuid", "user_uuid", "role",
+		"expires_at", "created_at", "updated_at"}).
+		AddRow(
+			subscription.UUID, subscription.UserUUID, subscription.Role,
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	type args struct {
 		s *domain.Subscription
@@ -164,18 +164,84 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		name    string
 		rows    *sqlmock.Rows
 		args    args
+		want    domain.Subscription
 		wantErr bool
 	}{
 		{
 			name:    "create subscription",
 			rows:    validRows,
 			args:    args{s: &subscription},
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
 			args:    args{s: &subscription},
+			want:    domain.Subscription{},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, _, stmts := newSubscriptionTestDB()
+			r, err := NewSubscriptionRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+			}
+			prep, ok := stmts[createSubscriptionWithoutMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", createSubscriptionWithoutMatrix)
+			}
+
+			prep.ExpectQuery().WillReturnRows(tt.rows)
+
+			if err := r.CreateSubscriptionWithoutMatrix(tt.args.s); (err != nil) != tt.wantErr {
+				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			}
+		})
+	}
+}
+
+func TestRepository_CreateSubscription(t *testing.T) {
+	validRows := sqlmock.NewRows([]string{
+		"uuid", "user_uuid", "role",
+		"expires_at", "created_at", "updated_at"}).
+		AddRow(
+			subscription.UUID, subscription.UserUUID, subscription.Role,
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
+
+	type args struct {
+		s *domain.Subscription
+	}
+
+	tests := []struct {
+		name    string
+		rows    *sqlmock.Rows
+		args    args
+		want    domain.Subscription
+		wantErr bool
+	}{
+		{
+			name:    "create subscription",
+			rows:    validRows,
+			args:    args{s: &subscription},
+			want:    subscription,
+			wantErr: false,
+		},
+		{
+			name:    "empty fields",
+			rows:    utils.EmptyRows,
+			args:    args{s: &subscription},
+			want:    domain.Subscription{},
 			wantErr: true,
 		},
 	}
@@ -200,15 +266,21 @@ func TestRepository_CreateSubscription(t *testing.T) {
 			if err := r.CreateSubscription(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
+
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			}
 		})
 	}
 }
 
 func TestRepository_UpdateSubscription(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{"id", "uuid", "user_id", "course_id", "matrix_id",
-		"expires_at", "created_at", "updated_at", "deleted_at"}).
-		AddRow(subscription.ID, subscription.UUID, subscription.UserID, subscription.CourseID, subscription.MatrixID,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
+	validRows := sqlmock.NewRows([]string{
+		"uuid", "role",
+		"expires_at", "created_at", "updated_at"}).
+		AddRow(
+			subscription.UUID, subscription.Role,
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	type fields struct {
 		DB *sqlx.DB
@@ -219,20 +291,23 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
 		rows    *sqlmock.Rows
+		args    args
+		want    domain.Subscription
 		wantErr bool
 	}{
 		{
 			name:    "update course",
-			args:    args{s: &subscription},
 			rows:    validRows,
+			args:    args{s: &subscription},
+			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty course",
-			args:    args{s: &domain.Subscription{}},
 			rows:    utils.EmptyRows,
+			args:    args{s: &domain.Subscription{}},
+			want:    domain.Subscription{},
 			wantErr: true,
 		},
 	}
@@ -255,6 +330,10 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 
 			if err := r.UpdateSubscription(tt.args.s); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateSubscription() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
 			}
 		})
 	}
