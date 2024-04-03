@@ -44,9 +44,9 @@ func (s *Service) filteredMatrices(filters *MatrixFilters) ([]Matrix, error) {
 }
 
 func (s *Service) CreateMatrix(ctx context.Context, matrix *Matrix) error {
-	err := s.courses.CourseExists(ctx, *matrix.CourseUUID)
+	err := s.courses.CourseExists(ctx, matrix.CourseUUID)
 	if err != nil {
-		return fmt.Errorf("error checking if course with UUID %s exists: %w", *matrix.CourseUUID, err)
+		return fmt.Errorf("error checking if course with UUID %s exists: %w", matrix.CourseUUID, err)
 	}
 	if err := s.matrices.CreateMatrix(matrix); err != nil {
 		return fmt.Errorf("service can't create matrix: %w", err)

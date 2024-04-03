@@ -70,7 +70,7 @@ func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		return &CreateMatrixResponse{
 			Matrix: &MatrixResponse{
 				UUID:        matrix.UUID,
-				CourseUUID:  *matrix.CourseUUID,
+				CourseUUID:  matrix.CourseUUID,
 				Code:        matrix.Code,
 				Name:        matrix.Name,
 				Description: matrix.Description,

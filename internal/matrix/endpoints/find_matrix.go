@@ -44,7 +44,7 @@ func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		return &FindMatrixResponse{
 			Matrix: &MatrixResponse{
 				UUID:        matrix.UUID,
-				CourseUUID:  *matrix.CourseUUID,
+				CourseUUID:  matrix.CourseUUID,
 				Code:        matrix.Code,
 				Name:        matrix.Name,
 				Description: matrix.Description,

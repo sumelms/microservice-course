@@ -15,7 +15,7 @@ import (
 var (
 	matrix = domain.Matrix{
 		UUID:        utils.MatrixUUID,
-		CourseUUID:  &utils.CourseUUID,
+		CourseUUID:  utils.CourseUUID,
 		Code:        "Code",
 		Name:        "Name",
 		Description: "Description",

@@ -60,7 +60,7 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 		return &UpdateMatrixResponse{
 			Matrix: &MatrixResponse{
 				UUID:        matrix.UUID,
-				CourseUUID:  *matrix.CourseUUID,
+				CourseUUID:  matrix.CourseUUID,
 				Code:        matrix.Code,
 				Name:        matrix.Name,
 				Description: matrix.Description,
