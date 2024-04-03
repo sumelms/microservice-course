@@ -14,7 +14,7 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type updateCourseRequest struct {
+type UpdateCourseRequest struct {
 	UUID        uuid.UUID `json:"uuid"        validate:"required"`
 	Code        string    `json:"code"        validate:"required,max=100"`
 	Name        string    `json:"name"        validate:"required,max=100"`
@@ -25,8 +25,8 @@ type updateCourseRequest struct {
 	Description string    `json:"description" validate:"required,max=255"`
 }
 
-type updateCourseResponse struct {
-	Course *domain.Course `json:"course"`
+type UpdateCourseResponse struct {
+	Course *CourseResponse `json:"course"`
 }
 
 func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -40,7 +40,7 @@ func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 
 func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(updateCourseRequest)
+		req, ok := request.(UpdateCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -60,8 +60,19 @@ func makeUpdateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return updateCourseResponse{
-			Course: &course,
+		return UpdateCourseResponse{
+			Course: &CourseResponse{
+				UUID:        course.UUID,
+				Code:        course.Code,
+				Name:        course.Name,
+				Underline:   course.Underline,
+				Image:       course.Image,
+				ImageCover:  course.ImageCover,
+				Excerpt:     course.Excerpt,
+				Description: course.Description,
+				CreatedAt:   course.CreatedAt,
+				UpdatedAt:   course.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -73,7 +84,7 @@ func decodeUpdateCourseRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	var req updateCourseRequest
+	var req UpdateCourseRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

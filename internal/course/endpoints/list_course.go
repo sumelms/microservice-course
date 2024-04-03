@@ -9,8 +9,8 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type listCourseResponse struct {
-	Courses []domain.Course `json:"courses"`
+type ListCourseResponse struct {
+	Courses []CourseResponse `json:"courses"`
 }
 
 func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -29,7 +29,24 @@ func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &listCourseResponse{Courses: courses}, nil
+		var list []CourseResponse
+		for i := range courses {
+			c := courses[i]
+			list = append(list, CourseResponse{
+				UUID:        c.UUID,
+				Code:        c.Code,
+				Name:        c.Name,
+				Underline:   c.Underline,
+				Image:       c.Image,
+				ImageCover:  c.ImageCover,
+				Excerpt:     c.Excerpt,
+				Description: c.Description,
+				CreatedAt:   c.CreatedAt,
+				UpdatedAt:   c.UpdatedAt,
+			})
+		}
+
+		return &ListCourseResponse{Courses: list}, nil
 	}
 }
 

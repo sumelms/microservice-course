@@ -5,14 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/sumelms/microservice-course/internal/course/domain"
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type createCourseRequest struct {
+type CreateCourseRequest struct {
 	Code        string `json:"code"        validate:"required,max=15"`
 	Name        string `json:"name"        validate:"required,max=100"`
 	Underline   string `json:"underline"   validate:"required,max=100"`
@@ -22,8 +24,21 @@ type createCourseRequest struct {
 	Description string `json:"description" validate:"required,max=255"`
 }
 
-type createCourseResponse struct {
-	Course *domain.Course `json:"course"`
+type CourseResponse struct {
+	UUID        uuid.UUID `json:"uuid"`
+	Code        string    `json:"code"`
+	Name        string    `json:"name"`
+	Underline   string    `json:"underline"`
+	Image       string    `json:"image,omitempty"`
+	ImageCover  string    `json:"image_cover,omitempty"`
+	Excerpt     string    `json:"excerpt"`
+	Description string    `json:"description,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type CreateCourseResponse struct {
+	Course *CourseResponse `json:"course"`
 }
 
 // NewCreateCourseHandler creates new course handler
@@ -32,8 +47,8 @@ type createCourseResponse struct {
 // @Tags         course
 // @Accept       json
 // @Produce      json
-// @Param        course	  body		createCourseRequest		true	"Add Course"
-// @Success      200      {object}  createCourseResponse
+// @Param        course	  body		CreateCourseRequest		true	"Add Course"
+// @Success      200      {object}  CreateCourseResponse
 // @Failure      400      {object}  error
 // @Failure      404      {object}  error
 // @Failure      500      {object}  error
@@ -49,7 +64,7 @@ func NewCreateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 
 func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(createCourseRequest)
+		req, ok := request.(CreateCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -69,14 +84,25 @@ func makeCreateCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return createCourseResponse{
-			Course: &course,
+		return &CreateCourseResponse{
+			Course: &CourseResponse{
+				UUID:        course.UUID,
+				Code:        course.Code,
+				Name:        course.Name,
+				Underline:   course.Underline,
+				Image:       course.Image,
+				ImageCover:  course.ImageCover,
+				Excerpt:     course.Excerpt,
+				Description: course.Description,
+				CreatedAt:   course.CreatedAt,
+				UpdatedAt:   course.UpdatedAt,
+			},
 		}, nil
 	}
 }
 
 func decodeCreateCourseRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req createCourseRequest
+	var req CreateCourseRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/sumelms/microservice-course/internal/course/domain"
-	"github.com/sumelms/microservice-course/internal/shared"
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
@@ -113,7 +112,7 @@ func (r CourseRepository) UpdateCourse(course *domain.Course) error {
 }
 
 // DeleteCourse soft delete the course by given uuid.
-func (r CourseRepository) DeleteCourse(course *shared.Deleted) error {
+func (r CourseRepository) DeleteCourse(course *domain.DeletedCourse) error {
 	stmt, err := r.statement(deleteCourse)
 	if err != nil {
 		return err

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sumelms/microservice-course/internal/shared"
 )
 
 func (s *Service) Course(_ context.Context, courseUUID uuid.UUID) (Course, error) {
@@ -41,7 +40,7 @@ func (s *Service) UpdateCourse(_ context.Context, course *Course) error {
 	return nil
 }
 
-func (s *Service) DeleteCourse(_ context.Context, course *shared.Deleted) error {
+func (s *Service) DeleteCourse(_ context.Context, course *DeletedCourse) error {
 	if err := s.courses.DeleteCourse(course); err != nil {
 		return fmt.Errorf("service can't delete course: %w", err)
 	}

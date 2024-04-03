@@ -12,12 +12,12 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type findCourseRequest struct {
+type FindCourseRequest struct {
 	UUID uuid.UUID `json:"uuid"`
 }
 
-type findCourseResponse struct {
-	Course *domain.Course `json:"course"`
+type FindCourseResponse struct {
+	Course *CourseResponse `json:"course"`
 }
 
 func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -31,7 +31,7 @@ func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findCourseRequest)
+		req, ok := request.(FindCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -41,8 +41,19 @@ func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &findCourseResponse{
-			Course: &course,
+		return &FindCourseResponse{
+			Course: &CourseResponse{
+				UUID:        course.UUID,
+				Code:        course.Code,
+				Name:        course.Name,
+				Underline:   course.Underline,
+				Image:       course.Image,
+				ImageCover:  course.ImageCover,
+				Excerpt:     course.Excerpt,
+				Description: course.Description,
+				CreatedAt:   course.CreatedAt,
+				UpdatedAt:   course.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -56,7 +67,7 @@ func decodeFindCourseRequest(_ context.Context, r *http.Request) (interface{}, e
 
 	uid := uuid.MustParse(id)
 
-	return findCourseRequest{UUID: uid}, nil
+	return FindCourseRequest{UUID: uid}, nil
 }
 
 func encodeFindCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
