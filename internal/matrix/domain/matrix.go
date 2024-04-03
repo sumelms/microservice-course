@@ -34,3 +34,8 @@ type MatrixSubject struct {
 	MatrixID   uuid.UUID `db:"matrix_id"   json:"matrix_id"`
 	IsRequired bool      `db:"is_required" json:"is_required"`
 }
+
+type DeletedMatrix struct {
+	UUID      uuid.UUID `db:"uuid"       json:"uuid"`
+	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
+}

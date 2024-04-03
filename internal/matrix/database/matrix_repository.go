@@ -124,13 +124,16 @@ func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) error {
 	return nil
 }
 
-func (r MatrixRepository) DeleteMatrix(matrixUUID uuid.UUID) error {
+func (r MatrixRepository) DeleteMatrix(matrix *domain.DeletedMatrix) error {
 	stmt, err := r.statement(deleteMatrix)
 	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteMatrix)
 	}
 
-	if _, err := stmt.Exec(matrixUUID); err != nil {
+	args := []interface{}{
+		matrix.UUID,
+	}
+	if err := stmt.Get(matrix, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting matrix")
 	}
 	return nil

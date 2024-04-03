@@ -14,15 +14,15 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type updateMatrixRequest struct {
+type UpdateMatrixRequest struct {
 	UUID        uuid.UUID `json:"uuid"        validate:"required"`
 	Code        string    `json:"code"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
 }
 
-type updateMatrixResponse struct {
-	Matrix *domain.Matrix `json:"matrix"`
+type UpdateMatrixResponse struct {
+	Matrix *MatrixResponse `json:"matrix"`
 }
 
 func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -37,7 +37,7 @@ func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 //nolint:dupl
 func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(updateMatrixRequest)
+		req, ok := request.(UpdateMatrixRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -57,8 +57,16 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return updateMatrixResponse{
-			Matrix: &matrix,
+		return &UpdateMatrixResponse{
+			Matrix: &MatrixResponse{
+				UUID:        matrix.UUID,
+				CourseUUID:  *matrix.CourseUUID,
+				Code:        matrix.Code,
+				Name:        matrix.Name,
+				Description: matrix.Description,
+				CreatedAt:   matrix.CreatedAt,
+				UpdatedAt:   matrix.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -70,7 +78,7 @@ func decodeUpdateMatrixRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	var req updateMatrixRequest
+	var req UpdateMatrixRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

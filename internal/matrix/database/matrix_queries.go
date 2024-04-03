@@ -64,10 +64,10 @@ func queriesMatrix() map[string]string {
 			WHERE uuid = $1
 			RETURNING %s`, returningMatrixColumns),
 		// DELETE.
-		deleteMatrix: fmt.Sprintf(`UPDATE matrices
+		deleteMatrix: `UPDATE matrices
 			SET deleted_at = NOW()
 			WHERE uuid = $1
-			RETURNING %s`, returningMatrixColumns),
+			RETURNING uuid, deleted_at`,
 		removeSubject: `UPDATE matrix_subjects
 			SET deleted_at = NOW()
 			WHERE matrix_id = $1 AND subject_id = $2`,

@@ -12,12 +12,12 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-type findMatrixRequest struct {
+type FindMatrixRequest struct {
 	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
-type findMatrixResponse struct {
-	Matrix *domain.Matrix `json:"matrix"`
+type FindMatrixResponse struct {
+	Matrix *MatrixResponse `json:"matrix"`
 }
 
 func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -31,7 +31,7 @@ func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findMatrixRequest)
+		req, ok := request.(FindMatrixRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -41,8 +41,16 @@ func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &findMatrixResponse{
-			Matrix: &matrix,
+		return &FindMatrixResponse{
+			Matrix: &MatrixResponse{
+				UUID:        matrix.UUID,
+				CourseUUID:  *matrix.CourseUUID,
+				Code:        matrix.Code,
+				Name:        matrix.Name,
+				Description: matrix.Description,
+				CreatedAt:   matrix.CreatedAt,
+				UpdatedAt:   matrix.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -56,7 +64,7 @@ func decodeFindMatrixRequest(_ context.Context, r *http.Request) (interface{}, e
 
 	uid := uuid.MustParse(id)
 
-	return findMatrixRequest{UUID: uid}, nil
+	return FindMatrixRequest{UUID: uid}, nil
 }
 
 func encodeFindMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
