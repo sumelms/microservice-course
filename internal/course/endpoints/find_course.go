@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -13,21 +12,12 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type findCourseRequest struct {
+type FindCourseRequest struct {
 	UUID uuid.UUID `json:"uuid"`
 }
 
-type findCourseResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code"`
-	Name        string    `json:"name"`
-	Underline   string    `json:"underline"`
-	Image       string    `json:"image,omitempty"`
-	ImageCover  string    `json:"image_cover,omitempty"`
-	Excerpt     string    `json:"excerpt"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+type FindCourseResponse struct {
+	Course *CourseResponse `json:"course"`
 }
 
 func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -41,25 +31,29 @@ func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeFindCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findCourseRequest)
+		req, ok := request.(FindCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		c, err := s.Course(ctx, req.UUID)
+		course, err := s.Course(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
-		return &findCourseResponse{
-			UUID:        c.UUID,
-			Code:        c.Code,
-			Name:        c.Name,
-			Underline:   c.Underline,
-			Image:       c.Image,
-			ImageCover:  c.ImageCover,
-			Excerpt:     c.Excerpt,
-			Description: c.Description,
+		return &FindCourseResponse{
+			Course: &CourseResponse{
+				UUID:        course.UUID,
+				Code:        course.Code,
+				Name:        course.Name,
+				Underline:   course.Underline,
+				Image:       course.Image,
+				ImageCover:  course.ImageCover,
+				Excerpt:     course.Excerpt,
+				Description: course.Description,
+				CreatedAt:   course.CreatedAt,
+				UpdatedAt:   course.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -73,7 +67,7 @@ func decodeFindCourseRequest(_ context.Context, r *http.Request) (interface{}, e
 
 	uid := uuid.MustParse(id)
 
-	return findCourseRequest{UUID: uid}, nil
+	return FindCourseRequest{UUID: uid}, nil
 }
 
 func encodeFindCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

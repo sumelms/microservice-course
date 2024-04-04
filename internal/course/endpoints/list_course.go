@@ -9,8 +9,8 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type listCourseResponse struct {
-	Courses []findCourseResponse `json:"courses"`
+type ListCourseResponse struct {
+	Courses []CourseResponse `json:"courses"`
 }
 
 func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -24,15 +24,15 @@ func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		cc, err := s.Courses(ctx)
+		courses, err := s.Courses(ctx)
 		if err != nil {
 			return nil, err
 		}
 
-		var list []findCourseResponse
-		for i := range cc {
-			c := cc[i]
-			list = append(list, findCourseResponse{
+		var list []CourseResponse
+		for i := range courses {
+			c := courses[i]
+			list = append(list, CourseResponse{
 				UUID:        c.UUID,
 				Code:        c.Code,
 				Name:        c.Name,
@@ -46,7 +46,7 @@ func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			})
 		}
 
-		return &listCourseResponse{Courses: list}, nil
+		return &ListCourseResponse{Courses: list}, nil
 	}
 }
 

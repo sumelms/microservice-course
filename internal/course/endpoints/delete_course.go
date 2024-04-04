@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -14,8 +15,17 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type deleteCourseRequest struct {
+type DeleteCourseRequest struct {
 	UUID uuid.UUID `json:"uuid" validate:"required"`
+}
+
+type DeletedCourseResponse struct {
+	UUID      uuid.UUID `json:"uuid"`
+	DeletedAt time.Time `json:"deleted_at"`
+}
+
+type DeleteCourseResponse struct {
+	Course *DeletedCourseResponse `json:"course"`
 }
 
 func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -29,16 +39,22 @@ func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 
 func makeDeleteCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(deleteCourseRequest)
+		req, ok := request.(DeleteCourseRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		if err := s.DeleteCourse(ctx, req.UUID); err != nil {
+		deletedCourse := domain.DeletedCourse{UUID: req.UUID}
+		if err := s.DeleteCourse(ctx, &deletedCourse); err != nil {
 			return nil, err
 		}
 
-		return nil, nil
+		return DeleteCourseResponse{
+			Course: &DeletedCourseResponse{
+				UUID:      deletedCourse.UUID,
+				DeletedAt: deletedCourse.DeletedAt,
+			},
+		}, nil
 	}
 }
 
@@ -54,7 +70,7 @@ func decodeDeleteCourseRequest(_ context.Context, r *http.Request) (interface{},
 		return nil, err
 	}
 
-	return deleteCourseRequest{UUID: uid}, nil
+	return DeleteCourseRequest{UUID: uid}, nil
 }
 
 func encodeDeleteCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

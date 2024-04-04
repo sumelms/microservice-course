@@ -34,6 +34,9 @@ func queriesCourse() map[string]string {
 				AND deleted_at IS NULL
 			RETURNING %s`, returningColumns),
 		// DELETE.
-		deleteCourse: "UPDATE courses SET deleted_at = NOW() WHERE uuid = $1 AND deleted_at IS NULL",
+		deleteCourse: `UPDATE courses
+			SET deleted_at = NOW()
+			WHERE uuid = $1
+			RETURNING uuid, deleted_at`,
 	}
 }
