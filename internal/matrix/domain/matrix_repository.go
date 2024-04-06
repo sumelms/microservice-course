@@ -8,7 +8,7 @@ type MatrixRepository interface {
 	Matrices() ([]Matrix, error)
 	CourseMatrices(courseUUID uuid.UUID) ([]Matrix, error)
 	CreateMatrix(matrix *Matrix) error
-	UpdateMatrix(matrix *Matrix) error
+	UpdateMatrix(matrix *Matrix) (Matrix, error)
 	DeleteMatrix(matrix *DeletedMatrix) error
 	AddSubject(matrixSubject *MatrixSubject) error
 	RemoveSubject(matrixUUID, subjectUUID uuid.UUID) error

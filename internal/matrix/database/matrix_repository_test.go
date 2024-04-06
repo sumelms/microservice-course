@@ -265,11 +265,12 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.UpdateMatrix(tt.args.m); (err != nil) != tt.wantErr {
+			m, err := r.UpdateMatrix(tt.args.m)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("UpdateMatrix() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(*tt.args.m, tt.want) {
+			if !tt.wantErr && !reflect.DeepEqual(m, tt.want) {
 				t.Errorf("UpdateMatrix() got = %v, want %v", *tt.args.m, tt.want)
 			}
 		})

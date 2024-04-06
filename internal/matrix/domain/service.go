@@ -12,7 +12,7 @@ type ServiceInterface interface {
 	CourseMatrix(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
 	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
-	UpdateMatrix(ctx context.Context, matrix *Matrix) error
+	UpdateMatrix(ctx context.Context, matrix *Matrix) (Matrix, error)
 	DeleteMatrix(ctx context.Context, matrix *DeletedMatrix) error
 	AddSubject(ctx context.Context, matrixSubject *MatrixSubject) error
 	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
