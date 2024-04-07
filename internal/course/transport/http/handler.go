@@ -29,7 +29,7 @@ func NewCourseRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *m
 	createCourseHandler := endpoints.NewCreateCourseHandler(s, opts...)
 	r.Handle("", createCourseHandler).Methods(http.MethodPost)
 
-	listCourseHandler := endpoints.NewListCourseHandler(s, opts...)
+	listCourseHandler := endpoints.NewListCoursesHandler(s, opts...)
 	r.Handle("", listCourseHandler).Methods(http.MethodGet)
 
 	findCourseHandler := endpoints.NewFindCourseHandler(s, opts...)

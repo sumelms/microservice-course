@@ -9,20 +9,20 @@ import (
 	"github.com/sumelms/microservice-course/internal/course/domain"
 )
 
-type ListCourseResponse struct {
+type ListCoursesResponse struct {
 	Courses []CourseResponse `json:"courses"`
 }
 
-func NewListCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListCoursesHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeListCourseEndpoint(s),
-		decodeListCourseRequest,
-		encodeListCourseResponse,
+		makeListCoursesEndpoint(s),
+		decodeListCoursesRequest,
+		encodeListCoursesResponse,
 		opts...,
 	)
 }
 
-func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeListCoursesEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		courses, err := s.Courses(ctx)
 		if err != nil {
@@ -46,14 +46,14 @@ func makeListCourseEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			})
 		}
 
-		return &ListCourseResponse{Courses: list}, nil
+		return &ListCoursesResponse{Courses: list}, nil
 	}
 }
 
-func decodeListCourseRequest(_ context.Context, _ *http.Request) (interface{}, error) {
+func decodeListCoursesRequest(_ context.Context, _ *http.Request) (interface{}, error) {
 	return nil, nil
 }
 
-func encodeListCourseResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func encodeListCoursesResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return kithttp.EncodeJSONResponse(ctx, w, response)
 }
