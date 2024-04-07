@@ -9,10 +9,10 @@ const (
 	createMatrix = "create matrix"
 	addSubject   = "adds subject to matrix"
 	// READ.
-	getMatrix          = "get matrix by uuid"
-	getCourseMatrix    = "get course and matrix by course_uuid"
-	listMatrix         = "list matrices"
-	listCourseMatrices = "list course matrices by course_uuid"
+	getMatrix             = "get matrix by uuid"
+	getCourseMatrixExists = "get whether there is a relationship between course and matrix"
+	listMatrices          = "list matrices"
+	listCourseMatrices    = "list course matrices by course_uuid"
 	// UPDATE.
 	updateMatrix = "update matrix by uuid"
 	// DELERE.
@@ -38,13 +38,13 @@ func queriesMatrix() map[string]string {
 			LEFT JOIN courses ON matrices.course_id = courses.id
 			WHERE matrices.uuid = $1 AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningMatrixColumns),
-		getCourseMatrix: fmt.Sprintf(`SELECT
-				%s
+		getCourseMatrixExists: `SELECT
+				courses.uuid IS NOT NULL AND matrices.uuid IS NOT NULL as exists_relationship
 			FROM matrices
 			LEFT JOIN courses ON matrices.course_id = courses.id
 			WHERE courses.uuid = $1 AND courses.deleted_at IS NULL
-				AND matrices.uuid = $2 AND matrices.deleted_at IS NULL`, returningMatrixColumns),
-		listMatrix: fmt.Sprintf(`SELECT
+				AND matrices.uuid = $2 AND matrices.deleted_at IS NULL`,
+		listMatrices: fmt.Sprintf(`SELECT
 				courses.uuid AS course_uuid,
 				%s
 			FROM matrices

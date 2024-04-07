@@ -11,26 +11,26 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-type ListMatrixRequest struct {
+type ListMatricesRequest struct {
 	CourseUUID uuid.UUID `json:"course_uuid,omitempty"`
 }
 
-type ListMatrixResponse struct {
+type ListMatricesResponse struct {
 	Matrices []MatrixResponse `json:"matrices"`
 }
 
-func NewListMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListMatricesHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeListMatrixEndpoint(s),
-		decodeListMatrixRequest,
-		encodeListMatrixResponse,
+		makeListMatricesEndpoint(s),
+		decodeListMatricesRequest,
+		encodeListMatricesResponse,
 		opts...,
 	)
 }
 
-func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeListMatricesEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(ListMatrixRequest)
+		req, ok := request.(ListMatricesRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -59,20 +59,20 @@ func makeListMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			})
 		}
 
-		return &ListMatrixResponse{Matrices: list}, nil
+		return &ListMatricesResponse{Matrices: list}, nil
 	}
 }
 
-func decodeListMatrixRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeListMatricesRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	courseUUID := r.FormValue("course_uuid")
 
-	request := ListMatrixRequest{}
+	request := ListMatricesRequest{}
 	if len(courseUUID) > 0 {
 		request.CourseUUID = uuid.MustParse(courseUUID)
 	}
 	return request, nil
 }
 
-func encodeListMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func encodeListMatricesResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return kithttp.EncodeJSONResponse(ctx, w, response)
 }

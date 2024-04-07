@@ -30,10 +30,10 @@ func newMatrixTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.ExpectedP
 
 func TestRepository_Matrix(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{
-		"uuid", "code", "name", "description", "course_uuid",
+		"course_uuid", "uuid", "code", "name", "description",
 		"created_at", "updated_at"}).
 		AddRow(
-			matrix.UUID, matrix.Code, matrix.Name, matrix.Description, matrix.CourseUUID,
+			matrix.CourseUUID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
 			matrix.CreatedAt, matrix.UpdatedAt)
 
 	type args struct {
@@ -94,13 +94,13 @@ func TestRepository_Matrix(t *testing.T) {
 
 func TestRepository_Matrices(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{
-		"uuid", "code", "name", "description", "course_uuid",
+		"course_uuid", "uuid", "code", "name", "description",
 		"created_at", "updated_at"}).
 		AddRow(
-			matrix.UUID, matrix.Code, matrix.Name, matrix.Description, matrix.CourseUUID,
+			matrix.CourseUUID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
 			matrix.CreatedAt, matrix.UpdatedAt).
-		AddRow(uuid.MustParse("e74868b2-72d4-4591-a90d-122a9ac2d945"),
-			matrix.Code, matrix.Name, matrix.Description, matrix.CourseUUID,
+		AddRow(matrix.CourseUUID, uuid.MustParse("e74868b2-72d4-4591-a90d-122a9ac2d945"),
+			matrix.Code, matrix.Name, matrix.Description,
 			matrix.CreatedAt, matrix.UpdatedAt)
 
 	tests := []struct {
@@ -133,9 +133,9 @@ func TestRepository_Matrices(t *testing.T) {
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the MatrixRepository", err)
 			}
-			prep, ok := stmts[listMatrix]
+			prep, ok := stmts[listMatrices]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", listMatrix)
+				t.Fatalf("prepared statement %s not found", listMatrices)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
@@ -154,10 +154,10 @@ func TestRepository_Matrices(t *testing.T) {
 
 func TestRepository_CreateMatrix(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{
-		"uuid", "code", "name", "description", "course_uuid",
+		"course_uuid", "uuid", "code", "name", "description",
 		"created_at", "updated_at"}).
 		AddRow(
-			matrix.UUID, matrix.Code, matrix.Name, matrix.Description, matrix.CourseUUID,
+			matrix.CourseUUID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
 			matrix.CreatedAt, matrix.UpdatedAt)
 
 	type args struct {
@@ -216,36 +216,45 @@ func TestRepository_CreateMatrix(t *testing.T) {
 }
 
 func TestRepository_UpdateMatrix(t *testing.T) {
-	validRows := sqlmock.NewRows([]string{
-		"uuid", "code", "name", "description", "course_uuid",
+	validUpdateRows := sqlmock.NewRows([]string{
+		"uuid", "code", "name", "description",
 		"created_at", "updated_at"}).
 		AddRow(
-			matrix.UUID, matrix.Code, matrix.Name, matrix.Description, matrix.CourseUUID,
+			matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
+			matrix.CreatedAt, matrix.UpdatedAt)
+	validGetRows := sqlmock.NewRows([]string{
+		"course_uuid", "uuid", "code", "name", "description",
+		"created_at", "updated_at"}).
+		AddRow(
+			matrix.CourseUUID, matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
 			matrix.CreatedAt, matrix.UpdatedAt)
 
 	type args struct {
 		m *domain.Matrix
 	}
 	tests := []struct {
-		name    string
-		args    args
-		rows    *sqlmock.Rows
-		want    domain.Matrix
-		wantErr bool
+		name       string
+		args       args
+		updateRows *sqlmock.Rows
+		getRows    *sqlmock.Rows
+		want       domain.Matrix
+		wantErr    bool
 	}{
 		{
-			name:    "update matrix",
-			args:    args{m: &matrix},
-			rows:    validRows,
-			want:    matrix,
-			wantErr: false,
+			name:       "update matrix",
+			args:       args{m: &matrix},
+			updateRows: validUpdateRows,
+			getRows:    validGetRows,
+			want:       matrix,
+			wantErr:    false,
 		},
 		{
-			name:    "empty matrix",
-			args:    args{m: &domain.Matrix{}},
-			rows:    utils.EmptyRows,
-			want:    domain.Matrix{},
-			wantErr: true,
+			name:       "empty matrix",
+			args:       args{m: &domain.Matrix{}},
+			updateRows: utils.EmptyRows,
+			getRows:    utils.EmptyRows,
+			want:       domain.Matrix{},
+			wantErr:    true,
 		},
 	}
 	for _, testCase := range tests {
@@ -262,16 +271,21 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 			if !ok {
 				t.Fatalf("prepared statement %s not found", updateMatrix)
 			}
+			prep.ExpectQuery().WillReturnRows(tt.updateRows)
 
-			prep.ExpectQuery().WillReturnRows(tt.rows)
+			prep, ok = stmts[getMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", getMatrix)
+			}
+			prep.ExpectQuery().WillReturnRows(tt.getRows)
 
 			m, err := r.UpdateMatrix(tt.args.m)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("UpdateMatrix() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("UpdateMatrix() \nerror = %v, \nwantErr = %v", err, tt.wantErr)
 			}
 
 			if !tt.wantErr && !reflect.DeepEqual(m, tt.want) {
-				t.Errorf("UpdateMatrix() got = %v, want %v", *tt.args.m, tt.want)
+				t.Errorf("UpdateMatrix() \ngot = %v, \nwant = %v", *tt.args.m, tt.want)
 			}
 		})
 	}

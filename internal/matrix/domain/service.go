@@ -9,7 +9,7 @@ import (
 
 type ServiceInterface interface {
 	Matrix(ctx context.Context, matrixUUID uuid.UUID) (Matrix, error)
-	CourseMatrix(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
+	CourseMatrixExists(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error)
 	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
 	UpdateMatrix(ctx context.Context, matrix *Matrix) (Matrix, error)

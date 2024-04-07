@@ -48,23 +48,23 @@ func (r MatrixRepository) Matrix(matrixUUID uuid.UUID) (domain.Matrix, error) {
 	return matrix, nil
 }
 
-func (r MatrixRepository) CourseMatrix(courseUUID uuid.UUID, matrixUUID uuid.UUID) (domain.Matrix, error) {
-	stmt, err := r.statement(getCourseMatrix)
+func (r MatrixRepository) CourseMatrixExists(courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error) {
+	stmt, err := r.statement(getCourseMatrixExists)
 	if err != nil {
-		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
+		return false, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
 	}
 
-	var m domain.Matrix
-	if err := stmt.Get(&m, courseUUID, matrixUUID); err != nil {
-		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
+	var exists bool
+	if err := stmt.Get(&exists, courseUUID, matrixUUID); err != nil {
+		return false, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
 	}
-	return m, nil
+	return exists, nil
 }
 
 func (r MatrixRepository) Matrices() ([]domain.Matrix, error) {
-	stmt, err := r.statement(listMatrix)
+	stmt, err := r.statement(listMatrices)
 	if err != nil {
-		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrix)
+		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrices)
 	}
 
 	var list []domain.Matrix
@@ -118,7 +118,7 @@ func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) (domain.Matrix, er
 		matrix.Name,
 		matrix.Description,
 	}
-	if _, err := stmt.Exec(args...); err != nil {
+	if err := stmt.Get(matrix, args...); err != nil {
 		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
 	return r.Matrix(matrix.UUID)
