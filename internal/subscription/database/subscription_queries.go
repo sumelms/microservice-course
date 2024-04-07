@@ -22,6 +22,7 @@ const (
 //nolint:funlen
 func queriesSubscription() map[string]string {
 	return map[string]string{
+		// CREATE.
 		createSubscription: fmt.Sprintf(`INSERT INTO subscriptions (
 				course_id, matrix_id, user_uuid, role, expires_at
 			) SELECT
@@ -39,10 +40,7 @@ func queriesSubscription() map[string]string {
 			WHERE
 				courses.uuid = $1 AND courses.deleted_at IS NULL
 			RETURNING %s`, returningColumns),
-		deleteSubscription: fmt.Sprintf(`UPDATE subscriptions
-			SET deleted_at = NOW(), reason = $2
-			WHERE uuid = $1 AND deleted_at IS NULL
-			RETURNING %s, reason, deleted_at`, returningColumns),
+		// READ.
 		getSubscription: fmt.Sprintf(`SELECT
 				courses.uuid AS course_uuid,
 				matrices.uuid AS matrix_uuid,
@@ -65,10 +63,6 @@ func queriesSubscription() map[string]string {
 				subscriptions.deleted_at IS NULL
 				AND courses.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL`, returningColumns),
-		updateSubscription: fmt.Sprintf(`UPDATE subscriptions
-			SET role = $2, expires_at = $3, updated_at = NOW()
-			WHERE uuid = $1 AND deleted_at IS NULL
-			RETURNING %s`, returningColumns),
 		courseSubscriptions: fmt.Sprintf(`SELECT
 				%s,
 				matrices.uuid AS "matrices.uuid",
@@ -94,5 +88,15 @@ func queriesSubscription() map[string]string {
 			WHERE subscriptions.user_uuid = $1 AND subscriptions.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningColumns),
+		// UPDATE.
+		updateSubscription: fmt.Sprintf(`UPDATE subscriptions
+			SET role = $2, expires_at = $3, updated_at = NOW()
+			WHERE uuid = $1 AND deleted_at IS NULL
+			RETURNING %s`, returningColumns),
+		// DELETE.
+		deleteSubscription: `UPDATE subscriptions
+			SET deleted_at = NOW(), reason = $2
+			WHERE uuid = $1 AND deleted_at IS NULL
+			RETURNING uuid, reason, deleted_at`,
 	}
 }
