@@ -67,6 +67,7 @@ func queriesMatrix() map[string]string {
 		deleteMatrix: `UPDATE matrices
 			SET deleted_at = NOW()
 			WHERE uuid = $1
+				AND deleted_at IS NULL
 			RETURNING uuid, deleted_at`,
 		removeSubject: `UPDATE matrix_subjects
 			SET deleted_at = NOW()
