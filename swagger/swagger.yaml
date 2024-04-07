@@ -1,140 +1,296 @@
-basePath: /api/v1
-definitions:
-  endpoints.createCourseRequest:
-    properties:
-      code:
-        maxLength: 15
-        type: string
-      description:
-        maxLength: 255
-        type: string
-      excerpt:
-        maxLength: 140
-        type: string
-      image:
-        type: string
-      image_cover:
-        type: string
-      name:
-        maxLength: 100
-        type: string
-      underline:
-        maxLength: 100
-        type: string
-    required:
-    - code
-    - description
-    - excerpt
-    - name
-    - underline
-    type: object
-  endpoints.createCourseResponse:
-    properties:
-      code:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      excerpt:
-        type: string
-      image:
-        type: string
-      image_cover:
-        type: string
-      name:
-        type: string
-      underline:
-        type: string
-      updated_at:
-        type: string
-      uuid:
-        type: string
-    type: object
-host: localhost:8080
+swagger: '2.0'
 info:
+  description: This is the Sumé LMS API for Course Microservice
+  title: Sumé LMS Course API
+  termsOfService: https://sumelms.com/docs/terms
   contact:
-    email: support@sumelms.com
     name: LMS Support
     url: https://sumelms.com/support
-  description: This is the Sumé LMS API for Course Microservice
+    email: support@sumelms.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: https://sumelms.com/docs/terms
-  title: Sumé LMS Course API
-  version: "1.0"
+  version: '1.0'
+host: localhost:8080
+basePath: /api/v1
 paths:
   /courses:
-    post:
-      consumes:
-      - application/json
-      description: Create a new course
-      parameters:
-      - description: Add Course
-        in: body
-        name: course
-        required: true
-        schema:
-          $ref: '#/definitions/endpoints.createCourseRequest'
-      produces:
-      - application/json
+    get:
+      summary: List Courses
+      deprecated: false
+      description: List Courses
+      tags:
+        - courses
+      parameters: []
       responses:
-        "200":
-          description: OK
+        '200':
+          description: Success
           schema:
-            $ref: '#/definitions/endpoints.createCourseResponse'
-        "400":
+            type: object
+            properties:
+              courses:
+                type: array
+                items:
+                  $ref: '#/definitions/endpoints.CourseResponse'
+        '400':
           description: Bad Request
           schema: {}
-        "404":
+        '404':
           description: Not Found
           schema: {}
-        "500":
+        '500':
           description: Internal Server Error
-          schema: {}
-      summary: Create course
+          schema:
+            $ref: '#/definitions/endpoints.ErrorResponse'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+    post:
+      summary: Create Course
+      deprecated: false
+      description: Create a new Course
       tags:
-      - course
+        - courses
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/endpoints.CourseRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              course:
+                $ref: '#/definitions/endpoints.CourseResponse'
+        '400':
+          description: Bad Request
+          schema: {}
+        '404':
+          description: Not Found
+          schema: {}
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/endpoints.ErrorResponse'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /courses/{course_uuid}:
+    get:
+      summary: Get Course
+      deprecated: false
+      description: Get Course by UUID
+      tags:
+        - courses
+      parameters:
+        - in: path
+          required: true
+          name: course_uuid
+          description: Course UUID
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              course:
+                $ref: '#/definitions/endpoints.CourseResponse'
+        '400':
+          description: Bad Request
+          schema: {}
+        '404':
+          description: Not Found
+          schema: {}
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/endpoints.ErrorResponse'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+    put:
+      summary: Update Course
+      deprecated: false
+      description: Update a Course by UUID
+      tags:
+        - courses
+      parameters:
+        - in: path
+          required: true
+          name: course_uuid
+          description: Course UUID
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/endpoints.CourseRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              course:
+                $ref: '#/definitions/endpoints.CourseResponse'
+        '400':
+          description: Bad Request
+          schema: {}
+        '404':
+          description: Not Found
+          schema: {}
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/endpoints.ErrorResponse'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+    delete:
+      summary: Delete Course
+      deprecated: false
+      description: Delete a Course by UUID
+      tags:
+        - courses
+      parameters:
+        - in: path
+          required: true
+          name: course_uuid
+          description: Course UUID
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              course:
+                $ref: '#/definitions/endpoints.DeleteResponse'
+        '400':
+          description: Bad Request
+          schema: {}
+        '404':
+          description: Not Found
+          schema: {}
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/endpoints.ErrorResponse'
+      security: []
+      produces:
+        - application/json
+definitions:
+  endpoints.DeleteResponse:
+    type: object
+    properties:
+      uuid:
+        type: string
+      deleted_at:
+        type: string
+  endpoints.ErrorResponse:
+    type: object
+    properties:
+      message:
+        type: string
+      error:
+        type: string
+  endpoints.CourseResponse:
+    type: object
+    properties:
+      uuid:
+        type: string
+      code:
+        type: string
+      name:
+        type: string
+      underline:
+        type: string
+      image:
+        type: string
+      image_cover:
+        type: string
+      excerpt:
+        type: string
+      description:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  endpoints.CourseRequest:
+    type: object
+    properties:
+      code:
+        type: string
+        maxLength: 15
+      name:
+        type: string
+        maxLength: 100
+      underline:
+        type: string
+        maxLength: 100
+      image:
+        type: string
+      image_cover:
+        type: string
+      excerpt:
+        type: string
+        maxLength: 140
+      description:
+        type: string
+        maxLength: 255
+    required:
+      - code
+      - name
+      - underline
+      - excerpt
 securityDefinitions:
   ApiKeyAuth:
     description: Description for what is this security definition being used
-    in: header
-    name: Authorization
     type: apiKey
+    name: Authorization
+    in: header
   BasicAuth:
     type: basic
   OAuth2AccessCode:
-    authorizationUrl: https://sso.sumelms.com/oauth/authorize
+    type: oauth2
     flow: accessCode
-    scopes:
-      admin: '                            Grants read and write access to administrative
-        information'
-    tokenUrl: https://sso.sumelms.com/oauth/token
-    type: oauth2
-  OAuth2Application:
-    flow: application
-    scopes:
-      admin: '                             Grants read and write access to administrative
-        information'
-      write: '                             Grants write access'
-    tokenUrl: https://sso.sumelms.com/oauth/token
-    type: oauth2
-  OAuth2Implicit:
     authorizationUrl: https://sso.sumelms.com/oauth/authorize
-    flow: implicit
-    scopes:
-      admin: '                          Grants read and write access to administrative
-        information'
-      write: '                          Grants write access'
-    type: oauth2
-  OAuth2Password:
-    flow: password
-    scopes:
-      admin: '                          Grants read and write access to administrative
-        information'
-      read: '                           Grants read access'
-      write: '                          Grants write access'
     tokenUrl: https://sso.sumelms.com/oauth/token
+    scopes:
+      admin: Grants read and write access to administrative information
+  OAuth2Application:
     type: oauth2
-swagger: "2.0"
+    flow: application
+    tokenUrl: https://sso.sumelms.com/oauth/token
+    scopes:
+      admin: Grants read and write access to administrative information
+      write: Grants write access
+  OAuth2Implicit:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://sso.sumelms.com/oauth/authorize
+    scopes:
+      admin: Grants read and write access to administrative information
+      write: Grants write access
+  OAuth2Password:
+    type: oauth2
+    flow: password
+    tokenUrl: https://sso.sumelms.com/oauth/token
+    scopes:
+      admin: Grants read and write access to administrative information
+      read: Grants read access
+      write: Grants write access
