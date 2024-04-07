@@ -119,7 +119,7 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 	return nil
 }
 
-func (r SubscriptionRepository) DeleteSubscription(sub *domain.Subscription) error {
+func (r SubscriptionRepository) DeleteSubscription(sub *domain.DeletedSubscription) error {
 	stmt, err := r.statement(deleteSubscription)
 	if err != nil {
 		return err

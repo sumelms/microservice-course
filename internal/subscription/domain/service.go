@@ -13,7 +13,7 @@ type ServiceInterface interface {
 	Subscriptions(ctx context.Context, filters *SubscriptionFilters) ([]Subscription, error)
 	CreateSubscription(ctx context.Context, cs *Subscription) error
 	UpdateSubscription(ctx context.Context, cs *Subscription) error
-	DeleteSubscription(ctx context.Context, cs *Subscription) error
+	DeleteSubscription(ctx context.Context, cs *DeletedSubscription) error
 }
 
 type ServiceConfiguration func(svc *Service) error

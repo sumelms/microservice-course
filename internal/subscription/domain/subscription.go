@@ -35,5 +35,10 @@ type Subscription struct {
 	ExpiresAt  *time.Time `db:"expires_at"  json:"expires_at,omitempty"`
 	CreatedAt  time.Time  `db:"created_at"  json:"created_at"`
 	UpdatedAt  time.Time  `db:"updated_at"  json:"updated_at"`
-	DeletedAt  *time.Time `db:"deleted_at"  json:"deleted_at,omitempty"`
+}
+
+type DeletedSubscription struct {
+	UUID      uuid.UUID `db:"uuid"       json:"uuid"`
+	Reason    string    `db:"reason"     json:"reason"`
+	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
 }

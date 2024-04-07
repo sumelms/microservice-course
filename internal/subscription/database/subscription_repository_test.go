@@ -31,9 +31,9 @@ func newSubscriptionTestDB() (*sqlx.DB, sqlmock.Sqlmock, map[string]*sqlmock.Exp
 
 func TestRepository_Subscription(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{"uuid", "user_uuid", "course_uuid", "matrix_uuid", "role",
-		"expires_at", "created_at", "updated_at", "deleted_at"}).
+		"expires_at", "created_at", "updated_at"}).
 		AddRow(subscription.UUID, subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	type args struct {
 		UUID uuid.UUID
@@ -93,11 +93,11 @@ func TestRepository_Subscription(t *testing.T) {
 
 func TestRepository_Subscriptions(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{"uuid", "user_uuid", "course_uuid", "matrix_uuid", "role",
-		"expires_at", "created_at", "updated_at", "deleted_at"}).
+		"expires_at", "created_at", "updated_at"}).
 		AddRow(subscription.UUID, subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt).
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt).
 		AddRow(uuid.MustParse("7aec21ad-2fa8-4ddd-b5af-073144031ecc"), subscription.UserUUID, subscription.CourseUUID, subscription.MatrixUUID, subscription.Role,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt, subscription.DeletedAt)
+			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	tests := []struct {
 		name    string
