@@ -25,6 +25,19 @@ type UpdateMatrixResponse struct {
 	Matrix *MatrixResponse `json:"matrix"`
 }
 
+// NewUpdateMatrixHandler updates new matrix handler
+// @Summary      Update matrix
+// @Description  Update a matrix
+// @Tags         matrices
+// @Accept       json
+// @Produce      json
+// @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
+// @Param        matrix	  body		UpdateMatrixRequest		true	"Add Course"
+// @Success      200      {object}  UpdateMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices/{uuid} [put].
 func NewUpdateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateMatrixEndpoint(s),

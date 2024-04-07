@@ -20,6 +20,17 @@ type FindMatrixResponse struct {
 	Matrix *MatrixResponse `json:"matrix"`
 }
 
+// NewFindMatrixHandler find matrix handler
+// @Summary      Find matrix
+// @Description  Find a new matrix
+// @Tags         matrices
+// @Produce      json
+// @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
+// @Success      200      {object}  FindMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices/{uuid} [get].
 func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindMatrixEndpoint(s),

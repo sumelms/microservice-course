@@ -26,6 +26,17 @@ type DeleteMatrixResponse struct {
 	Matrix *DeletedMatrixResponse `json:"matrix"`
 }
 
+// NewDeleteMatrixHandler deletes matrix handler
+// @Summary      Delete matrix
+// @Description  Delete a new matrix
+// @Tags         matrices
+// @Produce      json
+// @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
+// @Success      200      {object}  DeleteMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices/{uuid} [delete].
 func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteMatrixEndpoint(s),

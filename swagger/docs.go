@@ -234,6 +234,228 @@ const docTemplate = `{
                 }
             }
         },
+        "/matrices": {
+            "get": {
+                "description": "List a new matrices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrices"
+                ],
+                "summary": "List matrices",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "course search by uuid",
+                        "name": "course_uuid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.ListMatricesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new matrix",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrices"
+                ],
+                "summary": "Create matrix",
+                "parameters": [
+                    {
+                        "description": "Add Matrix",
+                        "name": "matrices",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateMatrixRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateMatrixResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/matrices/{uuid}": {
+            "get": {
+                "description": "Find a new matrix",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrices"
+                ],
+                "summary": "Find matrix",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.FindMatrixResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a matrix",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrices"
+                ],
+                "summary": "Update matrix",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Add Course",
+                        "name": "matrix",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateMatrixRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateMatrixResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a new matrix",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrices"
+                ],
+                "summary": "Delete matrix",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.DeleteMatrixResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/subscriptions": {
             "get": {
                 "description": "List a new subscriptions",
@@ -543,6 +765,38 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.CreateMatrixRequest": {
+            "type": "object",
+            "required": [
+                "course_uuid",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 45
+                },
+                "course_uuid": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
+        "endpoints.CreateMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "matrix": {
+                    "$ref": "#/definitions/endpoints.MatrixResponse"
+                }
+            }
+        },
         "endpoints.CreateSubscriptionRequest": {
             "type": "object",
             "required": [
@@ -584,6 +838,14 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.DeleteMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "matrix": {
+                    "$ref": "#/definitions/endpoints.DeletedMatrixResponse"
+                }
+            }
+        },
         "endpoints.DeleteSubscriptionResponse": {
             "type": "object",
             "properties": {
@@ -593,6 +855,17 @@ const docTemplate = `{
             }
         },
         "endpoints.DeletedCourseResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.DeletedMatrixResponse": {
             "type": "object",
             "properties": {
                 "deleted_at": {
@@ -625,6 +898,14 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.FindMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "matrix": {
+                    "$ref": "#/definitions/endpoints.MatrixResponse"
+                }
+            }
+        },
         "endpoints.FindSubscriptionResponse": {
             "type": "object",
             "properties": {
@@ -644,6 +925,17 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.ListMatricesResponse": {
+            "type": "object",
+            "properties": {
+                "matrices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/endpoints.MatrixResponse"
+                    }
+                }
+            }
+        },
         "endpoints.ListSubscriptionsResponse": {
             "type": "object",
             "properties": {
@@ -652,6 +944,32 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/endpoints.SubscriptionsResponse"
                     }
+                }
+            }
+        },
+        "endpoints.MatrixResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "course_uuid": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
                 }
             }
         },
@@ -794,6 +1112,37 @@ const docTemplate = `{
             "properties": {
                 "course": {
                     "$ref": "#/definitions/endpoints.CourseResponse"
+                }
+            }
+        },
+        "endpoints.UpdateMatrixRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "uuid"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.UpdateMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "matrix": {
+                    "$ref": "#/definitions/endpoints.MatrixResponse"
                 }
             }
         },

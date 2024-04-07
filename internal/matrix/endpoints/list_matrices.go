@@ -19,6 +19,18 @@ type ListMatricesResponse struct {
 	Matrices []MatrixResponse `json:"matrices"`
 }
 
+// NewListMatricesHandler list matrices handler
+// @Summary      List matrices
+// @Description  List a new matrices
+// @Tags         matrices
+// @Accept       json
+// @Produce      json
+// @Param        course_uuid    query     string  false  "course search by uuid"  Format(uuid)
+// @Success      200      {object}  ListMatricesResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices [get].
 func NewListMatricesHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListMatricesEndpoint(s),

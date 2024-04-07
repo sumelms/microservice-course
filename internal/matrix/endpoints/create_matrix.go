@@ -35,6 +35,18 @@ type CreateMatrixResponse struct {
 	Matrix *MatrixResponse `json:"matrix"`
 }
 
+// NewCreateMatrixHandler creates new matrix handler
+// @Summary      Create matrix
+// @Description  Create a new matrix
+// @Tags         matrices
+// @Accept       json
+// @Produce      json
+// @Param        matrices	  body		CreateMatrixRequest		true	"Add Matrix"
+// @Success      200      {object}  CreateMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices [post].
 func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateMatrixEndpoint(s),

@@ -56,6 +56,28 @@ definitions:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
     type: object
+  endpoints.CreateMatrixRequest:
+    properties:
+      code:
+        maxLength: 45
+        type: string
+      course_uuid:
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 100
+        type: string
+    required:
+    - course_uuid
+    - name
+    type: object
+  endpoints.CreateMatrixResponse:
+    properties:
+      matrix:
+        $ref: '#/definitions/endpoints.MatrixResponse'
+    type: object
   endpoints.CreateSubscriptionRequest:
     properties:
       course_uuid:
@@ -83,12 +105,24 @@ definitions:
       course:
         $ref: '#/definitions/endpoints.DeletedCourseResponse'
     type: object
+  endpoints.DeleteMatrixResponse:
+    properties:
+      matrix:
+        $ref: '#/definitions/endpoints.DeletedMatrixResponse'
+    type: object
   endpoints.DeleteSubscriptionResponse:
     properties:
       subscription:
         $ref: '#/definitions/endpoints.DeletedSubscriptionResponse'
     type: object
   endpoints.DeletedCourseResponse:
+    properties:
+      deleted_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.DeletedMatrixResponse:
     properties:
       deleted_at:
         type: string
@@ -109,6 +143,11 @@ definitions:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
     type: object
+  endpoints.FindMatrixResponse:
+    properties:
+      matrix:
+        $ref: '#/definitions/endpoints.MatrixResponse'
+    type: object
   endpoints.FindSubscriptionResponse:
     properties:
       subscription:
@@ -121,12 +160,36 @@ definitions:
           $ref: '#/definitions/endpoints.CourseResponse'
         type: array
     type: object
+  endpoints.ListMatricesResponse:
+    properties:
+      matrices:
+        items:
+          $ref: '#/definitions/endpoints.MatrixResponse'
+        type: array
+    type: object
   endpoints.ListSubscriptionsResponse:
     properties:
       subscriptions:
         items:
           $ref: '#/definitions/endpoints.SubscriptionsResponse'
         type: array
+    type: object
+  endpoints.MatrixResponse:
+    properties:
+      code:
+        type: string
+      course_uuid:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
     type: object
   endpoints.SubscriptionCourseResponse:
     properties:
@@ -223,6 +286,27 @@ definitions:
     properties:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
+    type: object
+  endpoints.UpdateMatrixRequest:
+    properties:
+      code:
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      uuid:
+        type: string
+    required:
+    - name
+    - uuid
+    type: object
+  endpoints.UpdateMatrixResponse:
+    properties:
+      matrix:
+        $ref: '#/definitions/endpoints.MatrixResponse'
     type: object
   endpoints.UpdateSubscriptionRequest:
     properties:
@@ -400,6 +484,159 @@ paths:
       summary: Update course
       tags:
       - courses
+  /matrices:
+    get:
+      consumes:
+      - application/json
+      description: List a new matrices
+      parameters:
+      - description: course search by uuid
+        format: uuid
+        in: query
+        name: course_uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.ListMatricesResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List matrices
+      tags:
+      - matrices
+    post:
+      consumes:
+      - application/json
+      description: Create a new matrix
+      parameters:
+      - description: Add Matrix
+        in: body
+        name: matrices
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.CreateMatrixRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.CreateMatrixResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create matrix
+      tags:
+      - matrices
+  /matrices/{uuid}:
+    delete:
+      description: Delete a new matrix
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.DeleteMatrixResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete matrix
+      tags:
+      - matrices
+    get:
+      description: Find a new matrix
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.FindMatrixResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Find matrix
+      tags:
+      - matrices
+    put:
+      consumes:
+      - application/json
+      description: Update a matrix
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Add Course
+        in: body
+        name: matrix
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.UpdateMatrixRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.UpdateMatrixResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update matrix
+      tags:
+      - matrices
   /subscriptions:
     get:
       description: List a new subscriptions
