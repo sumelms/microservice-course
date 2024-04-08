@@ -385,7 +385,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Add Course",
+                        "description": "Update Matrix",
                         "name": "matrix",
                         "in": "body",
                         "required": true,

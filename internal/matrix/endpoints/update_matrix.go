@@ -32,7 +32,7 @@ type UpdateMatrixResponse struct {
 // @Accept       json
 // @Produce      json
 // @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
-// @Param        matrix	  body		UpdateMatrixRequest		true	"Add Course"
+// @Param        matrix	  body		UpdateMatrixRequest		true	"Update Matrix"
 // @Success      200      {object}  UpdateMatrixResponse
 // @Failure      400      {object}  error
 // @Failure      404      {object}  error

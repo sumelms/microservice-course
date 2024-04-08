@@ -612,7 +612,7 @@ paths:
         name: uuid
         required: true
         type: string
-      - description: Add Course
+      - description: Update Matrix
         in: body
         name: matrix
         required: true
