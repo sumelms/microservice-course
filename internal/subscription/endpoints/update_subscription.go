@@ -25,6 +25,19 @@ type UpdateSubscriptionResponse struct {
 	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
+// NewUpdateSubscriptionHandler updates new subscription handler
+// @Summary      Update subscription
+// @Description  Update a subscription
+// @Tags         subscriptions
+// @Accept       json
+// @Produce      json
+// @Param        uuid	  		  path      string  true  "Subscription UUID" Format(uuid)
+// @Param        subscription	  body		UpdateSubscriptionRequest		true	"Update Subscription"
+// @Success      200      {object}  UpdateSubscriptionResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions/{uuid} [put].
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubscriptionEndpoint(s),

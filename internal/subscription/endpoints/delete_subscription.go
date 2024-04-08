@@ -30,6 +30,17 @@ type DeleteSubscriptionResponse struct {
 	Subscription *DeletedSubscriptionResponse `json:"subscription"`
 }
 
+// NewDeleteSubscriptionHandler deletes subscription handler
+// @Summary      Delete subscription
+// @Description  Delete a new subscription
+// @Tags         subscriptions
+// @Produce      json
+// @Param        uuid	  path      string  true  "Subscription UUID" Format(uuid)
+// @Success      200      {object}  DeleteSubscriptionResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions/{uuid} [delete].
 func NewDeleteSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteSubscriptionEndpoint(s),

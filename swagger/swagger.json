@@ -227,6 +227,232 @@
                     }
                 }
             }
+        },
+        "/subscriptions": {
+            "get": {
+                "description": "List a new subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions"
+                ],
+                "summary": "List subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "course search by uuid",
+                        "name": "course_uuid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "user search by uuid",
+                        "name": "user_uuid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.ListSubscriptionsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions"
+                ],
+                "summary": "Create subscription",
+                "parameters": [
+                    {
+                        "description": "Add Subscription",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateSubscriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/subscriptions/{uuid}": {
+            "get": {
+                "description": "Find a new subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions"
+                ],
+                "summary": "Find subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subscription UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.FindSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions"
+                ],
+                "summary": "Update subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subscription UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Subscription",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateSubscriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a new subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions"
+                ],
+                "summary": "Delete subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subscription UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.DeleteSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -311,6 +537,39 @@
                 }
             }
         },
+        "endpoints.CreateSubscriptionRequest": {
+            "type": "object",
+            "required": [
+                "course_uuid",
+                "role",
+                "user_uuid"
+            ],
+            "properties": {
+                "course_uuid": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "user_uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.CreateSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "subscription": {
+                    "$ref": "#/definitions/endpoints.SubscriptionResponse"
+                }
+            }
+        },
         "endpoints.DeleteCourseResponse": {
             "type": "object",
             "properties": {
@@ -319,10 +578,32 @@
                 }
             }
         },
+        "endpoints.DeleteSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "subscription": {
+                    "$ref": "#/definitions/endpoints.DeletedSubscriptionResponse"
+                }
+            }
+        },
         "endpoints.DeletedCourseResponse": {
             "type": "object",
             "properties": {
                 "deleted_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.DeletedSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_at": {
+                    "type": "string"
+                },
+                "reason": {
                     "type": "string"
                 },
                 "uuid": {
@@ -338,6 +619,14 @@
                 }
             }
         },
+        "endpoints.FindSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "subscription": {
+                    "$ref": "#/definitions/endpoints.SubscriptionResponse"
+                }
+            }
+        },
         "endpoints.ListCoursesResponse": {
             "type": "object",
             "properties": {
@@ -346,6 +635,109 @@
                     "items": {
                         "$ref": "#/definitions/endpoints.CourseResponse"
                     }
+                }
+            }
+        },
+        "endpoints.ListSubscriptionsResponse": {
+            "type": "object",
+            "properties": {
+                "subscriptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/endpoints.SubscriptionsResponse"
+                    }
+                }
+            }
+        },
+        "endpoints.SubscriptionCourseResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.SubscriptionMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.SubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "course_uuid": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_uuid": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.SubscriptionsResponse": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "$ref": "#/definitions/endpoints.SubscriptionCourseResponse"
+                },
+                "course_uuid": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "matrix": {
+                    "$ref": "#/definitions/endpoints.SubscriptionMatrixResponse"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_uuid": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
                 }
             }
         },
@@ -396,6 +788,32 @@
             "properties": {
                 "course": {
                     "$ref": "#/definitions/endpoints.CourseResponse"
+                }
+            }
+        },
+        "endpoints.UpdateSubscriptionRequest": {
+            "type": "object",
+            "required": [
+                "role",
+                "uuid"
+            ],
+            "properties": {
+                "expires_at": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.UpdateSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "subscription": {
+                    "$ref": "#/definitions/endpoints.SubscriptionResponse"
                 }
             }
         }

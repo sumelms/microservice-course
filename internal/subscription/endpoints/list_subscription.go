@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -16,10 +17,47 @@ type ListSubscriptionsRequest struct {
 	UserUUID   uuid.UUID `json:"user_uuid"`
 }
 
-type ListSubscriptionsResponse struct {
-	Subscriptions []SubscriptionResponse `json:"subscriptions"`
+type SubscriptionCourseResponse struct {
+	UUID *uuid.UUID `db:"uuid" json:"uuid"`
+	Code *string    `db:"code" json:"code"`
+	Name *string    `db:"name" json:"name"`
 }
 
+type SubscriptionMatrixResponse struct {
+	UUID *uuid.UUID `db:"uuid" json:"uuid,omitempty"`
+	Code *string    `db:"code" json:"code,omitempty"`
+	Name *string    `db:"name" json:"name,omitempty"`
+}
+
+type SubscriptionsResponse struct {
+	UUID       uuid.UUID                   `json:"uuid"`
+	UserUUID   uuid.UUID                   `json:"user_uuid"`
+	Course     *SubscriptionCourseResponse `json:"course,omitempty"`
+	CourseUUID *uuid.UUID                  `json:"course_uuid,omitempty"`
+	Matrix     *SubscriptionMatrixResponse `json:"matrix,omitempty"`
+	MatrixUUID *uuid.UUID                  `json:"matrix_uuid,omitempty"`
+	Role       string                      `json:"role"`
+	ExpiresAt  *time.Time                  `json:"expires_at,omitempty"`
+	CreatedAt  time.Time                   `json:"created_at"`
+	UpdatedAt  time.Time                   `json:"updated_at"`
+}
+
+type ListSubscriptionsResponse struct {
+	Subscriptions []SubscriptionsResponse `json:"subscriptions"`
+}
+
+// NewListSubscriptionsHandler list subscriptions handler
+// @Summary      List subscriptions
+// @Description  List a new subscriptions
+// @Tags         subscriptions
+// @Produce      json
+// @Param        course_uuid    query     string  false  "course search by uuid"  Format(uuid)
+// @Param        user_uuid    	query     string  false  "user search by uuid"  Format(uuid)
+// @Success      200      {object}  ListSubscriptionsResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions [get].
 func NewListSubscriptionsHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListSubscriptionsEndpoint(s),
@@ -73,10 +111,10 @@ func makeListSubscriptionsEndpoint(s domain.ServiceInterface) endpoint.Endpoint 
 			return nil, err
 		}
 
-		var list []SubscriptionResponse
+		var list []SubscriptionsResponse
 		for i := range subscriptions {
 			sub := subscriptions[i]
-			list = append(list, SubscriptionResponse{
+			list = append(list, SubscriptionsResponse{
 				UUID:       sub.UUID,
 				UserUUID:   sub.UserUUID,
 				CourseUUID: sub.CourseUUID,

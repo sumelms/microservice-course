@@ -22,35 +22,33 @@ type CreateSubscriptionRequest struct {
 	ExpiresAt  *time.Time `json:"expires_at"`
 }
 
-type SubscriptionCourseResponse struct {
-	UUID *uuid.UUID `db:"uuid" json:"uuid"`
-	Code *string    `db:"code" json:"code"`
-	Name *string    `db:"name" json:"name"`
-}
-
-type SubscriptionMatrixResponse struct {
-	UUID *uuid.UUID `db:"uuid" json:"uuid,omitempty"`
-	Code *string    `db:"code" json:"code,omitempty"`
-	Name *string    `db:"name" json:"name,omitempty"`
-}
-
 type SubscriptionResponse struct {
-	UUID       uuid.UUID                   `json:"uuid"`
-	UserUUID   uuid.UUID                   `json:"user_uuid"`
-	Course     *SubscriptionCourseResponse `json:"course,omitempty"`
-	CourseUUID *uuid.UUID                  `json:"course_uuid,omitempty"`
-	Matrix     *SubscriptionMatrixResponse `json:"matrix,omitempty"`
-	MatrixUUID *uuid.UUID                  `json:"matrix_uuid,omitempty"`
-	Role       string                      `json:"role"`
-	ExpiresAt  *time.Time                  `json:"expires_at,omitempty"`
-	CreatedAt  time.Time                   `json:"created_at"`
-	UpdatedAt  time.Time                   `json:"updated_at"`
+	UUID       uuid.UUID  `json:"uuid"`
+	UserUUID   uuid.UUID  `json:"user_uuid"`
+	CourseUUID *uuid.UUID `json:"course_uuid,omitempty"`
+	MatrixUUID *uuid.UUID `json:"matrix_uuid,omitempty"`
+	Role       string     `json:"role"`
+	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
 type CreateSubscriptionResponse struct {
 	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
+// NewCreateSubscriptionHandler creates new subscription handler
+// @Summary      Create subscription
+// @Description  Create a new subscription
+// @Tags         subscriptions
+// @Accept       json
+// @Produce      json
+// @Param        subscription	  body		CreateSubscriptionRequest		true	"Add Subscription"
+// @Success      200      {object}  CreateSubscriptionResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions [post].
 func NewCreateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateSubscriptionEndpoint(s),

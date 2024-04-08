@@ -20,6 +20,17 @@ type FindSubscriptionResponse struct {
 	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
+// NewFindSubscriptionHandler find subscription handler
+// @Summary      Find subscription
+// @Description  Find a new subscription
+// @Tags         subscriptions
+// @Produce      json
+// @Param        uuid	  path      string  true  "Subscription UUID" Format(uuid)
+// @Success      200      {object}  FindSubscriptionResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions/{uuid} [get].
 func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubscriptionEndpoint(s),
