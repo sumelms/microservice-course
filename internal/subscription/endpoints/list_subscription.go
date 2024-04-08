@@ -16,7 +16,7 @@ type ListSubscriptionsRequest struct {
 	UserUUID   uuid.UUID `json:"user_uuid"`
 }
 
-type ListSubscriptionssResponse struct {
+type ListSubscriptionsResponse struct {
 	Subscriptions []SubscriptionResponse `json:"subscriptions"`
 }
 
@@ -89,7 +89,7 @@ func makeListSubscriptionsEndpoint(s domain.ServiceInterface) endpoint.Endpoint 
 				UpdatedAt:  sub.UpdatedAt,
 			})
 		}
-		return &ListSubscriptionssResponse{Subscriptions: list}, nil
+		return &ListSubscriptionsResponse{Subscriptions: list}, nil
 	}
 }
 
