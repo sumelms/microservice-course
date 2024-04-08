@@ -11,20 +11,20 @@ import (
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
-type ListSubscriptionRequest struct {
+type ListSubscriptionsRequest struct {
 	CourseUUID uuid.UUID `json:"course_uuid"`
 	UserUUID   uuid.UUID `json:"user_uuid"`
 }
 
-type ListSubscriptionsResponse struct {
+type ListSubscriptionssResponse struct {
 	Subscriptions []SubscriptionResponse `json:"subscriptions"`
 }
 
-func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
+func NewListSubscriptionsHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
-		makeListSubscriptionEndpoint(s),
-		decodeListSubscriptionRequest,
-		encodeListSubscriptionResponse,
+		makeListSubscriptionsEndpoint(s),
+		decodeListSubscriptionsRequest,
+		encodeListSubscriptionsResponse,
 		opts...,
 	)
 }
@@ -53,9 +53,9 @@ func SerializeMatrix(subscription domain.Subscription) *SubscriptionMatrixRespon
 	return nil
 }
 
-func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
+func makeListSubscriptionsEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(ListSubscriptionRequest)
+		req, ok := request.(ListSubscriptionsRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -89,15 +89,15 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 				UpdatedAt:  sub.UpdatedAt,
 			})
 		}
-		return &ListSubscriptionsResponse{Subscriptions: list}, nil
+		return &ListSubscriptionssResponse{Subscriptions: list}, nil
 	}
 }
 
-func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeListSubscriptionsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	courseUUID := r.FormValue("course_uuid")
 	userUUID := r.FormValue("user_uuid")
 
-	request := ListSubscriptionRequest{}
+	request := ListSubscriptionsRequest{}
 	if len(courseUUID) > 0 {
 		request.CourseUUID = uuid.MustParse(courseUUID)
 	}
@@ -108,6 +108,6 @@ func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interfac
 	return request, nil
 }
 
-func encodeListSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func encodeListSubscriptionsResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return kithttp.EncodeJSONResponse(ctx, w, response)
 }

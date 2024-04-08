@@ -26,8 +26,8 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 func NewSubscriptionRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
 	r := mux.NewRouter().PathPrefix("/subscriptions").Subrouter().StrictSlash(true)
 
-	listSubscriptionHandler := endpoints.NewListSubscriptionHandler(s, opts...)
-	r.Handle("", listSubscriptionHandler).Methods(http.MethodGet)
+	listSubscriptionsHandler := endpoints.NewListSubscriptionsHandler(s, opts...)
+	r.Handle("", listSubscriptionsHandler).Methods(http.MethodGet)
 
 	createSubscriptionHandler := endpoints.NewCreateSubscriptionHandler(s, opts...)
 	r.Handle("", createSubscriptionHandler).Methods(http.MethodPost)

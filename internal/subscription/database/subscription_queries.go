@@ -10,7 +10,7 @@ const (
 	createSubscriptionWithoutMatrix = "create subscription without matrix"
 	// READ.
 	getSubscription     = "get subscription by uuid"
-	listSubscription    = "list subscriptions"
+	listSubscriptions   = "list subscriptions"
 	courseSubscriptions = "list subscriptions by course uuid"
 	userSubscriptions   = "list subscriptions by user uuid"
 	// UPDATE.
@@ -52,7 +52,7 @@ func queriesSubscription() map[string]string {
 				subscriptions.uuid = $1 AND subscriptions.deleted_at IS NULL
 				AND courses.deleted_at IS NULL
 				AND matrices.deleted_at IS NULL`, returningColumns),
-		listSubscription: fmt.Sprintf(`SELECT
+		listSubscriptions: fmt.Sprintf(`SELECT
 				courses.uuid AS course_uuid,
 				matrices.uuid AS matrix_uuid,
 				%s

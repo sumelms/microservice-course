@@ -52,7 +52,7 @@ func (r SubscriptionRepository) Subscription(subscriptionUUID uuid.UUID) (domain
 }
 
 func (r SubscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
-	stmt, err := r.statement(listSubscription)
+	stmt, err := r.statement(listSubscriptions)
 	if err != nil {
 		return []domain.Subscription{}, err
 	}

@@ -129,9 +129,9 @@ func TestRepository_Subscriptions(t *testing.T) {
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected creating the repository", err)
 			}
-			prep, ok := stmts[listSubscription]
+			prep, ok := stmts[listSubscriptions]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", listSubscription)
+				t.Fatalf("prepared statement %s not found", listSubscriptions)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
