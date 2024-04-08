@@ -25,130 +25,34 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/courses": {
-            "get": {
-                "summary": "List Courses",
-                "deprecated": false,
-                "description": "List Courses",
-                "tags": [
-                    "courses"
-                ],
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "courses": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref":"#/definitions/endpoints.CourseResponse"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.ErrorResponse"
-                        }
-                    }
-                },
-                "security": [],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ]
-            },
             "post": {
-                "summary": "Create Course",
-                "deprecated": false,
-                "description": "Create a new Course",
-                "tags": ["courses"],
+                "description": "Create a new course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "course"
+                ],
+                "summary": "Create course",
                 "parameters": [
                     {
-                        "name": "body",
+                        "description": "Add Course",
+                        "name": "course",
                         "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.CourseRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "course": {
-                                    "$ref": "#/definitions/endpoints.CourseResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.ErrorResponse"
-                        }
-                    }
-                },
-                "security": [],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ]
-            }
-        },
-        "/courses/{course_uuid}": {
-            "get": {
-                "summary": "Get Course",
-                "deprecated": false,
-                "description": "Get Course by UUID",
-                "tags": [
-                    "courses"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
                         "required": true,
-                        "name": "course_uuid",
-                        "description": "Course UUID",
-                        "type": "string",
-                        "format": "uuid"
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.createCourseRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "course": {
-                                    "$ref": "#/definitions/endpoints.CourseResponse"
-                                }
-                            }
+                            "$ref": "#/definitions/endpoints.createCourseResponse"
                         }
                     },
                     "400": {
@@ -161,201 +65,34 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.ErrorResponse"
-                        }
-                    }
-                },
-                "security": [],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ]
-            },
-            "put": {
-                "summary": "Update Course",
-                "deprecated": false,
-                "description": "Update a Course by UUID",
-                "tags": [
-                    "courses"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "course_uuid",
-                        "description": "Course UUID",
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.CourseRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "course": {
-                                    "$ref": "#/definitions/endpoints.CourseResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.ErrorResponse"
-                        }
                     }
-                },
-                "security": [],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ]
-            },
-            "delete": {
-                "summary": "Delete Course",
-                "deprecated": false,
-                "description": "Delete a Course by UUID",
-                "tags": [
-                    "courses"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "course_uuid",
-                        "description": "Course UUID",
-                        "type": "string",
-                        "format": "uuid"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "course": {
-                                    "$ref": "#/definitions/endpoints.DeleteResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/endpoints.ErrorResponse"
-                        }
-                    }
-                },
-                "security": [],
-                "produces": [
-                    "application/json"
-                ]
+                }
             }
         }
     },
     "definitions": {
-        "endpoints.DeleteResponse": {
+        "endpoints.createCourseRequest": {
             "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "endpoints.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "endpoints.CourseResponse": {
-            "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string"
-                },
-                "code": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "underline": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "image_cover": {
-                    "type": "string"
-                },
-                "excerpt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "endpoints.CourseRequest": {
-            "type": "object",
+            "required": [
+                "code",
+                "description",
+                "excerpt",
+                "name",
+                "underline"
+            ],
             "properties": {
                 "code": {
                     "type": "string",
                     "maxLength": 15
                 },
-                "name": {
+                "description": {
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 255
                 },
-                "underline": {
+                "excerpt": {
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 140
                 },
                 "image": {
                     "type": "string"
@@ -363,21 +100,50 @@ const docTemplate = `{
                 "image_cover": {
                     "type": "string"
                 },
-                "excerpt": {
+                "name": {
                     "type": "string",
-                    "maxLength": 140
+                    "maxLength": 100
+                },
+                "underline": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
+        "endpoints.createCourseResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
                 },
                 "description": {
-                    "type": "string",
-                    "maxLength": 255
+                    "type": "string"
+                },
+                "excerpt": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_cover": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "underline": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
                 }
-            },
-            "required": [
-                "code",
-                "name",
-                "underline",
-                "excerpt"
-            ]
+            }
         }
     },
     "securityDefinitions": {
