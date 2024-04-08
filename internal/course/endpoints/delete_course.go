@@ -28,6 +28,17 @@ type DeleteCourseResponse struct {
 	Course *DeletedCourseResponse `json:"course"`
 }
 
+// NewDeleteCourseHandler deletes course handler
+// @Summary      Delete course
+// @Description  Delete a new course
+// @Tags         courses
+// @Produce      json
+// @Param        uuid	  path      string  true  "Course UUID" Format(uuid)
+// @Success      200      {object}  DeleteCourseResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /courses/{uuid} [delete].
 func NewDeleteCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteCourseEndpoint(s),

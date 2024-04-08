@@ -29,6 +29,19 @@ type UpdateCourseResponse struct {
 	Course *CourseResponse `json:"course"`
 }
 
+// NewUpdateCourseHandler updates new course handler
+// @Summary      Update course
+// @Description  Update a course
+// @Tags         courses
+// @Accept       json
+// @Produce      json
+// @Param        uuid	  path      string  true  "Course UUID" Format(uuid)
+// @Param        course	  body		UpdateCourseRequest		true	"Update Course"
+// @Success      200      {object}  UpdateCourseResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /courses/{uuid} [put].
 func NewUpdateCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateCourseEndpoint(s),

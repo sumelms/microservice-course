@@ -25,6 +25,36 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/courses": {
+            "get": {
+                "description": "List a new courses",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "List courses",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.ListCoursesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new course",
                 "consumes": [
@@ -34,7 +64,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "course"
+                    "courses"
                 ],
                 "summary": "Create course",
                 "parameters": [
@@ -44,7 +74,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/endpoints.createCourseRequest"
+                            "$ref": "#/definitions/endpoints.CreateCourseRequest"
                         }
                     }
                 ],
@@ -52,7 +82,141 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/endpoints.createCourseResponse"
+                            "$ref": "#/definitions/endpoints.CreateCourseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/courses/{uuid}": {
+            "get": {
+                "description": "Find a new course",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "Find course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Course UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.FindCourseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "Update course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Course UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Course",
+                        "name": "course",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateCourseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateCourseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a new course",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "Delete course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Course UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.DeleteCourseResponse"
                         }
                     },
                     "400": {
@@ -72,7 +236,42 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "endpoints.createCourseRequest": {
+        "endpoints.CourseResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "excerpt": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_cover": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "underline": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.CreateCourseRequest": {
             "type": "object",
             "required": [
                 "code",
@@ -110,20 +309,74 @@ const docTemplate = `{
                 }
             }
         },
-        "endpoints.createCourseResponse": {
+        "endpoints.CreateCourseResponse": {
             "type": "object",
             "properties": {
-                "code": {
+                "course": {
+                    "$ref": "#/definitions/endpoints.CourseResponse"
+                }
+            }
+        },
+        "endpoints.DeleteCourseResponse": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "$ref": "#/definitions/endpoints.DeletedCourseResponse"
+                }
+            }
+        },
+        "endpoints.DeletedCourseResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_at": {
                     "type": "string"
                 },
-                "created_at": {
+                "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "endpoints.FindCourseResponse": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "$ref": "#/definitions/endpoints.CourseResponse"
+                }
+            }
+        },
+        "endpoints.ListCoursesResponse": {
+            "type": "object",
+            "properties": {
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/endpoints.CourseResponse"
+                    }
+                }
+            }
+        },
+        "endpoints.UpdateCourseRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "description",
+                "excerpt",
+                "name",
+                "underline",
+                "uuid"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "excerpt": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 140
                 },
                 "image": {
                     "type": "string"
@@ -132,16 +385,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "underline": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "endpoints.UpdateCourseResponse": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "$ref": "#/definitions/endpoints.CourseResponse"
                 }
             }
         }
@@ -162,7 +422,7 @@ const docTemplate = `{
             "authorizationUrl": "https://sso.sumelms.com/oauth/authorize",
             "tokenUrl": "https://sso.sumelms.com/oauth/token",
             "scopes": {
-                "admin": "                            Grants read and write access to administrative information"
+                "admin": "Grants read and write access to administrative information"
             }
         },
         "OAuth2Application": {
@@ -170,8 +430,8 @@ const docTemplate = `{
             "flow": "application",
             "tokenUrl": "https://sso.sumelms.com/oauth/token",
             "scopes": {
-                "admin": "                             Grants read and write access to administrative information",
-                "write": "                             Grants write access"
+                "admin": "Grants read and write access to administrative information",
+                "write": "Grants write access"
             }
         },
         "OAuth2Implicit": {
@@ -179,8 +439,8 @@ const docTemplate = `{
             "flow": "implicit",
             "authorizationUrl": "https://sso.sumelms.com/oauth/authorize",
             "scopes": {
-                "admin": "                          Grants read and write access to administrative information",
-                "write": "                          Grants write access"
+                "admin": "Grants read and write access to administrative information",
+                "write": "Grants write access"
             }
         },
         "OAuth2Password": {
@@ -188,9 +448,9 @@ const docTemplate = `{
             "flow": "password",
             "tokenUrl": "https://sso.sumelms.com/oauth/token",
             "scopes": {
-                "admin": "                          Grants read and write access to administrative information",
-                "read": "                           Grants read access",
-                "write": "                          Grants write access"
+                "admin": "Grants read and write access to administrative information",
+                "read": "Grants read access",
+                "write": "Grants write access"
             }
         }
     }

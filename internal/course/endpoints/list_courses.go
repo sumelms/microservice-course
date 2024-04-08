@@ -13,6 +13,16 @@ type ListCoursesResponse struct {
 	Courses []CourseResponse `json:"courses"`
 }
 
+// NewListCoursesHandler list courses handler
+// @Summary      List courses
+// @Description  List a new courses
+// @Tags         courses
+// @Produce      json
+// @Success      200      {object}  ListCoursesResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /courses [get].
 func NewListCoursesHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeListCoursesEndpoint(s),
@@ -31,18 +41,18 @@ func makeListCoursesEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		var list []CourseResponse
 		for i := range courses {
-			c := courses[i]
+			course := courses[i]
 			list = append(list, CourseResponse{
-				UUID:        c.UUID,
-				Code:        c.Code,
-				Name:        c.Name,
-				Underline:   c.Underline,
-				Image:       c.Image,
-				ImageCover:  c.ImageCover,
-				Excerpt:     c.Excerpt,
-				Description: c.Description,
-				CreatedAt:   c.CreatedAt,
-				UpdatedAt:   c.UpdatedAt,
+				UUID:        course.UUID,
+				Code:        course.Code,
+				Name:        course.Name,
+				Underline:   course.Underline,
+				Image:       course.Image,
+				ImageCover:  course.ImageCover,
+				Excerpt:     course.Excerpt,
+				Description: course.Description,
+				CreatedAt:   course.CreatedAt,
+				UpdatedAt:   course.UpdatedAt,
 			})
 		}
 
