@@ -11,13 +11,13 @@ import (
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
-type listSubscriptionRequest struct {
+type ListSubscriptionRequest struct {
 	CourseUUID uuid.UUID `json:"course_uuid"`
 	UserUUID   uuid.UUID `json:"user_uuid"`
 }
 
-type listSubscriptionResponse struct {
-	Subscriptions []domain.Subscription `json:"subscriptions"`
+type ListSubscriptionsResponse struct {
+	Subscriptions []SubscriptionResponse `json:"subscriptions"`
 }
 
 func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -29,9 +29,33 @@ func NewListSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Serve
 	)
 }
 
+func SerializeCourse(subscription domain.Subscription) *SubscriptionCourseResponse {
+	if subscription.Course != nil {
+		return &SubscriptionCourseResponse{
+			UUID: subscription.Course.UUID,
+			Code: subscription.Course.Code,
+			Name: subscription.Course.Name,
+		}
+	}
+
+	return nil
+}
+
+func SerializeMatrix(subscription domain.Subscription) *SubscriptionMatrixResponse {
+	if subscription.Matrix != nil {
+		return &SubscriptionMatrixResponse{
+			UUID: subscription.Matrix.UUID,
+			Code: subscription.Matrix.Code,
+			Name: subscription.Matrix.Name,
+		}
+	}
+
+	return nil
+}
+
 func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(listSubscriptionRequest)
+		req, ok := request.(ListSubscriptionRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -49,7 +73,23 @@ func makeListSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &listSubscriptionResponse{Subscriptions: subscriptions}, nil
+		var list []SubscriptionResponse
+		for i := range subscriptions {
+			sub := subscriptions[i]
+			list = append(list, SubscriptionResponse{
+				UUID:       sub.UUID,
+				UserUUID:   sub.UserUUID,
+				CourseUUID: sub.CourseUUID,
+				Course:     SerializeCourse(sub),
+				MatrixUUID: sub.MatrixUUID,
+				Matrix:     SerializeMatrix(sub),
+				Role:       sub.Role,
+				ExpiresAt:  sub.ExpiresAt,
+				CreatedAt:  sub.CreatedAt,
+				UpdatedAt:  sub.UpdatedAt,
+			})
+		}
+		return &ListSubscriptionsResponse{Subscriptions: list}, nil
 	}
 }
 
@@ -57,7 +97,7 @@ func decodeListSubscriptionRequest(_ context.Context, r *http.Request) (interfac
 	courseUUID := r.FormValue("course_uuid")
 	userUUID := r.FormValue("user_uuid")
 
-	request := listSubscriptionRequest{}
+	request := ListSubscriptionRequest{}
 	if len(courseUUID) > 0 {
 		request.CourseUUID = uuid.MustParse(courseUUID)
 	}

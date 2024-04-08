@@ -12,12 +12,12 @@ import (
 	"github.com/sumelms/microservice-course/internal/subscription/domain"
 )
 
-type findSubscriptionRequest struct {
+type FindSubscriptionRequest struct {
 	UUID uuid.UUID `json:"uuid"`
 }
 
-type findSubscriptionResponse struct {
-	Subscription *domain.Subscription `json:"subscription"`
+type FindSubscriptionResponse struct {
+	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
 func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -31,7 +31,7 @@ func NewFindSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Serve
 
 func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findSubscriptionRequest)
+		req, ok := request.(FindSubscriptionRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -41,8 +41,17 @@ func makeFindSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &findSubscriptionResponse{
-			Subscription: &sub,
+		return CreateSubscriptionResponse{
+			Subscription: &SubscriptionResponse{
+				UUID:       sub.UUID,
+				UserUUID:   sub.UserUUID,
+				CourseUUID: sub.CourseUUID,
+				MatrixUUID: sub.MatrixUUID,
+				Role:       sub.Role,
+				ExpiresAt:  sub.ExpiresAt,
+				CreatedAt:  sub.CreatedAt,
+				UpdatedAt:  sub.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -56,7 +65,7 @@ func decodeFindSubscriptionRequest(_ context.Context, r *http.Request) (interfac
 
 	uid := uuid.MustParse(id)
 
-	return findSubscriptionRequest{UUID: uid}, nil
+	return FindSubscriptionRequest{UUID: uid}, nil
 }
 
 func encodeFindSubscriptionResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

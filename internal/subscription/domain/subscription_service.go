@@ -62,12 +62,13 @@ func (s *Service) CreateSubscription(ctx context.Context, sub *Subscription) err
 	return nil
 }
 
-func (s *Service) UpdateSubscription(_ context.Context, sub *Subscription) error {
-	if err := s.subscriptions.UpdateSubscription(sub); err != nil {
-		return fmt.Errorf("service can't update subscription: %w", err)
+func (s *Service) UpdateSubscription(_ context.Context, subscription *Subscription) (Subscription, error) {
+	sub, err := s.subscriptions.UpdateSubscription(subscription)
+	if err != nil {
+		return Subscription{}, fmt.Errorf("service can't update subscription: %w", err)
 	}
 
-	return nil
+	return sub, nil
 }
 
 func (s *Service) DeleteSubscription(_ context.Context, sub *DeletedSubscription) error {

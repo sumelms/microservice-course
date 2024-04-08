@@ -102,10 +102,10 @@ func (r SubscriptionRepository) CreateSubscription(s *domain.Subscription) error
 	return nil
 }
 
-func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) error {
+func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) (domain.Subscription, error) {
 	stmt, err := r.statement(updateSubscription)
 	if err != nil {
-		return err
+		return domain.Subscription{}, err
 	}
 
 	args := []interface{}{
@@ -114,9 +114,9 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 		sub.ExpiresAt,
 	}
 	if err := stmt.Get(sub, args...); err != nil {
-		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
+		return domain.Subscription{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
 	}
-	return nil
+	return r.Subscription(sub.UUID)
 }
 
 func (r SubscriptionRepository) DeleteSubscription(sub *domain.DeletedSubscription) error {

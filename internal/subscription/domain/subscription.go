@@ -12,9 +12,9 @@ type SubscriptionFilters struct {
 }
 
 type Course struct {
-	UUID uuid.UUID `db:"uuid" json:"uuid"`
-	Code string    `db:"code" json:"code"`
-	Name string    `db:"name" json:"name"`
+	UUID *uuid.UUID `db:"uuid" json:"uuid"`
+	Code *string    `db:"code" json:"code"`
+	Name *string    `db:"name" json:"name"`
 }
 
 type Matrix struct {

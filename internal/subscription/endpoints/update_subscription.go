@@ -15,14 +15,14 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type updateSubscriptionRequest struct {
+type UpdateSubscriptionRequest struct {
 	UUID      uuid.UUID  `json:"uuid"       validate:"required"`
 	Role      string     `json:"role"`
 	ExpiresAt *time.Time `json:"expires_at"`
 }
 
-type updateSubscriptionResponse struct {
-	Subscription *domain.Subscription `json:"subscription"`
+type UpdateSubscriptionResponse struct {
+	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
@@ -36,7 +36,7 @@ func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Ser
 
 func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(updateSubscriptionRequest)
+		req, ok := request.(UpdateSubscriptionRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -46,18 +46,28 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 			return nil, err
 		}
 
-		var sub domain.Subscription
+		var subscription domain.Subscription
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &sub); err != nil {
+		if err := json.Unmarshal(data, &subscription); err != nil {
 			return nil, err
 		}
 
-		if err := s.UpdateSubscription(ctx, &sub); err != nil {
+		sub, err := s.UpdateSubscription(ctx, &subscription)
+		if err != nil {
 			return nil, err
 		}
 
-		return updateSubscriptionResponse{
-			Subscription: &sub,
+		return UpdateSubscriptionResponse{
+			Subscription: &SubscriptionResponse{
+				UUID:       sub.UUID,
+				UserUUID:   sub.UserUUID,
+				CourseUUID: sub.CourseUUID,
+				MatrixUUID: sub.MatrixUUID,
+				Role:       sub.Role,
+				ExpiresAt:  sub.ExpiresAt,
+				CreatedAt:  sub.CreatedAt,
+				UpdatedAt:  sub.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -69,7 +79,7 @@ func decodeUpdateSubscriptionRequest(_ context.Context, r *http.Request) (interf
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	var req updateSubscriptionRequest
+	var req UpdateSubscriptionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
 	}
