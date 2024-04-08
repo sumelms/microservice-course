@@ -7,7 +7,7 @@ CREATE TABLE subscriptions
     user_uuid       uuid            NOT NULL,
     course_id       bigint          NOT NULL REFERENCES courses (id),
     matrix_id       bigint          NULL REFERENCES matrices (id),
-    role            varchar         NULL,
+    role            varchar         NOT NULL,
     expires_at      timestamp       NULL,
     created_at      timestamp       DEFAULT NOW() NOT NULL,
     updated_at      timestamp       DEFAULT NOW() NOT NULL,

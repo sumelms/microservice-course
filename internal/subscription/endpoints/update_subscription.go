@@ -17,7 +17,7 @@ import (
 
 type UpdateSubscriptionRequest struct {
 	UUID      uuid.UUID  `json:"uuid"       validate:"required"`
-	Role      string     `json:"role"`
+	Role      string     `json:"role"       validate:"required"`
 	ExpiresAt *time.Time `json:"expires_at"`
 }
 

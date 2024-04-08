@@ -30,7 +30,7 @@ type Subscription struct {
 	CourseUUID *uuid.UUID `db:"course_uuid" json:"course_uuid,omitempty"`
 	Matrix     *Matrix    `db:"matrices"    json:"matrix,omitempty"`
 	MatrixUUID *uuid.UUID `db:"matrix_uuid" json:"matrix_uuid,omitempty"`
-	Role       string     `db:"role"        json:"role,omitempty"`
+	Role       string     `db:"role"        json:"role"`
 	Reason     *string    `db:"reason"      json:"reason,omitempty"`
 	ExpiresAt  *time.Time `db:"expires_at"  json:"expires_at,omitempty"`
 	CreatedAt  time.Time  `db:"created_at"  json:"created_at"`
