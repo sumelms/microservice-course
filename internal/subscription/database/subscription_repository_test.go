@@ -70,11 +70,11 @@ func TestRepository_Subscription(t *testing.T) {
 			db, _, stmts := newSubscriptionTestDB()
 			r, err := NewSubscriptionRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected creating the repository", err)
+				t.Fatalf("an error '%sub' was not expected creating the repository", err)
 			}
 			prep, ok := stmts[getSubscription]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", getSubscription)
+				t.Fatalf("prepared statement %sub not found", getSubscription)
 			}
 
 			prep.ExpectQuery().WithArgs(utils.SubscriptionUUID).WillReturnRows(tt.rows)
@@ -127,11 +127,11 @@ func TestRepository_Subscriptions(t *testing.T) {
 			db, _, stmts := newSubscriptionTestDB()
 			r, err := NewSubscriptionRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected creating the repository", err)
+				t.Fatalf("an error '%sub' was not expected creating the repository", err)
 			}
 			prep, ok := stmts[listSubscriptions]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", listSubscriptions)
+				t.Fatalf("prepared statement %sub not found", listSubscriptions)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
@@ -157,7 +157,7 @@ func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
 			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	type args struct {
-		s *domain.Subscription
+		sub *domain.Subscription
 	}
 
 	tests := []struct {
@@ -170,14 +170,14 @@ func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
 		{
 			name:    "create subscription",
 			rows:    validRows,
-			args:    args{s: &subscription},
+			args:    args{sub: &subscription},
 			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
-			args:    args{s: &subscription},
+			args:    args{sub: &subscription},
 			want:    domain.Subscription{},
 			wantErr: true,
 		},
@@ -191,21 +191,21 @@ func TestRepository_CreateSubscriptionWithoutMatrix(t *testing.T) {
 			db, _, stmts := newSubscriptionTestDB()
 			r, err := NewSubscriptionRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%sub' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[createSubscriptionWithoutMatrix]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", createSubscriptionWithoutMatrix)
+				t.Fatalf("prepared statement %sub not found", createSubscriptionWithoutMatrix)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.CreateSubscriptionWithoutMatrix(tt.args.s); (err != nil) != tt.wantErr {
+			if err := r.CreateSubscriptionWithoutMatrix(tt.args.sub); (err != nil) != tt.wantErr {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
-				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.sub, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.sub, tt.want)
 			}
 		})
 	}
@@ -220,7 +220,7 @@ func TestRepository_CreateSubscription(t *testing.T) {
 			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
 
 	type args struct {
-		s *domain.Subscription
+		sub *domain.Subscription
 	}
 
 	tests := []struct {
@@ -233,14 +233,14 @@ func TestRepository_CreateSubscription(t *testing.T) {
 		{
 			name:    "create subscription",
 			rows:    validRows,
-			args:    args{s: &subscription},
+			args:    args{sub: &subscription},
 			want:    subscription,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
-			args:    args{s: &subscription},
+			args:    args{sub: &subscription},
 			want:    domain.Subscription{},
 			wantErr: true,
 		},
@@ -254,21 +254,21 @@ func TestRepository_CreateSubscription(t *testing.T) {
 			db, _, stmts := newSubscriptionTestDB()
 			r, err := NewSubscriptionRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%sub' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[createSubscription]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", createSubscription)
+				t.Fatalf("prepared statement %sub not found", createSubscription)
 			}
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.CreateSubscription(tt.args.s); (err != nil) != tt.wantErr {
+			if err := r.CreateSubscription(tt.args.sub); (err != nil) != tt.wantErr {
 				t.Errorf("CreateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
-				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.s, tt.want)
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.sub, tt.want) {
+				t.Errorf("CreateSubscription() got = %v, want %v", *tt.args.sub, tt.want)
 			}
 		})
 	}
@@ -292,7 +292,7 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 		DB *sqlx.DB
 	}
 	type args struct {
-		s *domain.Subscription
+		sub *domain.Subscription
 	}
 	tests := []struct {
 		name       string
@@ -307,7 +307,7 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 			name:       "update course",
 			updateRows: validUpdateRows,
 			getRows:    validGetRows,
-			args:       args{s: &subscription},
+			args:       args{sub: &subscription},
 			want:       subscription,
 			wantErr:    false,
 		},
@@ -315,7 +315,7 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 			name:       "empty course",
 			updateRows: utils.EmptyRows,
 			getRows:    utils.EmptyRows,
-			args:       args{s: &domain.Subscription{}},
+			args:       args{sub: &domain.Subscription{}},
 			want:       domain.Subscription{},
 			wantErr:    true,
 		},
@@ -328,27 +328,26 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 			db, _, stmts := newSubscriptionTestDB()
 			r, err := NewSubscriptionRepository(db)
 			if err != nil {
-				t.Fatalf("an error '%s' was not expected when creating the repository", err)
+				t.Fatalf("an error '%sub' was not expected when creating the repository", err)
 			}
 			prep, ok := stmts[updateSubscription]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", updateSubscription)
+				t.Fatalf("prepared statement %sub not found", updateSubscription)
 			}
 			prep.ExpectQuery().WillReturnRows(tt.updateRows)
 
 			prep, ok = stmts[getSubscription]
 			if !ok {
-				t.Fatalf("prepared statement %s not found", getSubscription)
+				t.Fatalf("prepared statement %sub not found", getSubscription)
 			}
 			prep.ExpectQuery().WillReturnRows(tt.getRows)
 
-			sub, err := r.UpdateSubscription(tt.args.s)
-			if (err != nil) != tt.wantErr {
+			if err := r.UpdateSubscription(tt.args.sub); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(sub, tt.want) {
-				t.Errorf("CreateSubscription() got = %v, want %v", sub, tt.want)
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.sub, tt.want) {
+				t.Errorf("CreateSubscription() got = \n%v, \nwant = %v", *tt.args.sub, tt.want)
 			}
 		})
 	}

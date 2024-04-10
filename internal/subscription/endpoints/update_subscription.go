@@ -59,13 +59,13 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 			return nil, err
 		}
 
-		var subscription domain.Subscription
+		var sub domain.Subscription
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &subscription); err != nil {
+		if err := json.Unmarshal(data, &sub); err != nil {
 			return nil, err
 		}
 
-		sub, err := s.UpdateSubscription(ctx, &subscription)
+		err := s.UpdateSubscription(ctx, &sub)
 		if err != nil {
 			return nil, err
 		}
