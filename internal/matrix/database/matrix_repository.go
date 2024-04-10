@@ -67,11 +67,11 @@ func (r MatrixRepository) Matrices() ([]domain.Matrix, error) {
 		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrices)
 	}
 
-	var list []domain.Matrix
-	if err := stmt.Select(&list); err != nil {
+	var matrices []domain.Matrix
+	if err := stmt.Select(&matrices); err != nil {
 		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
 	}
-	return list, nil
+	return matrices, nil
 }
 
 func (r MatrixRepository) CourseMatrices(courseUUID uuid.UUID) ([]domain.Matrix, error) {
@@ -81,11 +81,11 @@ func (r MatrixRepository) CourseMatrices(courseUUID uuid.UUID) ([]domain.Matrix,
 			errors.ErrCodeUnknown, "prepared statement %s not found", listCourseMatrices)
 	}
 
-	var list []domain.Matrix
-	if err := stmt.Select(&list, courseUUID); err != nil {
+	var matrices []domain.Matrix
+	if err := stmt.Select(&matrices, courseUUID); err != nil {
 		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
 	}
-	return list, nil
+	return matrices, nil
 }
 
 func (r MatrixRepository) CreateMatrix(matrix *domain.Matrix) error {
@@ -106,10 +106,10 @@ func (r MatrixRepository) CreateMatrix(matrix *domain.Matrix) error {
 	return nil
 }
 
-func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) (domain.Matrix, error) {
+func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) error {
 	stmt, err := r.statement(updateMatrix)
 	if err != nil {
-		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateMatrix)
+		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateMatrix)
 	}
 
 	args := []interface{}{
@@ -119,9 +119,13 @@ func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) (domain.Matrix, er
 		matrix.Description,
 	}
 	if err := stmt.Get(matrix, args...); err != nil {
-		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
+		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
-	return r.Matrix(matrix.UUID)
+
+	updatedMatrix, err := r.Matrix(matrix.UUID)
+	*matrix = updatedMatrix
+
+	return err
 }
 
 func (r MatrixRepository) DeleteMatrix(matrix *domain.DeletedMatrix) error {

@@ -12,7 +12,7 @@ type ServiceInterface interface {
 	CourseMatrixExists(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error)
 	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
-	UpdateMatrix(ctx context.Context, matrix *Matrix) (Matrix, error)
+	UpdateMatrix(ctx context.Context, matrix *Matrix) error
 	DeleteMatrix(ctx context.Context, matrix *DeletedMatrix) error
 	AddSubject(ctx context.Context, matrixSubject *MatrixSubject) error
 	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
@@ -73,9 +73,9 @@ func WithLogger(l log.Logger) ServiceConfiguration {
 	}
 }
 
-func WithCourseClient(c CourseClient) ServiceConfiguration {
+func WithCourseClient(courses CourseClient) ServiceConfiguration {
 	return func(svc *Service) error {
-		svc.courses = c
+		svc.courses = courses
 
 		return nil
 	}

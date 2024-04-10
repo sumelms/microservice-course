@@ -59,15 +59,15 @@ func makeListMatricesEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 
 		var list []MatrixResponse
 		for i := range matrices {
-			m := matrices[i]
+			matrix := matrices[i]
 			list = append(list, MatrixResponse{
-				UUID:        m.UUID,
-				CourseUUID:  m.CourseUUID,
-				Code:        m.Code,
-				Name:        m.Name,
-				Description: m.Description,
-				CreatedAt:   m.CreatedAt,
-				UpdatedAt:   m.UpdatedAt,
+				UUID:        matrix.UUID,
+				CourseUUID:  matrix.CourseUUID,
+				Code:        matrix.Code,
+				Name:        matrix.Name,
+				Description: matrix.Description,
+				CreatedAt:   matrix.CreatedAt,
+				UpdatedAt:   matrix.UpdatedAt,
 			})
 		}
 

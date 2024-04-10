@@ -161,7 +161,7 @@ func TestRepository_CreateMatrix(t *testing.T) {
 			matrix.CreatedAt, matrix.UpdatedAt)
 
 	type args struct {
-		s *domain.Matrix
+		m *domain.Matrix
 	}
 
 	tests := []struct {
@@ -174,14 +174,14 @@ func TestRepository_CreateMatrix(t *testing.T) {
 		{
 			name:    "create matrix",
 			rows:    validRows,
-			args:    args{s: &matrix},
+			args:    args{m: &matrix},
 			want:    matrix,
 			wantErr: false,
 		},
 		{
 			name:    "empty fields",
 			rows:    utils.EmptyRows,
-			args:    args{s: &matrix},
+			args:    args{m: &matrix},
 			want:    domain.Matrix{},
 			wantErr: true,
 		},
@@ -204,12 +204,12 @@ func TestRepository_CreateMatrix(t *testing.T) {
 
 			prep.ExpectQuery().WillReturnRows(tt.rows)
 
-			if err := r.CreateMatrix(tt.args.s); (err != nil) != tt.wantErr {
+			if err := r.CreateMatrix(tt.args.m); (err != nil) != tt.wantErr {
 				t.Errorf("CreateMatrix() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(*tt.args.s, tt.want) {
-				t.Errorf("CreateMatrix() got = %v, want %v", *tt.args.s, tt.want)
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.m, tt.want) {
+				t.Errorf("CreateMatrix() got = %v, want %v", *tt.args.m, tt.want)
 			}
 		})
 	}
@@ -279,12 +279,11 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 			}
 			prep.ExpectQuery().WillReturnRows(tt.getRows)
 
-			m, err := r.UpdateMatrix(tt.args.m)
-			if (err != nil) != tt.wantErr {
+			if err := r.UpdateMatrix(tt.args.m); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateMatrix() \nerror = %v, \nwantErr = %v", err, tt.wantErr)
 			}
 
-			if !tt.wantErr && !reflect.DeepEqual(m, tt.want) {
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.m, tt.want) {
 				t.Errorf("UpdateMatrix() \ngot = %v, \nwant = %v", *tt.args.m, tt.want)
 			}
 		})

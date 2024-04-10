@@ -54,12 +54,12 @@ func (s *Service) CreateMatrix(ctx context.Context, matrix *Matrix) error {
 	return nil
 }
 
-func (s *Service) UpdateMatrix(_ context.Context, matrix *Matrix) (Matrix, error) {
-	m, err := s.matrices.UpdateMatrix(matrix)
+func (s *Service) UpdateMatrix(_ context.Context, matrix *Matrix) error {
+	err := s.matrices.UpdateMatrix(matrix)
 	if err != nil {
-		return Matrix{}, fmt.Errorf("service can't update matrix: %w", err)
+		return fmt.Errorf("service can't update matrix: %w", err)
 	}
-	return m, nil
+	return nil
 }
 
 func (s *Service) DeleteMatrix(_ context.Context, matrix *DeletedMatrix) error {

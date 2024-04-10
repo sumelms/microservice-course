@@ -66,7 +66,7 @@ func makeUpdateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		matrix, err := s.UpdateMatrix(ctx, &matrix)
+		err := s.UpdateMatrix(ctx, &matrix)
 		if err != nil {
 			return nil, err
 		}
