@@ -52,7 +52,7 @@ func (r CourseRepository) Course(courseUUID uuid.UUID) (domain.Course, error) {
 
 // Courses list all courses.
 func (r CourseRepository) Courses() ([]domain.Course, error) {
-	stmt, err := r.statement(listCourse)
+	stmt, err := r.statement(listCourses)
 	if err != nil {
 		return []domain.Course{}, err
 	}

@@ -132,7 +132,7 @@ func TestRepository_Courses(t *testing.T) {
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when creating the CourseRepository", err)
 			}
-			prep, ok := stmts[listCourse]
+			prep, ok := stmts[listCourses]
 			if !ok {
 				t.Fatalf("prepared statement %s not found", getCourse)
 			}

@@ -44,7 +44,7 @@ type CreateCourseResponse struct {
 // NewCreateCourseHandler creates new course handler
 // @Summary      Create course
 // @Description  Create a new course
-// @Tags         course
+// @Tags         courses
 // @Accept       json
 // @Produce      json
 // @Param        course	  body		CreateCourseRequest		true	"Add Course"

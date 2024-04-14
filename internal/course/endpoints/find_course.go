@@ -20,6 +20,17 @@ type FindCourseResponse struct {
 	Course *CourseResponse `json:"course"`
 }
 
+// NewFindCourseHandler find course handler
+// @Summary      Find course
+// @Description  Find a new course
+// @Tags         courses
+// @Produce      json
+// @Param        uuid	  path      string  true  "Course UUID" Format(uuid)
+// @Success      200      {object}  FindCourseResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /courses/{uuid} [get].
 func NewFindCourseHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindCourseEndpoint(s),
