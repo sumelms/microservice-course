@@ -18,9 +18,9 @@ type ListSubscriptionsRequest struct {
 }
 
 type SubscriptionCourseResponse struct {
-	UUID *uuid.UUID `db:"uuid" json:"uuid"`
-	Code *string    `db:"code" json:"code"`
-	Name *string    `db:"name" json:"name"`
+	UUID uuid.UUID `db:"uuid" json:"uuid"`
+	Code string    `db:"code" json:"code"`
+	Name string    `db:"name" json:"name"`
 }
 
 type SubscriptionMatrixResponse struct {
