@@ -118,7 +118,7 @@ func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) error {
 		matrix.Name,
 		matrix.Description,
 	}
-	if err := stmt.Get(matrix, args...); err != nil {
+	if _, err := stmt.Exec(args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
 

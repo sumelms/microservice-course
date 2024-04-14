@@ -216,13 +216,7 @@ func TestRepository_CreateMatrix(t *testing.T) {
 }
 
 func TestRepository_UpdateMatrix(t *testing.T) {
-	validUpdateRows := sqlmock.NewRows([]string{
-		"uuid", "code", "name", "description",
-		"created_at", "updated_at"}).
-		AddRow(
-			matrix.UUID, matrix.Code, matrix.Name, matrix.Description,
-			matrix.CreatedAt, matrix.UpdatedAt)
-	validGetRows := sqlmock.NewRows([]string{
+	validRows := sqlmock.NewRows([]string{
 		"course_uuid", "uuid", "code", "name", "description",
 		"created_at", "updated_at"}).
 		AddRow(
@@ -233,28 +227,25 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 		m *domain.Matrix
 	}
 	tests := []struct {
-		name       string
-		args       args
-		updateRows *sqlmock.Rows
-		getRows    *sqlmock.Rows
-		want       domain.Matrix
-		wantErr    bool
+		name    string
+		args    args
+		rows    *sqlmock.Rows
+		want    domain.Matrix
+		wantErr bool
 	}{
 		{
-			name:       "update matrix",
-			args:       args{m: &matrix},
-			updateRows: validUpdateRows,
-			getRows:    validGetRows,
-			want:       matrix,
-			wantErr:    false,
+			name:    "update matrix",
+			args:    args{m: &matrix},
+			rows:    validRows,
+			want:    matrix,
+			wantErr: false,
 		},
 		{
-			name:       "empty matrix",
-			args:       args{m: &domain.Matrix{}},
-			updateRows: utils.EmptyRows,
-			getRows:    utils.EmptyRows,
-			want:       domain.Matrix{},
-			wantErr:    true,
+			name:    "empty matrix",
+			args:    args{m: &domain.Matrix{}},
+			rows:    utils.EmptyRows,
+			want:    domain.Matrix{},
+			wantErr: true,
 		},
 	}
 	for _, testCase := range tests {
@@ -271,13 +262,13 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 			if !ok {
 				t.Fatalf("prepared statement %s not found", updateMatrix)
 			}
-			prep.ExpectQuery().WillReturnRows(tt.updateRows)
+			prep.ExpectExec().WillReturnResult(sqlmock.NewResult(1, 1))
 
 			prep, ok = stmts[getMatrix]
 			if !ok {
 				t.Fatalf("prepared statement %s not found", getMatrix)
 			}
-			prep.ExpectQuery().WillReturnRows(tt.getRows)
+			prep.ExpectQuery().WillReturnRows(tt.rows)
 
 			if err := r.UpdateMatrix(tt.args.m); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateMatrix() \nerror = %v, \nwantErr = %v", err, tt.wantErr)
