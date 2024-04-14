@@ -137,10 +137,18 @@ func decodeListSubscriptionsRequest(_ context.Context, r *http.Request) (interfa
 
 	request := ListSubscriptionsRequest{}
 	if len(courseUUID) > 0 {
-		request.CourseUUID = uuid.MustParse(courseUUID)
+		parsedCourseUUID, err := uuid.Parse(courseUUID)
+		if err != nil {
+			return nil, fmt.Errorf("invalid course UUID: %v", err)
+		}
+		request.CourseUUID = parsedCourseUUID
 	}
 	if len(userUUID) > 0 {
-		request.UserUUID = uuid.MustParse(userUUID)
+		parsedUserUUID, err := uuid.Parse(userUUID)
+		if err != nil {
+			return nil, fmt.Errorf("invalid user UUID: %v", err)
+		}
+		request.UserUUID = parsedUserUUID
 	}
 
 	return request, nil
