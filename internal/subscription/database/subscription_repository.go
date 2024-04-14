@@ -113,7 +113,7 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 		sub.Role,
 		sub.ExpiresAt,
 	}
-	if err := stmt.Get(sub, args...); err != nil {
+	if _, err := stmt.Exec(args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
 	}
 

@@ -89,10 +89,9 @@ func queriesSubscription() map[string]string {
 				AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningColumns),
 		// UPDATE.
-		updateSubscription: fmt.Sprintf(`UPDATE subscriptions
+		updateSubscription: `UPDATE subscriptions
 			SET role = $2, expires_at = $3, updated_at = NOW()
-			WHERE uuid = $1 AND deleted_at IS NULL
-			RETURNING %s`, returningColumns),
+			WHERE uuid = $1 AND deleted_at IS NULL`,
 		// DELETE.
 		deleteSubscription: `UPDATE subscriptions
 			SET deleted_at = NOW(), reason = $2

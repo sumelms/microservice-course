@@ -275,13 +275,7 @@ func TestRepository_CreateSubscription(t *testing.T) {
 }
 
 func TestRepository_UpdateSubscription(t *testing.T) {
-	validUpdateRows := sqlmock.NewRows([]string{
-		"uuid", "role",
-		"expires_at", "created_at", "updated_at"}).
-		AddRow(
-			subscription.UUID, subscription.Role,
-			subscription.ExpiresAt, subscription.CreatedAt, subscription.UpdatedAt)
-	validGetRows := sqlmock.NewRows([]string{
+	validRows := sqlmock.NewRows([]string{
 		"user_uuid", "course_uuid", "matrix_uuid", "uuid",
 		"role", "expires_at", "created_at", "updated_at"}).
 		AddRow(
@@ -295,29 +289,26 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 		sub *domain.Subscription
 	}
 	tests := []struct {
-		name       string
-		fields     fields
-		updateRows *sqlmock.Rows
-		getRows    *sqlmock.Rows
-		args       args
-		want       domain.Subscription
-		wantErr    bool
+		name    string
+		fields  fields
+		rows    *sqlmock.Rows
+		args    args
+		want    domain.Subscription
+		wantErr bool
 	}{
 		{
-			name:       "update course",
-			updateRows: validUpdateRows,
-			getRows:    validGetRows,
-			args:       args{sub: &subscription},
-			want:       subscription,
-			wantErr:    false,
+			name:    "update course",
+			rows:    validRows,
+			args:    args{sub: &subscription},
+			want:    subscription,
+			wantErr: false,
 		},
 		{
-			name:       "empty course",
-			updateRows: utils.EmptyRows,
-			getRows:    utils.EmptyRows,
-			args:       args{sub: &domain.Subscription{}},
-			want:       domain.Subscription{},
-			wantErr:    true,
+			name:    "empty course",
+			rows:    utils.EmptyRows,
+			args:    args{sub: &domain.Subscription{}},
+			want:    domain.Subscription{},
+			wantErr: true,
 		},
 	}
 	for _, testCase := range tests {
@@ -334,20 +325,20 @@ func TestRepository_UpdateSubscription(t *testing.T) {
 			if !ok {
 				t.Fatalf("prepared statement %s not found", updateSubscription)
 			}
-			prep.ExpectQuery().WillReturnRows(tt.updateRows)
+			prep.ExpectExec().WillReturnResult(sqlmock.NewResult(1, 1))
 
 			prep, ok = stmts[getSubscription]
 			if !ok {
 				t.Fatalf("prepared statement %s not found", getSubscription)
 			}
-			prep.ExpectQuery().WillReturnRows(tt.getRows)
+			prep.ExpectQuery().WillReturnRows(tt.rows)
 
 			if err := r.UpdateSubscription(tt.args.sub); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateSubscription() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if !tt.wantErr && !reflect.DeepEqual(*tt.args.sub, tt.want) {
-				t.Errorf("CreateSubscription() got = \n%v, \nwant = %v", *tt.args.sub, tt.want)
+				t.Errorf("UpdateSubscription() got = \n%v, \nwant = %v", *tt.args.sub, tt.want)
 			}
 		})
 	}
