@@ -70,6 +70,7 @@ definitions:
         maxLength: 100
         type: string
     required:
+    - code
     - course_uuid
     - name
     type: object
@@ -290,6 +291,7 @@ definitions:
   endpoints.UpdateMatrixRequest:
     properties:
       code:
+        maxLength: 45
         type: string
       description:
         maxLength: 255
@@ -300,6 +302,7 @@ definitions:
       uuid:
         type: string
     required:
+    - code
     - name
     - uuid
     type: object

@@ -768,6 +768,7 @@ const docTemplate = `{
         "endpoints.CreateMatrixRequest": {
             "type": "object",
             "required": [
+                "code",
                 "course_uuid",
                 "name"
             ],
@@ -1118,12 +1119,14 @@ const docTemplate = `{
         "endpoints.UpdateMatrixRequest": {
             "type": "object",
             "required": [
+                "code",
                 "name",
                 "uuid"
             ],
             "properties": {
                 "code": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 45
                 },
                 "description": {
                     "type": "string",

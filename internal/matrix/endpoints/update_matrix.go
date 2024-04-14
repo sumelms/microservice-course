@@ -16,7 +16,7 @@ import (
 
 type UpdateMatrixRequest struct {
 	UUID        uuid.UUID `json:"uuid"        validate:"required"`
-	Code        string    `json:"code"`
+	Code        string    `json:"code"        validate:"required,max=45"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
 }

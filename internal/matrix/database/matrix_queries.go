@@ -15,7 +15,7 @@ const (
 	listCourseMatrices    = "list course matrices by course_uuid"
 	// UPDATE.
 	updateMatrix = "update matrix by uuid"
-	// DELERE.
+	// DELETE.
 	deleteMatrix  = "delete matrix by uuid"
 	removeSubject = "remove subject from matrix"
 )
