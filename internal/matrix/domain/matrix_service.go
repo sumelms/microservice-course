@@ -30,7 +30,7 @@ func (s *Service) Matrix(_ context.Context, matrixUUID uuid.UUID) (Matrix, error
 func (s *Service) Matrices(_ context.Context, filters *MatrixFilters) ([]Matrix, error) {
 	list, err := s.filteredMatrices(filters)
 	if err != nil {
-		return []Matrix{}, fmt.Errorf("service didn't found any matrix: %w", err)
+		return []Matrix{}, fmt.Errorf("service didn't find any matrices: %w", err)
 	}
 
 	return list, nil
