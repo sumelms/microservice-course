@@ -70,7 +70,7 @@ func (s *Service) UpdateSubscription(_ context.Context, sub *Subscription) error
 	return nil
 }
 
-func (s *Service) DeleteSubscription(_ context.Context, sub *Subscription) error {
+func (s *Service) DeleteSubscription(_ context.Context, sub *DeletedSubscription) error {
 	if err := s.subscriptions.DeleteSubscription(sub); err != nil {
 		return fmt.Errorf("service can't delete subscription: %w", err)
 	}

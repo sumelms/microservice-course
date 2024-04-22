@@ -8,7 +8,7 @@ type SubscriptionRepository interface {
 	CreateSubscription(subscription *Subscription) error
 	CreateSubscriptionWithoutMatrix(subscription *Subscription) error
 	UpdateSubscription(subscription *Subscription) error
-	DeleteSubscription(subscription *Subscription) error
+	DeleteSubscription(subscription *DeletedSubscription) error
 	CourseSubscriptions(courseUUID uuid.UUID) ([]Subscription, error)
 	UserSubscriptions(userUUID uuid.UUID) ([]Subscription, error)
 }

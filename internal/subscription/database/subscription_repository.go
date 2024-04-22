@@ -52,7 +52,7 @@ func (r SubscriptionRepository) Subscription(subscriptionUUID uuid.UUID) (domain
 }
 
 func (r SubscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
-	stmt, err := r.statement(listSubscription)
+	stmt, err := r.statement(listSubscriptions)
 	if err != nil {
 		return []domain.Subscription{}, err
 	}
@@ -65,38 +65,38 @@ func (r SubscriptionRepository) Subscriptions() ([]domain.Subscription, error) {
 	return subs, nil
 }
 
-func (r SubscriptionRepository) CreateSubscriptionWithoutMatrix(s *domain.Subscription) error {
+func (r SubscriptionRepository) CreateSubscriptionWithoutMatrix(sub *domain.Subscription) error {
 	stmt, err := r.statement(createSubscriptionWithoutMatrix)
 	if err != nil {
 		return err
 	}
 
 	args := []interface{}{
-		s.CourseUUID,
-		s.UserUUID,
-		s.Role,
-		s.ExpiresAt,
+		sub.CourseUUID,
+		sub.UserUUID,
+		sub.Role,
+		sub.ExpiresAt,
 	}
-	if err := stmt.Get(s, args...); err != nil {
+	if err := stmt.Get(sub, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subscription")
 	}
 	return nil
 }
 
-func (r SubscriptionRepository) CreateSubscription(s *domain.Subscription) error {
+func (r SubscriptionRepository) CreateSubscription(sub *domain.Subscription) error {
 	stmt, err := r.statement(createSubscription)
 	if err != nil {
 		return err
 	}
 
 	args := []interface{}{
-		s.CourseUUID,
-		s.MatrixUUID,
-		s.UserUUID,
-		s.Role,
-		s.ExpiresAt,
+		sub.CourseUUID,
+		sub.MatrixUUID,
+		sub.UserUUID,
+		sub.Role,
+		sub.ExpiresAt,
 	}
-	if err := stmt.Get(s, args...); err != nil {
+	if err := stmt.Get(sub, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subscription")
 	}
 	return nil
@@ -113,13 +113,17 @@ func (r SubscriptionRepository) UpdateSubscription(sub *domain.Subscription) err
 		sub.Role,
 		sub.ExpiresAt,
 	}
-	if err := stmt.Get(sub, args...); err != nil {
+	if _, err := stmt.Exec(args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subscription")
 	}
-	return nil
+
+	updatedSub, err := r.Subscription(sub.UUID)
+	*sub = updatedSub
+
+	return err
 }
 
-func (r SubscriptionRepository) DeleteSubscription(sub *domain.Subscription) error {
+func (r SubscriptionRepository) DeleteSubscription(sub *domain.DeletedSubscription) error {
 	stmt, err := r.statement(deleteSubscription)
 	if err != nil {
 		return err

@@ -15,16 +15,29 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type updateSubscriptionRequest struct {
+type UpdateSubscriptionRequest struct {
 	UUID      uuid.UUID  `json:"uuid"       validate:"required"`
-	Role      string     `json:"role"`
+	Role      string     `json:"role"       validate:"required"`
 	ExpiresAt *time.Time `json:"expires_at"`
 }
 
-type updateSubscriptionResponse struct {
-	Subscription *domain.Subscription `json:"subscription"`
+type UpdateSubscriptionResponse struct {
+	Subscription *SubscriptionResponse `json:"subscription"`
 }
 
+// NewUpdateSubscriptionHandler updates new subscription handler
+// @Summary      Update subscription
+// @Description  Update a subscription
+// @Tags         subscriptions
+// @Accept       json
+// @Produce      json
+// @Param        uuid	  		  path      string  true  "Subscription UUID" Format(uuid)
+// @Param        subscription	  body		UpdateSubscriptionRequest		true	"Update Subscription"
+// @Success      200      {object}  UpdateSubscriptionResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subscriptions/{uuid} [put].
 func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubscriptionEndpoint(s),
@@ -36,7 +49,7 @@ func NewUpdateSubscriptionHandler(s domain.ServiceInterface, opts ...kithttp.Ser
 
 func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(updateSubscriptionRequest)
+		req, ok := request.(UpdateSubscriptionRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -52,12 +65,22 @@ func makeUpdateSubscriptionEndpoint(s domain.ServiceInterface) endpoint.Endpoint
 			return nil, err
 		}
 
-		if err := s.UpdateSubscription(ctx, &sub); err != nil {
+		err := s.UpdateSubscription(ctx, &sub)
+		if err != nil {
 			return nil, err
 		}
 
-		return updateSubscriptionResponse{
-			Subscription: &sub,
+		return UpdateSubscriptionResponse{
+			Subscription: &SubscriptionResponse{
+				UUID:       sub.UUID,
+				UserUUID:   sub.UserUUID,
+				CourseUUID: sub.CourseUUID,
+				MatrixUUID: sub.MatrixUUID,
+				Role:       sub.Role,
+				ExpiresAt:  sub.ExpiresAt,
+				CreatedAt:  sub.CreatedAt,
+				UpdatedAt:  sub.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -69,7 +92,7 @@ func decodeUpdateSubscriptionRequest(_ context.Context, r *http.Request) (interf
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	var req updateSubscriptionRequest
+	var req UpdateSubscriptionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
 	}

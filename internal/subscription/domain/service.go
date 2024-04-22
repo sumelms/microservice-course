@@ -11,9 +11,9 @@ import (
 type ServiceInterface interface {
 	Subscription(ctx context.Context, subscriptionUUID uuid.UUID) (Subscription, error)
 	Subscriptions(ctx context.Context, filters *SubscriptionFilters) ([]Subscription, error)
-	CreateSubscription(ctx context.Context, cs *Subscription) error
-	UpdateSubscription(ctx context.Context, cs *Subscription) error
-	DeleteSubscription(ctx context.Context, cs *Subscription) error
+	CreateSubscription(ctx context.Context, subscription *Subscription) error
+	UpdateSubscription(ctx context.Context, subscription *Subscription) error
+	DeleteSubscription(ctx context.Context, subscription *DeletedSubscription) error
 }
 
 type ServiceConfiguration func(svc *Service) error
@@ -47,17 +47,17 @@ func WithSubscriptionRepository(sr SubscriptionRepository) ServiceConfiguration 
 	}
 }
 
-func WithCourseClient(c CourseClient) ServiceConfiguration {
+func WithCourseClient(courses CourseClient) ServiceConfiguration {
 	return func(svc *Service) error {
-		svc.courses = c
+		svc.courses = courses
 
 		return nil
 	}
 }
 
-func WithMatrixClient(m MatrixClient) ServiceConfiguration {
+func WithMatrixClient(matrices MatrixClient) ServiceConfiguration {
 	return func(svc *Service) error {
-		svc.matrices = m
+		svc.matrices = matrices
 
 		return nil
 	}

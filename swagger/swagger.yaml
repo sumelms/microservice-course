@@ -56,14 +56,50 @@ definitions:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
     type: object
+  endpoints.CreateSubscriptionRequest:
+    properties:
+      course_uuid:
+        type: string
+      expires_at:
+        type: string
+      matrix_uuid:
+        type: string
+      role:
+        type: string
+      user_uuid:
+        type: string
+    required:
+    - course_uuid
+    - role
+    - user_uuid
+    type: object
+  endpoints.CreateSubscriptionResponse:
+    properties:
+      subscription:
+        $ref: '#/definitions/endpoints.SubscriptionResponse'
+    type: object
   endpoints.DeleteCourseResponse:
     properties:
       course:
         $ref: '#/definitions/endpoints.DeletedCourseResponse'
     type: object
+  endpoints.DeleteSubscriptionResponse:
+    properties:
+      subscription:
+        $ref: '#/definitions/endpoints.DeletedSubscriptionResponse'
+    type: object
   endpoints.DeletedCourseResponse:
     properties:
       deleted_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.DeletedSubscriptionResponse:
+    properties:
+      deleted_at:
+        type: string
+      reason:
         type: string
       uuid:
         type: string
@@ -73,12 +109,84 @@ definitions:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
     type: object
+  endpoints.FindSubscriptionResponse:
+    properties:
+      subscription:
+        $ref: '#/definitions/endpoints.SubscriptionResponse'
+    type: object
   endpoints.ListCoursesResponse:
     properties:
       courses:
         items:
           $ref: '#/definitions/endpoints.CourseResponse'
         type: array
+    type: object
+  endpoints.ListSubscriptionsResponse:
+    properties:
+      subscriptions:
+        items:
+          $ref: '#/definitions/endpoints.SubscriptionsResponse'
+        type: array
+    type: object
+  endpoints.SubscriptionCourseResponse:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.SubscriptionMatrixResponse:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.SubscriptionResponse:
+    properties:
+      course_uuid:
+        type: string
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      matrix_uuid:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_uuid:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.SubscriptionsResponse:
+    properties:
+      course:
+        $ref: '#/definitions/endpoints.SubscriptionCourseResponse'
+      course_uuid:
+        type: string
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      matrix:
+        $ref: '#/definitions/endpoints.SubscriptionMatrixResponse'
+      matrix_uuid:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_uuid:
+        type: string
+      uuid:
+        type: string
     type: object
   endpoints.UpdateCourseRequest:
     properties:
@@ -115,6 +223,23 @@ definitions:
     properties:
       course:
         $ref: '#/definitions/endpoints.CourseResponse'
+    type: object
+  endpoints.UpdateSubscriptionRequest:
+    properties:
+      expires_at:
+        type: string
+      role:
+        type: string
+      uuid:
+        type: string
+    required:
+    - role
+    - uuid
+    type: object
+  endpoints.UpdateSubscriptionResponse:
+    properties:
+      subscription:
+        $ref: '#/definitions/endpoints.SubscriptionResponse'
     type: object
 host: localhost:8080
 info:
@@ -275,6 +400,162 @@ paths:
       summary: Update course
       tags:
       - courses
+  /subscriptions:
+    get:
+      description: List a new subscriptions
+      parameters:
+      - description: course search by uuid
+        format: uuid
+        in: query
+        name: course_uuid
+        type: string
+      - description: user search by uuid
+        format: uuid
+        in: query
+        name: user_uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.ListSubscriptionsResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List subscriptions
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Create a new subscription
+      parameters:
+      - description: Add Subscription
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.CreateSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create subscription
+      tags:
+      - subscriptions
+  /subscriptions/{uuid}:
+    delete:
+      description: Delete a new subscription
+      parameters:
+      - description: Subscription UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.DeleteSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete subscription
+      tags:
+      - subscriptions
+    get:
+      description: Find a new subscription
+      parameters:
+      - description: Subscription UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.FindSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Find subscription
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Update a subscription
+      parameters:
+      - description: Subscription UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Update Subscription
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.UpdateSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update subscription
+      tags:
+      - subscriptions
 securityDefinitions:
   ApiKeyAuth:
     description: Description for what is this security definition being used
