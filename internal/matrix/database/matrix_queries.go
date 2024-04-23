@@ -39,7 +39,7 @@ func queriesMatrix() map[string]string {
 			WHERE matrices.uuid = $1 AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningMatrixColumns),
 		getCourseMatrixExists: `SELECT
-				courses.uuid IS NOT NULL AND matrices.uuid IS NOT NULL as exists_relationship
+				(courses.uuid IS NOT NULL AND matrices.uuid IS NOT NULL) as exists_relationship
 			FROM matrices
 			LEFT JOIN courses ON matrices.course_id = courses.id
 			WHERE courses.uuid = $1 AND courses.deleted_at IS NULL

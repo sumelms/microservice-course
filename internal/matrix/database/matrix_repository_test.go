@@ -92,6 +92,63 @@ func TestRepository_Matrix(t *testing.T) {
 	}
 }
 
+func TestRepository_CourseMatrixExists(t *testing.T) {
+	type args struct {
+		courseUUID uuid.UUID
+		matrixUUID uuid.UUID
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		rows    *sqlmock.Rows
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:    "matrix course exists",
+			args:    args{courseUUID: utils.CourseUUID, matrixUUID: utils.MatrixUUID},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name:    "matrix course not found error",
+			args:    args{courseUUID: utils.CourseUUID, matrixUUID: uuid.MustParse("8281f61e-956e-4f64-ac0e-860c444c5f86")},
+			want:    false,
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, _, stmts := newMatrixTestDB()
+			r, err := NewMatrixRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when creating the MatrixRepository", err)
+			}
+			prep, ok := stmts[getCourseMatrixExists]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", getCourseMatrixExists)
+			}
+
+			columns := []string{"exists_relationship"}
+			prep.ExpectQuery().WithArgs(tt.args.courseUUID, tt.args.matrixUUID).WillReturnRows(sqlmock.NewRows(columns).AddRow(tt.want))
+
+			got, err := r.CourseMatrixExists(tt.args.courseUUID, tt.args.matrixUUID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CourseMatrixExists() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CourseMatrixExists() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestRepository_Matrices(t *testing.T) {
 	validRows := sqlmock.NewRows([]string{
 		"course_uuid", "uuid", "code", "name", "description",
