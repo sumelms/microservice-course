@@ -337,3 +337,65 @@ func TestRepository_UpdateMatrix(t *testing.T) {
 		})
 	}
 }
+
+func TestRepository_DeleteMatrix(t *testing.T) {
+	validRows := sqlmock.NewRows([]string{"uuid", "deleted_at"}).
+		AddRow(matrix.UUID, utils.Now)
+
+	deletedMatrix := domain.DeletedMatrix{
+		UUID:      utils.MatrixUUID,
+		DeletedAt: utils.Now,
+	}
+
+	type args struct {
+		m *domain.DeletedMatrix
+	}
+	tests := []struct {
+		name    string
+		args    args
+		rows    *sqlmock.Rows
+		want    domain.DeletedMatrix
+		wantErr bool
+	}{
+		{
+			name:    "delete matrix",
+			args:    args{m: &deletedMatrix},
+			rows:    validRows,
+			want:    deletedMatrix,
+			wantErr: false,
+		},
+		{
+			name:    "empty matrix",
+			args:    args{m: &domain.DeletedMatrix{}},
+			rows:    utils.EmptyRows,
+			want:    domain.DeletedMatrix{},
+			wantErr: true,
+		},
+	}
+	for _, testCase := range tests {
+		tt := testCase
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, _, stmts := newMatrixTestDB()
+			r, err := NewMatrixRepository(db)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected creating the MatrixRepository", err)
+			}
+
+			prep, ok := stmts[deleteMatrix]
+			if !ok {
+				t.Fatalf("prepared statement %s not found", deleteMatrix)
+			}
+			prep.ExpectQuery().WillReturnRows(tt.rows)
+
+			if err := r.DeleteMatrix(tt.args.m); (err != nil) != tt.wantErr {
+				t.Errorf("DeleteMatrix() \nerror = %v, \nwantErr = %v", err, tt.wantErr)
+			}
+
+			if !tt.wantErr && !reflect.DeepEqual(*tt.args.m, tt.want) {
+				t.Errorf("DeleteMatrix() \ngot = %v, \nwant = %v", *tt.args.m, tt.want)
+			}
+		})
+	}
+}
