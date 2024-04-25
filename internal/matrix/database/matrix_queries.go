@@ -38,12 +38,12 @@ func queriesMatrix() map[string]string {
 			LEFT JOIN courses ON matrices.course_id = courses.id
 			WHERE matrices.uuid = $1 AND matrices.deleted_at IS NULL
 				AND courses.deleted_at IS NULL`, returningMatrixColumns),
-		getCourseMatrixExists: `SELECT
-				(courses.uuid IS NOT NULL AND matrices.uuid IS NOT NULL) as exists_relationship
+		getCourseMatrixExists: `SELECT EXISTS (
+			SELECT 1
 			FROM matrices
-			LEFT JOIN courses ON matrices.course_id = courses.id
+			INNER JOIN courses ON matrices.course_id = courses.id
 			WHERE courses.uuid = $1 AND courses.deleted_at IS NULL
-				AND matrices.uuid = $2 AND matrices.deleted_at IS NULL`,
+				AND matrices.uuid = $2 AND matrices.deleted_at IS NULL)`,
 		listMatrices: fmt.Sprintf(`SELECT
 				courses.uuid AS course_uuid,
 				%s
