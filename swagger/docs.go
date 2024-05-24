@@ -322,6 +322,260 @@ const docTemplate = `{
                 }
             }
         },
+        "/matrices/{matrix_uuid}/subjects": {
+            "get": {
+                "description": "List matrix subjects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrix_subjects"
+                ],
+                "summary": "List matrix subjects",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "matrix_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.ListMatrixSubjectsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/matrices/{matrix_uuid}/subjects/": {
+            "post": {
+                "description": "Create a new matrix subject",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrix_subjects"
+                ],
+                "summary": "Create matrix subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "matrix_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Add Matrix Subject",
+                        "name": "matrix_subject",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateMatrixSubjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateMatrixSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/matrices/{matrix_uuid}/subjects/{subject_uuid}": {
+            "get": {
+                "description": "Find a new matrix subject",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrix_subjects"
+                ],
+                "summary": "Find matrix subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "matrix_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "subject_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.FindMatrixSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a matrix subject",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrix_subjects"
+                ],
+                "summary": "Update matrix subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "matrix_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "subject_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update MatrixSubject",
+                        "name": "matrix_subject",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateMatrixSubjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateMatrixSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a new matrix subject",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matrix_subjects"
+                ],
+                "summary": "Delete matrix subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Matrix UUID",
+                        "name": "matrix_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "subject_uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.DeletedMatrixSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/matrices/{uuid}": {
             "get": {
                 "description": "Find a new matrix",
@@ -439,6 +693,219 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/endpoints.DeleteMatrixResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/subjects": {
+            "get": {
+                "description": "List a new subjects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subjects"
+                ],
+                "summary": "List subjects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.ListSubjectsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new subject",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subjects"
+                ],
+                "summary": "Create subject",
+                "parameters": [
+                    {
+                        "description": "Add Subject",
+                        "name": "subjects",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateSubjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.CreateSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/subjects/{uuid}": {
+            "get": {
+                "description": "Find a new subject",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subjects"
+                ],
+                "summary": "Find subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.FindSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a subject",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subjects"
+                ],
+                "summary": "Update subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Subject",
+                        "name": "subject",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateSubjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.UpdateSubjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a new subject",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subjects"
+                ],
+                "summary": "Delete subject",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Subject UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/endpoints.DeleteSubjectResponse"
                         }
                     },
                     "400": {
@@ -798,6 +1265,74 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.CreateMatrixSubjectRequest": {
+            "type": "object",
+            "required": [
+                "group",
+                "matrix_uuid",
+                "subject_uuid"
+            ],
+            "properties": {
+                "group": {
+                    "type": "string"
+                },
+                "is_required": {
+                    "type": "boolean"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "subject_uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.CreateMatrixSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "matrix_subject": {
+                    "$ref": "#/definitions/endpoints.MatrixSubjectResponse"
+                }
+            }
+        },
+        "endpoints.CreateSubjectRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 45
+                },
+                "credit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "objective": {
+                    "type": "string",
+                    "maxLength": 245
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "workload": {
+                    "type": "number"
+                }
+            }
+        },
+        "endpoints.CreateSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "subject": {
+                    "$ref": "#/definitions/endpoints.SubjectResponse"
+                }
+            }
+        },
         "endpoints.CreateSubscriptionRequest": {
             "type": "object",
             "required": [
@@ -847,6 +1382,14 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.DeleteSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "subject": {
+                    "$ref": "#/definitions/endpoints.DeletedSubjectResponse"
+                }
+            }
+        },
         "endpoints.DeleteSubscriptionResponse": {
             "type": "object",
             "properties": {
@@ -867,6 +1410,34 @@ const docTemplate = `{
             }
         },
         "endpoints.DeletedMatrixResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.DeletedMatrixSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_at": {
+                    "type": "string"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "subject_uuid": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.DeletedSubjectResponse": {
             "type": "object",
             "properties": {
                 "deleted_at": {
@@ -907,6 +1478,22 @@ const docTemplate = `{
                 }
             }
         },
+        "endpoints.FindMatrixSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "matrix_subject": {
+                    "$ref": "#/definitions/endpoints.MatrixSubjectResponse"
+                }
+            }
+        },
+        "endpoints.FindSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "subject": {
+                    "$ref": "#/definitions/endpoints.SubjectResponse"
+                }
+            }
+        },
         "endpoints.FindSubscriptionResponse": {
             "type": "object",
             "properties": {
@@ -933,6 +1520,28 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/endpoints.MatrixResponse"
+                    }
+                }
+            }
+        },
+        "endpoints.ListMatrixSubjectsResponse": {
+            "type": "object",
+            "properties": {
+                "matrix_subjects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/endpoints.MatrixSubjectResponse"
+                    }
+                }
+            }
+        },
+        "endpoints.ListSubjectsResponse": {
+            "type": "object",
+            "properties": {
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/endpoints.SubjectResponse"
                     }
                 }
             }
@@ -971,6 +1580,64 @@ const docTemplate = `{
                 },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "endpoints.MatrixSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "is_required": {
+                    "type": "boolean"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "subject_uuid": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.SubjectResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "credit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "objective": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "workload": {
+                    "type": "number"
                 }
             }
         },
@@ -1146,6 +1813,78 @@ const docTemplate = `{
             "properties": {
                 "matrix": {
                     "$ref": "#/definitions/endpoints.MatrixResponse"
+                }
+            }
+        },
+        "endpoints.UpdateMatrixSubjectRequest": {
+            "type": "object",
+            "required": [
+                "group",
+                "matrix_uuid",
+                "subject_uuid"
+            ],
+            "properties": {
+                "group": {
+                    "type": "string"
+                },
+                "is_required": {
+                    "type": "boolean"
+                },
+                "matrix_uuid": {
+                    "type": "string"
+                },
+                "subject_uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "endpoints.UpdateMatrixSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "matrix_subject": {
+                    "$ref": "#/definitions/endpoints.MatrixSubjectResponse"
+                }
+            }
+        },
+        "endpoints.UpdateSubjectRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "uuid"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 45
+                },
+                "credit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "objective": {
+                    "type": "string",
+                    "maxLength": 245
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "workload": {
+                    "type": "number"
+                }
+            }
+        },
+        "endpoints.UpdateSubjectResponse": {
+            "type": "object",
+            "properties": {
+                "subject": {
+                    "$ref": "#/definitions/endpoints.SubjectResponse"
                 }
             }
         },

@@ -21,13 +21,23 @@ type Matrix struct {
 }
 
 type MatrixSubject struct {
-	ID         uint      `json:"id"`
-	SubjectID  uuid.UUID `db:"subject_id"  json:"subject_id"`
-	MatrixID   uuid.UUID `db:"matrix_id"   json:"matrix_id"`
-	IsRequired bool      `db:"is_required" json:"is_required"`
+	UUID        uuid.UUID `db:"uuid"         json:"uuid"`
+	MatrixUUID  uuid.UUID `db:"matrix_uuid"  json:"matrix_uuid"`
+	SubjectUUID uuid.UUID `db:"subject_uuid" json:"subject_uuid"`
+	IsRequired  bool      `db:"is_required"  json:"is_required"`
+	Group       string    `db:"group"        json:"group"`
+	CreatedAt   time.Time `db:"created_at"   json:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at"   json:"updated_at"`
 }
 
 type DeletedMatrix struct {
 	UUID      uuid.UUID `db:"uuid"       json:"uuid"`
 	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
+}
+
+type DeletedMatrixSubject struct {
+	UUID        uuid.UUID `db:"uuid"         json:"uuid"`
+	SubjectUUID uuid.UUID `db:"subject_uuid" json:"subject_uuid"`
+	MatrixUUID  uuid.UUID `db:"matrix_uuid"  json:"matrix_uuid"`
+	DeletedAt   time.Time `db:"deleted_at"   json:"deleted_at"`
 }

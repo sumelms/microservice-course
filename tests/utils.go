@@ -16,6 +16,7 @@ var (
 	CourseUUID       = uuid.MustParse("00000000-0000-0000-0000-aaaaaaaaaaaa")
 	MatrixUUID       = uuid.MustParse("00000000-0000-0000-0000-bbbbbbbbbbbb")
 	SubscriptionUUID = uuid.MustParse("00000000-0000-0000-0000-cccccccccccc")
+	SubjectUUID      = uuid.MustParse("00000000-0000-0000-0000-dddddddddddd")
 	UserUUID         = uuid.MustParse("00000000-0000-0000-0000-111111111111")
 	Role             = "Role"
 	EmptyRows        = sqlmock.NewRows([]string{})

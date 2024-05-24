@@ -15,26 +15,33 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type updateSubjectRequest struct {
-	UUID      uuid.UUID `json:"uuid"      validate:"required"`
-	Code      string    `json:"code"      validate:"required,max=45"`
-	Name      string    `json:"name"      validate:"required,max=100"`
-	Objective string    `json:"objective" validate:"max=245"`
-	Credit    float32   `json:"credit"`
-	Workload  float32   `json:"workload"`
+type UpdateSubjectRequest struct {
+	UUID        uuid.UUID  `json:"uuid"         validate:"required"`
+	Code        string     `json:"code"         validate:"required,max=45"`
+	Name        string     `json:"name"         validate:"required,max=100"`
+	Objective   string     `json:"objective"    validate:"max=245"`
+	Credit      float32    `json:"credit"`
+	Workload    float32    `json:"workload"`
+	PublishedAt *time.Time `json:"published_at"`
 }
 
-type updateSubjectResponse struct {
-	UUID      uuid.UUID `json:"uuid"`
-	Code      string    `json:"code"                validate:"required,max=45"`
-	Name      string    `json:"name"                validate:"required,max=100"`
-	Objective string    `json:"objective,omitempty" validate:"max=245"`
-	Credit    float32   `json:"credit,omitempty"`
-	Workload  float32   `json:"workload,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type UpdateSubjectResponse struct {
+	Subject *SubjectResponse `json:"subject"`
 }
 
+// NewUpdateSubjectHandler updates new subject handler
+// @Summary      Update subject
+// @Description  Update a subject
+// @Tags         subjects
+// @Accept       json
+// @Produce      json
+// @Param        uuid		path    string  				true	"Subject UUID" Format(uuid)
+// @Param        subject	body	UpdateSubjectRequest	true	"Update Subject"
+// @Success      200      {object}  UpdateSubjectResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subjects/{uuid} [put].
 func NewUpdateSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeUpdateSubjectEndpoint(s),
@@ -47,7 +54,7 @@ func NewUpdateSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOp
 //nolint:dupl
 func makeUpdateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(updateSubjectRequest)
+		req, ok := request.(UpdateSubjectRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -57,25 +64,28 @@ func makeUpdateSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		c := domain.Subject{}
+		subject := domain.Subject{}
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &c); err != nil {
+		if err := json.Unmarshal(data, &subject); err != nil {
 			return nil, err
 		}
 
-		if err := s.UpdateSubject(ctx, &c); err != nil {
+		if err := s.UpdateSubject(ctx, &subject); err != nil {
 			return nil, err
 		}
 
-		return updateSubjectResponse{
-			UUID:      c.UUID,
-			Code:      c.Code,
-			Name:      c.Name,
-			Objective: c.Objective,
-			Credit:    c.Credit,
-			Workload:  c.Workload,
-			CreatedAt: c.CreatedAt,
-			UpdatedAt: c.UpdatedAt,
+		return UpdateSubjectResponse{
+			Subject: &SubjectResponse{
+				UUID:        subject.UUID,
+				Code:        subject.Code,
+				Name:        subject.Name,
+				Objective:   subject.Objective,
+				Credit:      subject.Credit,
+				Workload:    subject.Workload,
+				CreatedAt:   subject.CreatedAt,
+				UpdatedAt:   subject.UpdatedAt,
+				PublishedAt: subject.PublishedAt,
+			},
 		}, nil
 	}
 }
@@ -87,7 +97,7 @@ func decodeUpdateSubjectRequest(_ context.Context, r *http.Request) (interface{}
 		return nil, fmt.Errorf("invalid argument")
 	}
 
-	var req updateSubjectRequest
+	var req UpdateSubjectRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

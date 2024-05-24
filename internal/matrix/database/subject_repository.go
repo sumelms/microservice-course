@@ -24,67 +24,95 @@ func NewSubjectRepository(db *sqlx.DB) (SubjectRepository, error) { //nolint: re
 	}, nil
 }
 
+func (r SubjectRepository) statement(s string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[s]
+	if !ok {
+		return nil, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", s)
+	}
+	return stmt, nil
+}
+
 type SubjectRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-func (r SubjectRepository) Subject(id uuid.UUID) (domain.Subject, error) {
-	stmt, ok := r.statements[getSubject]
-	if !ok {
+func (r SubjectRepository) Subject(subjectUUID uuid.UUID) (domain.Subject, error) {
+	stmt, err := r.statement(getSubject)
+	if err != nil {
 		return domain.Subject{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getSubject)
 	}
 
-	var sub domain.Subject
-	if err := stmt.Get(&sub, id); err != nil {
+	var subject domain.Subject
+	if err := stmt.Get(&subject, subjectUUID); err != nil {
 		return domain.Subject{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subject")
 	}
-	return sub, nil
+	return subject, nil
 }
 
 func (r SubjectRepository) Subjects() ([]domain.Subject, error) {
-	stmt, ok := r.statements[listSubject]
-	if !ok {
-		return []domain.Subject{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubject)
+	stmt, err := r.statement(listSubjects)
+	if err != nil {
+		return []domain.Subject{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listSubjects)
 	}
 
-	var subs []domain.Subject
-	if err := stmt.Select(&subs); err != nil {
+	var subjects []domain.Subject
+	if err := stmt.Select(&subjects); err != nil {
 		return []domain.Subject{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting subjects")
 	}
-	return subs, nil
+	return subjects, nil
 }
 
-func (r SubjectRepository) CreateSubject(sub *domain.Subject) error {
-	stmt, ok := r.statements[createSubject]
-	if !ok {
+func (r SubjectRepository) CreateSubject(subject *domain.Subject) error {
+	stmt, err := r.statement(createSubject)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createSubject)
 	}
 
-	if err := stmt.Get(sub, sub.Name); err != nil {
+	args := []interface{}{
+		subject.Code,
+		subject.Name,
+		subject.Objective,
+		subject.Credit,
+		subject.Workload,
+		subject.PublishedAt,
+	}
+	if err := stmt.Get(subject, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating subject")
 	}
 	return nil
 }
 
-func (r SubjectRepository) UpdateSubject(sub *domain.Subject) error {
-	stmt, ok := r.statements[updateSubject]
-	if !ok {
+func (r SubjectRepository) UpdateSubject(subject *domain.Subject) error {
+	stmt, err := r.statement(updateSubject)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateSubject)
 	}
 
-	if err := stmt.Get(sub, sub.UUID); err != nil {
+	args := []interface{}{
+		subject.UUID,
+		subject.Code,
+		subject.Name,
+		subject.Objective,
+		subject.Credit,
+		subject.Workload,
+		subject.PublishedAt,
+	}
+	if err := stmt.Get(subject, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating subject")
 	}
 	return nil
 }
 
-func (r SubjectRepository) DeleteSubject(id uuid.UUID) error {
-	stmt, ok := r.statements[deleteSubject]
-	if !ok {
+func (r SubjectRepository) DeleteSubject(subject *domain.DeletedSubject) error {
+	stmt, err := r.statement(deleteSubject)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteSubject)
 	}
 
-	if _, err := stmt.Exec(id); err != nil {
+	args := []interface{}{
+		subject.UUID,
+	}
+	if err := stmt.Get(subject, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting subject")
 	}
 	return nil
