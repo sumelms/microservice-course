@@ -14,23 +14,39 @@ import (
 	"github.com/sumelms/microservice-course/pkg/validator"
 )
 
-type createMatrixRequest struct {
-	Code        string    `json:"code"        validate:"max=45"`
+type CreateMatrixRequest struct {
+	CourseUUID  uuid.UUID `json:"course_uuid" validate:"required"`
+	Code        string    `json:"code"        validate:"required,max=45"`
 	Name        string    `json:"name"        validate:"required,max=100"`
 	Description string    `json:"description" validate:"max=255"`
-	CourseID    uuid.UUID `json:"course_id"   validate:"required"`
 }
 
-type createMatrixResponse struct {
+type MatrixResponse struct {
 	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code,omitempty"`
+	CourseUUID  uuid.UUID `json:"course_uuid"`
+	Code        string    `json:"code"`
 	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
+	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    uuid.UUID `json:"course_id"`
 }
 
+type CreateMatrixResponse struct {
+	Matrix *MatrixResponse `json:"matrix"`
+}
+
+// NewCreateMatrixHandler creates new matrix handler
+// @Summary      Create matrix
+// @Description  Create a new matrix
+// @Tags         matrices
+// @Accept       json
+// @Produce      json
+// @Param        matrices	  body		CreateMatrixRequest		true	"Add Matrix"
+// @Success      200      {object}  CreateMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices [post].
 func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeCreateMatrixEndpoint(s),
@@ -43,7 +59,7 @@ func NewCreateMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 //nolint:dupl
 func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(createMatrixRequest)
+		req, ok := request.(CreateMatrixRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
@@ -53,29 +69,32 @@ func makeCreateMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 			return nil, err
 		}
 
-		var m domain.Matrix
+		var matrix domain.Matrix
 		data, _ := json.Marshal(req)
-		if err := json.Unmarshal(data, &m); err != nil {
+		if err := json.Unmarshal(data, &matrix); err != nil {
 			return nil, err
 		}
 
-		if err := s.CreateMatrix(ctx, &m); err != nil {
+		if err := s.CreateMatrix(ctx, &matrix); err != nil {
 			return nil, err
 		}
 
-		return createMatrixResponse{
-			UUID:        m.UUID,
-			Name:        m.Name,
-			Description: m.Description,
-			CreatedAt:   m.CreatedAt,
-			UpdatedAt:   m.UpdatedAt,
-			CourseID:    m.CourseID,
+		return &CreateMatrixResponse{
+			Matrix: &MatrixResponse{
+				UUID:        matrix.UUID,
+				CourseUUID:  matrix.CourseUUID,
+				Code:        matrix.Code,
+				Name:        matrix.Name,
+				Description: matrix.Description,
+				CreatedAt:   matrix.CreatedAt,
+				UpdatedAt:   matrix.UpdatedAt,
+			},
 		}, nil
 	}
 }
 
 func decodeCreateMatrixRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var req createMatrixRequest
+	var req CreateMatrixRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

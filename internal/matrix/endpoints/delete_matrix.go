@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -12,10 +13,30 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-type deleteMatrixRequest struct {
+type DeleteMatrixRequest struct {
 	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
+type DeletedMatrixResponse struct {
+	UUID      uuid.UUID `json:"uuid"`
+	DeletedAt time.Time `json:"deleted_at"`
+}
+
+type DeleteMatrixResponse struct {
+	Matrix *DeletedMatrixResponse `json:"matrix"`
+}
+
+// NewDeleteMatrixHandler deletes matrix handler
+// @Summary      Delete matrix
+// @Description  Delete a new matrix
+// @Tags         matrices
+// @Produce      json
+// @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
+// @Success      200      {object}  DeleteMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices/{uuid} [delete].
 func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeDeleteMatrixEndpoint(s),
@@ -27,16 +48,22 @@ func NewDeleteMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpt
 
 func makeDeleteMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(deleteMatrixRequest)
+		req, ok := request.(DeleteMatrixRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		if err := s.DeleteMatrix(ctx, req.UUID); err != nil {
+		deletedMatrix := domain.DeletedMatrix{UUID: req.UUID}
+		if err := s.DeleteMatrix(ctx, &deletedMatrix); err != nil {
 			return nil, err
 		}
 
-		return nil, nil
+		return DeleteMatrixResponse{
+			Matrix: &DeletedMatrixResponse{
+				UUID:      deletedMatrix.UUID,
+				DeletedAt: deletedMatrix.DeletedAt,
+			},
+		}, nil
 	}
 }
 
@@ -49,7 +76,7 @@ func decodeDeleteMatrixRequest(_ context.Context, r *http.Request) (interface{},
 
 	uid := uuid.MustParse(id)
 
-	return deleteMatrixRequest{UUID: uid}, nil
+	return DeleteMatrixRequest{UUID: uid}, nil
 }
 
 func encodeDeleteMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

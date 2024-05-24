@@ -3,12 +3,17 @@ package domain
 import "github.com/google/uuid"
 
 type MatrixRepository interface {
-	Matrix(id uuid.UUID) (Matrix, error)
-	CourseMatrix(courseUUID uuid.UUID, matrixUUID uuid.UUID) (Matrix, error)
-	Matrices() ([]Matrix, error)
+	// CREATE.
 	CreateMatrix(matrix *Matrix) error
-	UpdateMatrix(matrix *Matrix) error
-	DeleteMatrix(id uuid.UUID) error
 	AddSubject(matrixSubject *MatrixSubject) error
-	RemoveSubject(matrixID, subjectID uuid.UUID) error
+	// READ.
+	Matrix(matrixUUID uuid.UUID) (Matrix, error)
+	CourseMatrixExists(courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error)
+	Matrices() ([]Matrix, error)
+	CourseMatrices(courseUUID uuid.UUID) ([]Matrix, error)
+	// UPDATE.
+	UpdateMatrix(matrix *Matrix) error
+	// DELETE.
+	DeleteMatrix(matrix *DeletedMatrix) error
+	RemoveSubject(matrixUUID, subjectUUID uuid.UUID) error
 }

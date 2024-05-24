@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -13,20 +12,25 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-type findMatrixRequest struct {
+type FindMatrixRequest struct {
 	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
-type findMatrixResponse struct {
-	UUID        uuid.UUID `json:"uuid"`
-	Code        string    `json:"code,omitempty"`
-	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	CourseID    uuid.UUID `json:"course_id"`
+type FindMatrixResponse struct {
+	Matrix *MatrixResponse `json:"matrix"`
 }
 
+// NewFindMatrixHandler find matrix handler
+// @Summary      Find matrix
+// @Description  Find a new matrix
+// @Tags         matrices
+// @Produce      json
+// @Param        uuid	  path      string  true  "Matrix UUID" Format(uuid)
+// @Success      200      {object}  FindMatrixResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /matrices/{uuid} [get].
 func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindMatrixEndpoint(s),
@@ -38,24 +42,26 @@ func NewFindMatrixHandler(s domain.ServiceInterface, opts ...kithttp.ServerOptio
 
 func makeFindMatrixEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findMatrixRequest)
+		req, ok := request.(FindMatrixRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		m, err := s.Matrix(ctx, req.UUID)
+		matrix, err := s.Matrix(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
-		return &findMatrixResponse{
-			UUID:        m.UUID,
-			Code:        m.Code,
-			Name:        m.Name,
-			Description: m.Description,
-			CreatedAt:   m.CreatedAt,
-			UpdatedAt:   m.UpdatedAt,
-			CourseID:    m.CourseID,
+		return &FindMatrixResponse{
+			Matrix: &MatrixResponse{
+				UUID:        matrix.UUID,
+				CourseUUID:  matrix.CourseUUID,
+				Code:        matrix.Code,
+				Name:        matrix.Name,
+				Description: matrix.Description,
+				CreatedAt:   matrix.CreatedAt,
+				UpdatedAt:   matrix.UpdatedAt,
+			},
 		}, nil
 	}
 }
@@ -69,7 +75,7 @@ func decodeFindMatrixRequest(_ context.Context, r *http.Request) (interface{}, e
 
 	uid := uuid.MustParse(id)
 
-	return findMatrixRequest{UUID: uid}, nil
+	return FindMatrixRequest{UUID: uid}, nil
 }
 
 func encodeFindMatrixResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

@@ -28,8 +28,8 @@ func NewHTTPHandler(r *mux.Router, s domain.ServiceInterface, logger log.Logger)
 func NewMatrixRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
 	r := mux.NewRouter().PathPrefix("/matrices").Subrouter().StrictSlash(true)
 
-	listMatrixHandler := endpoints.NewListMatrixHandler(s, opts...)
-	r.Handle("", listMatrixHandler).Methods(http.MethodGet)
+	listMatricesHandler := endpoints.NewListMatricesHandler(s, opts...)
+	r.Handle("", listMatricesHandler).Methods(http.MethodGet)
 
 	createMatrixHandler := endpoints.NewCreateMatrixHandler(s, opts...)
 	r.Handle("", createMatrixHandler).Methods(http.MethodPost)

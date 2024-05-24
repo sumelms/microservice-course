@@ -7,7 +7,6 @@ import (
 	"github.com/sumelms/microservice-course/pkg/errors"
 )
 
-// NewMatrixRepository creates the matrix MatrixRepository.
 func NewMatrixRepository(db *sqlx.DB) (MatrixRepository, error) {
 	sqlStatements := make(map[string]*sqlx.Stmt)
 
@@ -28,90 +27,125 @@ type MatrixRepository struct {
 	statements map[string]*sqlx.Stmt
 }
 
-// Matrix get the matrix by given id.
-func (r MatrixRepository) Matrix(id uuid.UUID) (domain.Matrix, error) {
-	stmt, ok := r.statements[getMatrix]
+func (r MatrixRepository) statement(s string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[s]
 	if !ok {
+		return nil, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", s)
+	}
+	return stmt, nil
+}
+
+func (r MatrixRepository) Matrix(matrixUUID uuid.UUID) (domain.Matrix, error) {
+	stmt, err := r.statement(getMatrix)
+	if err != nil {
 		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
 	}
 
-	var m domain.Matrix
-	if err := stmt.Get(&m, id); err != nil {
+	var matrix domain.Matrix
+	if err := stmt.Get(&matrix, matrixUUID); err != nil {
 		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
 	}
-	return m, nil
+	return matrix, nil
 }
 
-func (r MatrixRepository) CourseMatrix(courseUUID uuid.UUID, matrixUUID uuid.UUID) (domain.Matrix, error) {
-	stmt, ok := r.statements[getCourseMatrix]
-	if !ok {
-		return domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
+func (r MatrixRepository) CourseMatrixExists(courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error) {
+	stmt, err := r.statement(getCourseMatrixExists)
+	if err != nil {
+		return false, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", getMatrix)
 	}
 
-	var m domain.Matrix
-	if err := stmt.Get(&m, courseUUID, matrixUUID); err != nil {
-		return domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
+	var exists bool
+	if err := stmt.Get(&exists, courseUUID, matrixUUID); err != nil {
+		return false, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrix")
 	}
-	return m, nil
+	return exists, nil
 }
 
-// Matrices get the list of matrices.
 func (r MatrixRepository) Matrices() ([]domain.Matrix, error) {
-	stmt, ok := r.statements[listMatrix]
-	if !ok {
-		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrix)
+	stmt, err := r.statement(listMatrices)
+	if err != nil {
+		return []domain.Matrix{}, errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", listMatrices)
 	}
 
-	var mm []domain.Matrix
-	if err := stmt.Select(&mm); err != nil {
+	var matrices []domain.Matrix
+	if err := stmt.Select(&matrices); err != nil {
 		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
 	}
-	return mm, nil
+	return matrices, nil
 }
 
-// CreateMatrix create a new matrix.
-func (r MatrixRepository) CreateMatrix(m *domain.Matrix) error {
-	stmt, ok := r.statements[createMatrix]
-	if !ok {
+func (r MatrixRepository) CourseMatrices(courseUUID uuid.UUID) ([]domain.Matrix, error) {
+	stmt, err := r.statement(listCourseMatrices)
+	if err != nil {
+		return []domain.Matrix{}, errors.NewErrorf(
+			errors.ErrCodeUnknown, "prepared statement %s not found", listCourseMatrices)
+	}
+
+	var matrices []domain.Matrix
+	if err := stmt.Select(&matrices, courseUUID); err != nil {
+		return []domain.Matrix{}, errors.WrapErrorf(err, errors.ErrCodeUnknown, "error getting matrices")
+	}
+	return matrices, nil
+}
+
+func (r MatrixRepository) CreateMatrix(matrix *domain.Matrix) error {
+	stmt, err := r.statement(createMatrix)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", createMatrix)
 	}
 
-	if err := stmt.Get(m, m.Code, m.Name, m.Description, m.CourseID); err != nil {
+	args := []interface{}{
+		matrix.CourseUUID,
+		matrix.Code,
+		matrix.Name,
+		matrix.Description,
+	}
+	if err := stmt.Get(matrix, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error creating matrix")
 	}
 	return nil
 }
 
-// UpdateMatrix updates the given matrix.
-func (r MatrixRepository) UpdateMatrix(m *domain.Matrix) error {
-	stmt, ok := r.statements[updateMatrix]
-	if !ok {
+func (r MatrixRepository) UpdateMatrix(matrix *domain.Matrix) error {
+	stmt, err := r.statement(updateMatrix)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", updateMatrix)
 	}
 
-	if err := stmt.Get(m, m.Code, m.Name, m.Description, m.CourseID, m.UUID); err != nil {
+	args := []interface{}{
+		matrix.UUID,
+		matrix.Code,
+		matrix.Name,
+		matrix.Description,
+	}
+	if _, err := stmt.Exec(args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error updating matrix")
 	}
-	return nil
+
+	updatedMatrix, err := r.Matrix(matrix.UUID)
+	*matrix = updatedMatrix
+
+	return err
 }
 
-// DeleteMatrix delete the given matrix by uuid.
-func (r MatrixRepository) DeleteMatrix(id uuid.UUID) error {
-	stmt, ok := r.statements[deleteMatrix]
-	if !ok {
+func (r MatrixRepository) DeleteMatrix(matrix *domain.DeletedMatrix) error {
+	stmt, err := r.statement(deleteMatrix)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", deleteMatrix)
 	}
 
-	if _, err := stmt.Exec(id); err != nil {
+	args := []interface{}{
+		matrix.UUID,
+	}
+	if err := stmt.Get(matrix, args...); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error deleting matrix")
 	}
 	return nil
 }
 
-// AddSubject adds the subject to the matrix.
 func (r MatrixRepository) AddSubject(ms *domain.MatrixSubject) error {
-	stmt, ok := r.statements[addSubject]
-	if !ok {
+	stmt, err := r.statement(addSubject)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", addSubject)
 	}
 
@@ -121,14 +155,13 @@ func (r MatrixRepository) AddSubject(ms *domain.MatrixSubject) error {
 	return nil
 }
 
-// RemoveSubject removes the subject from the matrix.
-func (r MatrixRepository) RemoveSubject(matrixID, subjectID uuid.UUID) error {
-	stmt, ok := r.statements[removeSubject]
-	if !ok {
+func (r MatrixRepository) RemoveSubject(matrixUUID, subjectUUID uuid.UUID) error {
+	stmt, err := r.statement(removeSubject)
+	if err != nil {
 		return errors.NewErrorf(errors.ErrCodeUnknown, "prepared statement %s not found", removeSubject)
 	}
 
-	if _, err := stmt.Exec(matrixID, subjectID); err != nil {
+	if _, err := stmt.Exec(matrixUUID, subjectUUID); err != nil {
 		return errors.WrapErrorf(err, errors.ErrCodeUnknown, "error removing subject from matrix")
 	}
 	return nil
