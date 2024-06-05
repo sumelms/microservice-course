@@ -102,11 +102,8 @@ func (s *Service) UpdateMatrixSubject(_ context.Context, matrixSubject *MatrixSu
 
 func (s *Service) DeleteMatrixSubject(_ context.Context, matrixSubject *DeletedMatrixSubject) error {
 	if err := s.matrices.DeleteMatrixSubject(matrixSubject); err != nil {
-		return fmt.Errorf(
-			"service can't remove subject with UUID %s from matrix with UUID %s: %w",
-			matrixSubject.SubjectUUID,
-			matrixSubject.MatrixUUID,
-			err)
+		return fmt.Errorf("failed to remove subject with UUID %s from matrix with UUID %s: %w",
+			matrixSubject.SubjectUUID, matrixSubject.MatrixUUID, err)
 	}
 	return nil
 }

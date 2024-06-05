@@ -16,13 +16,13 @@ import (
 )
 
 type UpdateSubjectRequest struct {
-	UUID        uuid.UUID  `json:"uuid"         validate:"required"`
-	Code        string     `json:"code"         validate:"required,max=45"`
-	Name        string     `json:"name"         validate:"required,max=100"`
-	Objective   string     `json:"objective"    validate:"max=245"`
-	Credit      float32    `json:"credit"`
-	Workload    float32    `json:"workload"`
-	PublishedAt *time.Time `json:"published_at"`
+	UUID        uuid.UUID `json:"uuid"         validate:"required"`
+	Code        string    `json:"code"         validate:"required,max=45"`
+	Name        string    `json:"name"         validate:"required,max=100"`
+	Objective   string    `json:"objective"    validate:"max=245"`
+	Credit      float32   `json:"credit"`
+	Workload    float32   `json:"workload"`
+	PublishedAt time.Time `json:"published_at"`
 }
 
 type UpdateSubjectResponse struct {

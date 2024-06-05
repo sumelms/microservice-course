@@ -15,24 +15,24 @@ import (
 )
 
 type CreateSubjectRequest struct {
-	Code        string     `json:"code"         validate:"required,max=45"`
-	Name        string     `json:"name"         validate:"required,max=100"`
-	Objective   string     `json:"objective"    validate:"max=245"`
-	Credit      float32    `json:"credit"`
-	Workload    float32    `json:"workload"`
-	PublishedAt *time.Time `json:"published_at"`
+	Code        string    `json:"code"         validate:"required,max=45"`
+	Name        string    `json:"name"         validate:"required,max=100"`
+	Objective   string    `json:"objective"    validate:"max=245"`
+	Credit      float32   `json:"credit"`
+	Workload    float32   `json:"workload"`
+	PublishedAt time.Time `json:"published_at"`
 }
 
 type SubjectResponse struct {
-	UUID        uuid.UUID  `json:"uuid"`
-	Code        string     `json:"code"`
-	Name        string     `json:"name"`
-	Objective   string     `json:"objective,omitempty"`
-	Credit      float32    `json:"credit,omitempty"`
-	Workload    float32    `json:"workload,omitempty"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	PublishedAt *time.Time `json:"published_at,omitempty"`
+	UUID        uuid.UUID `json:"uuid"`
+	Code        string    `json:"code"`
+	Name        string    `json:"name"`
+	Objective   string    `json:"objective,omitempty"`
+	Credit      float32   `json:"credit,omitempty"`
+	Workload    float32   `json:"workload,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	PublishedAt time.Time `json:"published_at,omitempty"`
 }
 
 type CreateSubjectResponse struct {

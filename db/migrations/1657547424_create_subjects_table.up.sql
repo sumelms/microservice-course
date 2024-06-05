@@ -11,7 +11,7 @@ CREATE TABLE subjects
     workload        float           NULL,
     created_at      timestamp       DEFAULT now() NOT NULL,
     updated_at      timestamp       DEFAULT now() NOT NULL,
-    published_at    timestamp       DEFAULT now() NOT NULL,
+    published_at    timestamp       NOT NULL,
     deleted_at      timestamp
 );
 

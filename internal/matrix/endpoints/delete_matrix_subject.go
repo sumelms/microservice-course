@@ -84,18 +84,15 @@ func decodeDeleteMatrixSubjectRequest(_ context.Context, r *http.Request) (inter
 
 	MatrixUUID, ok := vars["matrix_uuid"]
 	if !ok {
-		return nil, fmt.Errorf("invalid argument")
+		return nil, fmt.Errorf("invalid argument: missing matrix_uuid")
 	}
 
 	SubjectUUID, ok := vars["subject_uuid"]
 	if !ok {
-		return nil, fmt.Errorf("invalid argument")
+		return nil, fmt.Errorf("invalid argument: missing subject_uuid")
 	}
 
 	var req DeleteMatrixSubjectRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return nil, err
-	}
 
 	req.MatrixUUID = uuid.MustParse(MatrixUUID)
 	req.SubjectUUID = uuid.MustParse(SubjectUUID)

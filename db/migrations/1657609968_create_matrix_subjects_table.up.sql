@@ -6,7 +6,7 @@ CREATE TABLE matrix_subjects
     uuid            uuid            DEFAULT uuid_generate_v4() NOT NULL,
     subject_id      bigint          NOT NULL REFERENCES subjects (id),
     matrix_id       bigint          NOT NULL REFERENCES matrices (id),
-    is_required     boolean         NULL DEFAULT TRUE,
+    is_required     boolean         NOT NULL DEFAULT TRUE,
     "group"         varchar         NOT NULL,
     created_at      timestamp       DEFAULT now() NOT NULL,
     updated_at      timestamp       DEFAULT now() NOT NULL,

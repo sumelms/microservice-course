@@ -20,7 +20,7 @@ var (
 		Objective:   "Objective",
 		Credit:      10,
 		Workload:    20,
-		PublishedAt: &utils.Now,
+		PublishedAt: utils.Now,
 		CreatedAt:   utils.Now,
 		UpdatedAt:   utils.Now,
 	}
