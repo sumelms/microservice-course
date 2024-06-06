@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -13,21 +12,25 @@ import (
 	"github.com/sumelms/microservice-course/internal/matrix/domain"
 )
 
-type findSubjectRequest struct {
-	UUID uuid.UUID `json:"uuid"`
+type FindSubjectRequest struct {
+	UUID uuid.UUID `json:"uuid" validate:"required"`
 }
 
-type findSubjectResponse struct {
-	UUID      uuid.UUID `json:"uuid"`
-	Code      string    `json:"code"                validate:"required,max=45"`
-	Name      string    `json:"name"                validate:"required,max=100"`
-	Objective string    `json:"objective,omitempty" validate:"max=245"`
-	Credit    float32   `json:"credit,omitempty"`
-	Workload  float32   `json:"workload,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type FindSubjectResponse struct {
+	Subject *SubjectResponse `json:"subject"`
 }
 
+// NewFindSubjectHandler find subject handler
+// @Summary      Find subject
+// @Description  Find a new subject
+// @Tags         subjects
+// @Produce      json
+// @Param        uuid	  path      string  true  "Subject UUID" Format(uuid)
+// @Success      200      {object}  FindSubjectResponse
+// @Failure      400      {object}  error
+// @Failure      404      {object}  error
+// @Failure      500      {object}  error
+// @Router       /subjects/{uuid} [get].
 func NewFindSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOption) *kithttp.Server {
 	return kithttp.NewServer(
 		makeFindSubjectEndpoint(s),
@@ -39,25 +42,28 @@ func NewFindSubjectHandler(s domain.ServiceInterface, opts ...kithttp.ServerOpti
 
 func makeFindSubjectEndpoint(s domain.ServiceInterface) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req, ok := request.(findSubjectRequest)
+		req, ok := request.(FindSubjectRequest)
 		if !ok {
 			return nil, fmt.Errorf("invalid argument")
 		}
 
-		c, err := s.Subject(ctx, req.UUID)
+		subject, err := s.Subject(ctx, req.UUID)
 		if err != nil {
 			return nil, err
 		}
 
-		return &findSubjectResponse{
-			UUID:      c.UUID,
-			Code:      c.Code,
-			Name:      c.Name,
-			Objective: c.Objective,
-			Credit:    c.Credit,
-			Workload:  c.Workload,
-			CreatedAt: c.CreatedAt,
-			UpdatedAt: c.UpdatedAt,
+		return &FindSubjectResponse{
+			Subject: &SubjectResponse{
+				UUID:        subject.UUID,
+				Code:        subject.Code,
+				Name:        subject.Name,
+				Objective:   subject.Objective,
+				Credit:      subject.Credit,
+				Workload:    subject.Workload,
+				CreatedAt:   subject.CreatedAt,
+				UpdatedAt:   subject.UpdatedAt,
+				PublishedAt: subject.PublishedAt,
+			},
 		}, nil
 	}
 }
@@ -71,7 +77,7 @@ func decodeFindSubjectRequest(_ context.Context, r *http.Request) (interface{}, 
 
 	uid := uuid.MustParse(id)
 
-	return findSubjectRequest{UUID: uid}, nil
+	return FindSubjectRequest{UUID: uid}, nil
 }
 
 func encodeFindSubjectResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

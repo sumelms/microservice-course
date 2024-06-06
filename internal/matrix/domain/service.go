@@ -9,19 +9,22 @@ import (
 
 type ServiceInterface interface {
 	Matrix(ctx context.Context, matrixUUID uuid.UUID) (Matrix, error)
+	MatrixSubject(ctx context.Context, matrixSubject *MatrixSubject) error
 	CourseMatrixExists(ctx context.Context, courseUUID uuid.UUID, matrixUUID uuid.UUID) (bool, error)
 	Matrices(ctx context.Context, filters *MatrixFilters) ([]Matrix, error)
+	MatrixSubjects(ctx context.Context, matrixUUID uuid.UUID) ([]MatrixSubject, error)
 	CreateMatrix(ctx context.Context, matrix *Matrix) error
 	UpdateMatrix(ctx context.Context, matrix *Matrix) error
 	DeleteMatrix(ctx context.Context, matrix *DeletedMatrix) error
-	AddSubject(ctx context.Context, matrixSubject *MatrixSubject) error
-	RemoveSubject(ctx context.Context, matrixID, SubjectID uuid.UUID) error
+	CreateMatrixSubject(ctx context.Context, matrixSubject *MatrixSubject) error
+	UpdateMatrixSubject(ctx context.Context, matrixSubject *MatrixSubject) error
+	DeleteMatrixSubject(ctx context.Context, matrixSubject *DeletedMatrixSubject) error
 
-	Subject(ctx context.Context, id uuid.UUID) (Subject, error)
+	Subject(ctx context.Context, subjectUUID uuid.UUID) (Subject, error)
 	Subjects(ctx context.Context) ([]Subject, error)
 	CreateSubject(ctx context.Context, subject *Subject) error
 	UpdateSubject(ctx context.Context, subject *Subject) error
-	DeleteSubject(ctx context.Context, id uuid.UUID) error
+	DeleteSubject(ctx context.Context, subject *DeletedSubject) error
 }
 
 type ServiceConfiguration func(svc *Service) error

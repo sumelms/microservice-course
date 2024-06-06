@@ -43,14 +43,29 @@ func NewMatrixRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *m
 	deleteMatrixHandler := endpoints.NewDeleteMatrixHandler(s, opts...)
 	r.Handle("/{uuid}", deleteMatrixHandler).Methods(http.MethodDelete)
 
+	createMatrixSubjectHandler := endpoints.NewCreateMatrixSubjectHandler(s, opts...)
+	r.Handle("/{matrix_uuid}/subjects", createMatrixSubjectHandler).Methods(http.MethodPost)
+
+	listMatrixSubjectsHandler := endpoints.NewListMatrixSubjectsHandler(s, opts...)
+	r.Handle("/{matrix_uuid}/subjects", listMatrixSubjectsHandler).Methods(http.MethodGet)
+
+	findMatrixSubjectHandler := endpoints.NewFindMatrixSubjectHandler(s, opts...)
+	r.Handle("/{matrix_uuid}/subjects/{subject_uuid}", findMatrixSubjectHandler).Methods(http.MethodGet)
+
+	updateMatrixSubjectHandler := endpoints.NewUpdateMatrixSubjectHandler(s, opts...)
+	r.Handle("/{matrix_uuid}/subjects/{subject_uuid}", updateMatrixSubjectHandler).Methods(http.MethodPut)
+
+	deleteMatrixSubjectHandler := endpoints.NewDeleteMatrixSubjectHandler(s, opts...)
+	r.Handle("/{matrix_uuid}/subjects/{subject_uuid}", deleteMatrixSubjectHandler).Methods(http.MethodDelete)
+
 	return r
 }
 
 func NewSubjectRouter(s domain.ServiceInterface, opts ...kithttp.ServerOption) *mux.Router {
 	r := mux.NewRouter().PathPrefix("/subjects").Subrouter().StrictSlash(true)
 
-	listSubjectHandler := endpoints.NewListSubjectHandler(s, opts...)
-	r.Handle("", listSubjectHandler).Methods(http.MethodGet)
+	listSubjectsHandler := endpoints.NewListSubjectsHandler(s, opts...)
+	r.Handle("", listSubjectsHandler).Methods(http.MethodGet)
 
 	createSubjectHandler := endpoints.NewCreateSubjectHandler(s, opts...)
 	r.Handle("", createSubjectHandler).Methods(http.MethodPost)

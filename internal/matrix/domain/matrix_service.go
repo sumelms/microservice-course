@@ -69,20 +69,41 @@ func (s *Service) DeleteMatrix(_ context.Context, matrix *DeletedMatrix) error {
 	return nil
 }
 
-func (s *Service) AddSubject(_ context.Context, matrixSubject *MatrixSubject) error {
-	if err := s.matrices.AddSubject(matrixSubject); err != nil {
+func (s *Service) CreateMatrixSubject(_ context.Context, matrixSubject *MatrixSubject) error {
+	if err := s.matrices.CreateMatrixSubject(matrixSubject); err != nil {
 		return fmt.Errorf("service can't adds the subject to matrix: %w", err)
 	}
 	return nil
 }
 
-func (s *Service) RemoveSubject(_ context.Context, matrixUUID, subjectUUID uuid.UUID) error {
-	if err := s.matrices.RemoveSubject(matrixUUID, subjectUUID); err != nil {
-		return fmt.Errorf(
-			"service can't remove subject with UUID %s from matrix with UUID %s: %w",
-			subjectUUID,
-			matrixUUID,
-			err)
+func (s *Service) MatrixSubjects(_ context.Context, matrixUUID uuid.UUID) ([]MatrixSubject, error) {
+	matrixSubjects, err := s.matrices.MatrixSubjects(matrixUUID)
+	if err != nil {
+		return []MatrixSubject{}, fmt.Errorf("service can't find matrix with UUID %s: %w", matrixUUID, err)
+	}
+	return matrixSubjects, nil
+}
+
+func (s *Service) MatrixSubject(_ context.Context, matrixSubject *MatrixSubject) error {
+	err := s.matrices.MatrixSubject(matrixSubject)
+	if err != nil {
+		return fmt.Errorf("service can't find matrix subject: %w", err)
+	}
+	return nil
+}
+
+func (s *Service) UpdateMatrixSubject(_ context.Context, matrixSubject *MatrixSubject) error {
+	err := s.matrices.UpdateMatrixSubject(matrixSubject)
+	if err != nil {
+		return fmt.Errorf("service can't update matrix subject: %w", err)
+	}
+	return nil
+}
+
+func (s *Service) DeleteMatrixSubject(_ context.Context, matrixSubject *DeletedMatrixSubject) error {
+	if err := s.matrices.DeleteMatrixSubject(matrixSubject); err != nil {
+		return fmt.Errorf("failed to remove subject with UUID %s from matrix with UUID %s: %w",
+			matrixSubject.SubjectUUID, matrixSubject.MatrixUUID, err)
 	}
 	return nil
 }

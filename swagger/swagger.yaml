@@ -79,6 +79,52 @@ definitions:
       matrix:
         $ref: '#/definitions/endpoints.MatrixResponse'
     type: object
+  endpoints.CreateMatrixSubjectRequest:
+    properties:
+      group:
+        type: string
+      is_required:
+        type: boolean
+      matrix_uuid:
+        type: string
+      subject_uuid:
+        type: string
+    required:
+    - group
+    - matrix_uuid
+    - subject_uuid
+    type: object
+  endpoints.CreateMatrixSubjectResponse:
+    properties:
+      matrix_subject:
+        $ref: '#/definitions/endpoints.MatrixSubjectResponse'
+    type: object
+  endpoints.CreateSubjectRequest:
+    properties:
+      code:
+        maxLength: 45
+        type: string
+      credit:
+        type: number
+      name:
+        maxLength: 100
+        type: string
+      objective:
+        maxLength: 245
+        type: string
+      published_at:
+        type: string
+      workload:
+        type: number
+    required:
+    - code
+    - name
+    type: object
+  endpoints.CreateSubjectResponse:
+    properties:
+      subject:
+        $ref: '#/definitions/endpoints.SubjectResponse'
+    type: object
   endpoints.CreateSubscriptionRequest:
     properties:
       course_uuid:
@@ -111,6 +157,11 @@ definitions:
       matrix:
         $ref: '#/definitions/endpoints.DeletedMatrixResponse'
     type: object
+  endpoints.DeleteSubjectResponse:
+    properties:
+      subject:
+        $ref: '#/definitions/endpoints.DeletedSubjectResponse'
+    type: object
   endpoints.DeleteSubscriptionResponse:
     properties:
       subscription:
@@ -124,6 +175,24 @@ definitions:
         type: string
     type: object
   endpoints.DeletedMatrixResponse:
+    properties:
+      deleted_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.DeletedMatrixSubjectResponse:
+    properties:
+      deleted_at:
+        type: string
+      matrix_uuid:
+        type: string
+      subject_uuid:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.DeletedSubjectResponse:
     properties:
       deleted_at:
         type: string
@@ -149,6 +218,16 @@ definitions:
       matrix:
         $ref: '#/definitions/endpoints.MatrixResponse'
     type: object
+  endpoints.FindMatrixSubjectResponse:
+    properties:
+      matrix_subject:
+        $ref: '#/definitions/endpoints.MatrixSubjectResponse'
+    type: object
+  endpoints.FindSubjectResponse:
+    properties:
+      subject:
+        $ref: '#/definitions/endpoints.SubjectResponse'
+    type: object
   endpoints.FindSubscriptionResponse:
     properties:
       subscription:
@@ -166,6 +245,20 @@ definitions:
       matrices:
         items:
           $ref: '#/definitions/endpoints.MatrixResponse'
+        type: array
+    type: object
+  endpoints.ListMatrixSubjectsResponse:
+    properties:
+      matrix_subjects:
+        items:
+          $ref: '#/definitions/endpoints.MatrixSubjectResponse'
+        type: array
+    type: object
+  endpoints.ListSubjectsResponse:
+    properties:
+      subjects:
+        items:
+          $ref: '#/definitions/endpoints.SubjectResponse'
         type: array
     type: object
   endpoints.ListSubscriptionsResponse:
@@ -191,6 +284,44 @@ definitions:
         type: string
       uuid:
         type: string
+    type: object
+  endpoints.MatrixSubjectResponse:
+    properties:
+      created_at:
+        type: string
+      group:
+        type: string
+      is_required:
+        type: boolean
+      matrix_uuid:
+        type: string
+      subject_uuid:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  endpoints.SubjectResponse:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      credit:
+        type: number
+      name:
+        type: string
+      objective:
+        type: string
+      published_at:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
+      workload:
+        type: number
     type: object
   endpoints.SubscriptionCourseResponse:
     properties:
@@ -310,6 +441,55 @@ definitions:
     properties:
       matrix:
         $ref: '#/definitions/endpoints.MatrixResponse'
+    type: object
+  endpoints.UpdateMatrixSubjectRequest:
+    properties:
+      group:
+        type: string
+      is_required:
+        type: boolean
+      matrix_uuid:
+        type: string
+      subject_uuid:
+        type: string
+    required:
+    - group
+    - matrix_uuid
+    - subject_uuid
+    type: object
+  endpoints.UpdateMatrixSubjectResponse:
+    properties:
+      matrix_subject:
+        $ref: '#/definitions/endpoints.MatrixSubjectResponse'
+    type: object
+  endpoints.UpdateSubjectRequest:
+    properties:
+      code:
+        maxLength: 45
+        type: string
+      credit:
+        type: number
+      name:
+        maxLength: 100
+        type: string
+      objective:
+        maxLength: 245
+        type: string
+      published_at:
+        type: string
+      uuid:
+        type: string
+      workload:
+        type: number
+    required:
+    - code
+    - name
+    - uuid
+    type: object
+  endpoints.UpdateSubjectResponse:
+    properties:
+      subject:
+        $ref: '#/definitions/endpoints.SubjectResponse'
     type: object
   endpoints.UpdateSubscriptionRequest:
     properties:
@@ -547,6 +727,183 @@ paths:
       summary: Create matrix
       tags:
       - matrices
+  /matrices/{matrix_uuid}/subjects:
+    get:
+      consumes:
+      - application/json
+      description: List matrix subjects
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: matrix_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.ListMatrixSubjectsResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List matrix subjects
+      tags:
+      - matrix_subjects
+  /matrices/{matrix_uuid}/subjects/:
+    post:
+      description: Create a new matrix subject
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: matrix_uuid
+        required: true
+        type: string
+      - description: Add Matrix Subject
+        in: body
+        name: matrix_subject
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.CreateMatrixSubjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.CreateMatrixSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create matrix subject
+      tags:
+      - matrix_subjects
+  /matrices/{matrix_uuid}/subjects/{subject_uuid}:
+    delete:
+      description: Delete a new matrix subject
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: matrix_uuid
+        required: true
+        type: string
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: subject_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.DeletedMatrixSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete matrix subject
+      tags:
+      - matrix_subjects
+    get:
+      description: Find a new matrix subject
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: matrix_uuid
+        required: true
+        type: string
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: subject_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.FindMatrixSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Find matrix subject
+      tags:
+      - matrix_subjects
+    put:
+      consumes:
+      - application/json
+      description: Update a matrix subject
+      parameters:
+      - description: Matrix UUID
+        format: uuid
+        in: path
+        name: matrix_uuid
+        required: true
+        type: string
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: subject_uuid
+        required: true
+        type: string
+      - description: Update MatrixSubject
+        in: body
+        name: matrix_subject
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.UpdateMatrixSubjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.UpdateMatrixSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update matrix subject
+      tags:
+      - matrix_subjects
   /matrices/{uuid}:
     delete:
       description: Delete a new matrix
@@ -640,6 +997,153 @@ paths:
       summary: Update matrix
       tags:
       - matrices
+  /subjects:
+    get:
+      consumes:
+      - application/json
+      description: List a new subjects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.ListSubjectsResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List subjects
+      tags:
+      - subjects
+    post:
+      consumes:
+      - application/json
+      description: Create a new subject
+      parameters:
+      - description: Add Subject
+        in: body
+        name: subjects
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.CreateSubjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.CreateSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create subject
+      tags:
+      - subjects
+  /subjects/{uuid}:
+    delete:
+      description: Delete a new subject
+      parameters:
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.DeleteSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete subject
+      tags:
+      - subjects
+    get:
+      description: Find a new subject
+      parameters:
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.FindSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Find subject
+      tags:
+      - subjects
+    put:
+      consumes:
+      - application/json
+      description: Update a subject
+      parameters:
+      - description: Subject UUID
+        format: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Update Subject
+        in: body
+        name: subject
+        required: true
+        schema:
+          $ref: '#/definitions/endpoints.UpdateSubjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/endpoints.UpdateSubjectResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update subject
+      tags:
+      - subjects
   /subscriptions:
     get:
       description: List a new subscriptions

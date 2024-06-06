@@ -5,9 +5,9 @@ import (
 )
 
 type SubjectRepository interface {
-	Subject(uuid.UUID) (Subject, error)
+	Subject(subjectUUID uuid.UUID) (Subject, error)
 	Subjects() ([]Subject, error)
-	CreateSubject(*Subject) error
-	UpdateSubject(*Subject) error
-	DeleteSubject(uuid.UUID) error
+	CreateSubject(subject *Subject) error
+	UpdateSubject(subject *Subject) error
+	DeleteSubject(subject *DeletedSubject) error
 }
